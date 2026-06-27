@@ -223,7 +223,7 @@
             padding: 10px 12px;
             border-radius: 6px;
             white-space: nowrap;
-            flex-grow: 1; /* Forces the text to occupy remaining space */
+            flex-grow: 1; 
         }
 
         .btn-share-wa {
@@ -238,15 +238,14 @@
             text-decoration: none;
             transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
             box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-            flex-shrink: 0; /* Prevents dimensional distortion on small viewports */
+            flex-shrink: 0; 
         }
 
         .btn-share-wa:hover {
             transform: scale(1.15);
-            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.35); /* Glow effect matching brand identity */
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.35); 
         }
 
-        /* SVG scaling and cascade color inheritance */
         .btn-share-wa svg {
             width: 18px;
             height: 18px;
@@ -387,6 +386,25 @@
             color: white;
             grid-column: span 2;
         }
+        
+        /* Newly Architected Audit Log Constraints */
+        .debit-audit-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .debit-history-scroll {
+            background-color: #f4f6f8;
+            border-radius: 8px;
+            max-height: 250px;
+            overflow-y: auto;
+            padding: 15px 20px;
+            border: 1px solid var(--border-light);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+            /* Preserves smooth scrolling on touch devices */
+            -webkit-overflow-scrolling: touch; 
+        }
 
         /* Accessible Visual Progress Bar Module */
         .progress-module {
@@ -452,6 +470,7 @@
 <div class="dashboard-container">
     
     <div class="left-column">
+        <!-- Scalar Accumulator Panel -->
         <div class="panel">
             <h2>Personal Daily Debit Accumulator</h2>
             <div class="debit-display">₹<span id="total-debit-val">0.00</span></div>
@@ -462,6 +481,7 @@
             </div>
         </div>
 
+        <!-- Utility Computation Module -->
         <div class="panel calculator">
             <div class="calculator__display" id="calc-display">0</div>
             <div class="calculator__keys" id="calc-keys">
@@ -484,8 +504,19 @@
                 <button data-action="calculate">=</button>
             </div>
         </div>
+        
+        <!-- NEW: Chronological Audit Log Panel -->
+        <div class="panel debit-audit-panel">
+            <h2>Transaction History Log</h2>
+            <div class="debit-history-scroll" id="debit-history-container">
+                <ul class="timeline" id="debit-history-list">
+                    <!-- Dynamic List Population Zone utilized by DOM manipulation logic -->
+                </ul>
+            </div>
+        </div>
     </div>
 
+    <!-- Right Column: Cohort Relational Mapping -->
     <div class="right-column">
         <div class="panel">
             <h2>Cohort Ledger & Transaction History</h2>
@@ -501,8 +532,12 @@
     const rawFriendsArray = ["thiwakar", "gojo", "mowlish", "goww", "aravindh", "mohan", "gowtham", "parithi", "soukar"];
     const sortedFriends = rawFriendsArray.sort(); 
     
+    // State initialization from local persistence handling potentially undefined historical states
     let personalTotalDebit = parseFloat(localStorage.getItem('personalTotalDebit')) || 0;
     let ledgerState = JSON.parse(localStorage.getItem('ledgerState')) || {};
+    
+    // NEW: Initialization of the Debit History State Array
+    let debitHistoryState = JSON.parse(localStorage.getItem('debitHistoryState')) || [];
     
     // --- V2 Schema Migration Engine (Expand & Contract Pattern) ---
     // Ensuring legacy scalar data is robustly expanded into the modern object format
@@ -523,6 +558,7 @@
         }
     });
     
+    // Synchronous blocking commit to the browser storage engine
     localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
 
     // Formatter leveraging native Intl API for robust cross-browser date localization
@@ -534,31 +570,83 @@
     document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('total-debit-val').textContent = personalTotalDebit.toFixed(2);
         renderLedger(); 
+        renderDebitHistory(); // Initialize the visual audit log upon DOM readiness
     });
 
+    // --- Core Modification: Event-Sourced Debit Accumulation Logic ---
     function addDailyDebit() {
         const inputEl = document.getElementById('daily-debit-input');
         const displayEl = document.getElementById('total-debit-val');
         const amount = parseFloat(inputEl.value);
         
+        // Input validation rejecting negative or structurally invalid data types
         if (!isNaN(amount) && amount > 0) {
+            // Update scalar accumulator for computational immediacy
             personalTotalDebit += amount;
             displayEl.textContent = personalTotalDebit.toFixed(2);
             localStorage.setItem('personalTotalDebit', personalTotalDebit);
+            
+            // Construct transactional event record with strict schema compliance
+            const newEntry = {
+                id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+                amount: amount,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Mutate chronological array (unshift forces reverse-chronological indexing)
+            debitHistoryState.unshift(newEntry);
+            localStorage.setItem('debitHistoryState', JSON.stringify(debitHistoryState));
+            
+            // Reconcile user interface and clear buffer
+            renderDebitHistory();
             inputEl.value = '';
         }
     }
 
+    // --- Core Modification: Cascading Reset Functionality ---
     function resetDailyDebit() {
-        if (confirm("Reset accumulator to ₹0.00? Data will be permanently purged.")) {
+        if (confirm("Reset accumulator to ₹0.00? This will permanently purge the audit log as well.")) {
+            // Purge computational scalars
             personalTotalDebit = 0;
             document.getElementById('total-debit-val').textContent = '0.00';
             localStorage.setItem('personalTotalDebit', 0);
+            
+            // Purge historical array and reconcile visual interface
+            debitHistoryState = [];
+            localStorage.setItem('debitHistoryState', JSON.stringify([]));
+            renderDebitHistory();
         }
+    }
+    
+    // --- New Rendering Pipeline: Audit Log DOM Construction Methodology ---
+    function renderDebitHistory() {
+        const listEl = document.getElementById('debit-history-list');
+        
+        // Graceful handling of null states preventing render anomalies
+        if (debitHistoryState.length === 0) {
+            listEl.innerHTML = `<li class="no-history-msg">No debits recorded yet.</li>`;
+            return;
+        }
+        
+        // Map the state array to a concatenated HTML string to minimize DOM reflow operations
+        listEl.innerHTML = debitHistoryState.map(entry => {
+            const dateObj = new Date(entry.timestamp);
+            const formattedDate = dateFormatter.format(dateObj);
+            
+            return `
+                <li class="timeline-item give">
+                    <div class="timeline-meta">
+                        <span class="timeline-desc">Debit Added</span>
+                        <span class="timeline-date">${formattedDate}</span>
+                    </div>
+                    <div class="timeline-amount">+₹${entry.amount.toFixed(2)}</div>
+                </li>
+            `;
+        }).join('');
     }
 
     // --- Dynamic Payload Generation Engine ---
-    // Synthesizes the contextual text string based on current state polarity
+    // Synthesizes the contextual text string based on current relational state polarity
     function generateSharePayload(peer, balance) {
         if (balance > 0) {
             return `Hey ${peer}, just a quick reminder that your pending share is ₹${balance.toFixed(2)} on the dashboard. Let's settle up when you can!`;
@@ -569,7 +657,7 @@
         }
     }
 
-    // --- Core Rendering Pipeline: Matrix, Timelines, and Communication ---
+    // --- Core Rendering Pipeline: Matrix, Timelines, and Communication Routing ---
     function renderLedger() {
         const container = document.getElementById('ledger-container');
         container.innerHTML = ''; 
@@ -580,7 +668,7 @@
             const currentBaseline = peerData.baseline;
             const transactions = peerData.transactions;
             
-            // Linguistic UI Parsing mapping balance values to semantic UI classes
+            // Linguistic UI Parsing mapping mathematical balance values to semantic UI classes
             let balanceText = 'Settled (₹0)';
             let balanceClass = 'balance-neutral';
             if (currentBalance > 0) {
@@ -592,12 +680,12 @@
             }
 
             // --- Universal Link Cryptographic Encoding ---
-            // Generates the unaddressed wa.me URI string encoded securely for transport
+            // Generates the unaddressed wa.me URI string encoded securely for cross-origin transport
             const rawMessage = generateSharePayload(peer, currentBalance);
             const encodedPayload = encodeURIComponent(rawMessage);
             const whatsappUri = `https://wa.me/?text=${encodedPayload}`;
 
-            // Relative Progress Mathematical Calculation preventing zero-division errors
+            // Relative Progress Mathematical Calculation preventing unhandled zero-division errors
             let progress = 0;
             if (currentBalance === 0) {
                 progress = 100;
@@ -607,7 +695,7 @@
             progress = Math.max(0, Math.min(progress, 100));
             const roundedProgress = Math.round(progress);
 
-            // Progress Visualization DOM Generation applying stateful styling
+            // Progress Visualization DOM Generation applying state-dependent CSS modifiers
             const isSettled = roundedProgress === 100 && currentBalance === 0;
             const fillClass = isSettled ? 'progress-fill settled' : 'progress-fill';
             
@@ -626,7 +714,6 @@
             `;
 
             // Action Container Injecting the highly optimized inline SVG trigger securely
-            // Employs strict target blank and noopener noreferrer for cross-origin security
             const actionContainerHTML = `
                 <div class="action-container">
                     <div class="balance-display ${balanceClass}">${balanceText}</div>
@@ -638,7 +725,7 @@
                 </div>
             `;
 
-            // Timeline DOM Generation parsing historical array structs
+            // Relational Timeline DOM Generation parsing historical array structures
             let historyHTML = '';
             if (transactions.length === 0) {
                 historyHTML = `<p class="no-history-msg">No historical transactions available.</p>`;
@@ -663,7 +750,7 @@
                 historyHTML = `<ul class="timeline">${listItems}</ul>`;
             }
 
-            // Root node creation and architectural synthesis
+            // Root node architectural synthesis
             const itemContainer = document.createElement('div');
             itemContainer.className = 'ledger-item-container';
             itemContainer.innerHTML = `
@@ -704,7 +791,7 @@
         }
     }
 
-    // --- Financial Mutation Engine defining state transitions ---
+    // --- Relational Financial Mutation Engine defining state transitions ---
     function processTransaction(peer, action) {
         const inputEl = document.getElementById(`input-${peer}`);
         const amount = parseFloat(inputEl.value);
@@ -748,12 +835,12 @@
             localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
             
             renderLedger(); 
-            // Re-open history panel to visualize the newly mutated state
+            // Re-open history panel to visualize the newly mutated relational state
             document.getElementById(`history-${peer}`).style.display = 'block';
         }
     }
 
-    // --- Isolated Event Delegation for the Calculator Module ---
+    // --- Isolated Event Delegation routing logic for the Calculator Module ---
     const calcKeys = document.getElementById('calc-keys');
     const calcDisplay = document.getElementById('calc-display');
     let calcState = {
@@ -767,6 +854,7 @@
         calcDisplay.textContent = calcState.displayValue;
     }
 
+    // Interception of event bubbling phase
     calcKeys.addEventListener('click', (event) => {
         const target = event.target;
         if (!target.matches('button')) return;
@@ -776,10 +864,10 @@
 
         if (!action) {
             if (calcState.waitingForSecondOperand) {
-                calcState.displayValue = key (content);
+                calcState.displayValue = keyContent; 
                 calcState.waitingForSecondOperand = false;
             } else {
-                calcState.displayValue = calcState.displayValue === '0'? keyContent : calcState.displayValue + keyContent;
+                calcState.displayValue = calcState.displayValue === '0' ? keyContent : calcState.displayValue + keyContent;
             }
         } else if (action === 'decimal') {
             if (!calcState.displayValue.includes('.')) {
@@ -788,7 +876,7 @@
         } else if (['add', 'subtract', 'multiply', 'divide'].includes(action)) {
             handleOperator(action);
         } else if (action === 'calculate') {
-            if (calcState.operator && calcState.firstOperand!== null) {
+            if (calcState.operator && calcState.firstOperand !== null) {
                 const secondOperand = parseFloat(calcState.displayValue);
                 calcState.displayValue = String(calculateResult(calcState.firstOperand, secondOperand, calcState.operator));
                 calcState.firstOperand = null;
@@ -811,7 +899,7 @@
             calcState.operator = nextOperator;
             return;
         }
-        if (calcState.firstOperand == null &&!isNaN(inputValue)) {
+        if (calcState.firstOperand == null && !isNaN(inputValue)) {
             calcState.firstOperand = inputValue;
         } else if (calcState.operator) {
             const result = calculateResult(calcState.firstOperand, inputValue, calcState.operator);
