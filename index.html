@@ -18,44 +18,62 @@
             --calc-key-op: #ff9800;
             --calc-key-action: #e74c3c;
         }
+        
+        /* Apply border-box globally to prevent visual padding spillover */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: 'Poppins', Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
+            min-height: 100vh;
         }
+
        .dashboard-container {
             display: flex;
             gap: 25px;
             max-width: 1400px;
             width: 100%;
             flex-wrap: wrap;
+            justify-content: center;
         }
+
        .left-column {
-            flex: 1;
-            min-width: 350px;
+            flex: 1 1 380px;
+            max-width: 480px;
             display: flex;
             flex-direction: column;
             gap: 25px;
         }
+
        .right-column {
-            flex: 2;
-            min-width: 500px;
+            flex: 1.8 1 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
         }
+
        .panel {
             background: var(--panel-bg);
             border-radius: 15px;
             padding: 25px;
             box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            width: 100%;
         }
+
         h2 {
             margin-top: 0;
             font-size: 1.4rem;
             border-bottom: 2px solid var(--border-light);
             padding-bottom: 12px;
+            margin-bottom: 15px;
         }
         
         /* Personal Debit Module Styles */
@@ -69,17 +87,22 @@
             border-radius: 8px;
             padding: 10px;
         }
+
        .input-group {
             display: flex;
             gap: 10px;
+            width: 100%;
         }
+
         input[type="number"] {
-            flex: 1;
+            flex: 1 1 auto;
             padding: 12px;
             border: 1px solid var(--border-light);
             border-radius: 8px;
             font-size: 1.1rem;
+            min-width: 0; /* Critical: allows input to shrink on small containers */
         }
+
         button {
             padding: 12px 18px;
             border: none;
@@ -88,42 +111,71 @@
             cursor: pointer;
             color: white;
             transition: transform 0.2s, opacity 0.2s;
+            white-space: nowrap; /* Prevents text from breaking onto multiple lines */
         }
+
         button:hover { transform: scale(1.02); opacity: 0.9; }
         button:active { transform: scale(0.95); }
-       .btn-add { background-color: var(--btn-neutral); }
-       .btn-reset { background-color: var(--calc-key-action); }
+       .btn-add { background-color: var(--btn-neutral); flex: 1 1 auto; }
+       .btn-reset { background-color: var(--calc-key-action); flex: 0 0 auto; }
         
-        /* Peer Ledger Matrix Styles */
+        /* Peer Ledger Matrix Styles - Locked into aligned columns */
        .ledger-row {
-            display: flex;
+            display: grid;
+            grid-template-columns: 120px 1.5fr 1.2fr;
             align-items: center;
-            justify-content: space-between;
             padding: 15px 0;
             border-bottom: 1px solid var(--border-light);
             gap: 15px;
         }
+
        .ledger-row:last-child { border-bottom: none; }
+
        .peer-name {
-            width: 100px;
             font-weight: 600;
             text-transform: capitalize;
             font-size: 1.1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
+
        .ledger-controls {
             display: flex;
             gap: 10px;
-            flex: 1;
+            align-items: center;
+            min-width: 0;
         }
-       .btn-give { background-color: var(--btn-give); font-size: 0.9rem; }
-       .btn-receive { background-color: var(--btn-receive); font-size: 0.9rem; }
+
+       .ledger-controls input {
+            width: 90px;
+            flex: 0 0 auto;
+            padding: 8px 10px;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+       .ledger-controls button {
+            flex: 1 1 auto;
+            white-space: nowrap;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            border-radius: 6px;
+        }
+
+       .btn-give { background-color: var(--btn-give); }
+       .btn-receive { background-color: var(--btn-receive); }
+
        .balance-display {
-            width: 160px;
             text-align: right;
             font-weight: bold;
-            font-size: 1.2rem;
-            padding: 8px;
-            border-radius: 5px;
+            font-size: 1.1rem;
+            padding: 8px 12px;
+            border-radius: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
        .balance-positive { color: #2e7d32; background-color: #e8f5e9; }
        .balance-negative { color: #c62828; background-color: #ffebee; }
@@ -135,6 +187,7 @@
             border-radius: 15px;
             padding: 20px;
         }
+
        .calculator__display {
             background-color: #ffeb3b;
             color: var(--text-main);
@@ -145,19 +198,24 @@
             margin-bottom: 20px;
             overflow-x: auto;
             border: none;
+            width: 100%;
         }
+
        .calculator__keys {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 12px;
         }
+
        .calculator__keys button {
             background-color: var(--calc-key);
             color: var(--text-main);
             font-size: 1.4rem;
             padding: 18px 0;
             border-radius: 10px;
+            font-weight: bold;
         }
+
        .calculator__keys button[data-action="add"],
        .calculator__keys button[data-action="subtract"],
        .calculator__keys button[data-action="multiply"],
@@ -165,15 +223,69 @@
             background-color: var(--calc-key-op);
             color: white;
         }
+
        .calculator__keys button[data-action="calculate"] {
             background-color: var(--btn-receive);
             color: white;
             grid-column: span 2;
         }
+
        .calculator__keys button[data-action="clear"] {
             background-color: var(--calc-key-action);
             color: white;
             grid-column: span 2;
+        }
+
+        /* Responsive Breakpoint for Mobile and Tablet viewports */
+        @media (max-width: 850px) {
+            body {
+                padding: 10px;
+            }
+
+           .dashboard-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+           .left-column,.right-column {
+                max-width: 100%;
+                flex: 1 1 auto;
+            }
+
+           .ledger-row {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                padding: 20px 0;
+                border-bottom: 2px solid var(--border-light);
+            }
+
+           .peer-name {
+                text-align: center;
+                font-size: 1.25rem;
+                width: 100%;
+            }
+
+           .ledger-controls {
+                width: 100%;
+            }
+
+           .ledger-controls input {
+                flex: 1 1 auto;
+                width: 100%;
+                height: 44px;
+            }
+
+           .ledger-controls button {
+                height: 44px;
+                font-size: 1rem;
+            }
+
+           .balance-display {
+                text-align: center;
+                width: 100%;
+                font-size: 1.15rem;
+                padding: 10px;
+            }
         }
     </style>
 </head>
