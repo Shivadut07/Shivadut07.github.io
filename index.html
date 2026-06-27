@@ -17,7 +17,7 @@
             --btn-give: #ff5722;
             --btn-receive: #8bc34a;
             --btn-neutral: #03a9f4;
-            --btn-whatsapp: #25D366; /* Official WhatsApp Brand Color */
+            --btn-whatsapp: #25D366; 
             
             /* Calculator Module Colors */
             --calc-bg: #2c3e50;
@@ -406,6 +406,56 @@
             -webkit-overflow-scrolling: touch; 
         }
 
+        /* NEW: Flex header for Excel Export button integration */
+        .header-action-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-light);
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .header-action-row h2 {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        /* Excel Export Button Architecture */
+        .btn-export-excel {
+            background-color: #107c41; /* Microsoft Excel Brand Green */
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn-export-excel:hover {
+            background-color: #0c5e31;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(16, 124, 65, 0.3);
+        }
+
+        .btn-export-excel:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 2px rgba(16, 124, 65, 0.3);
+        }
+
+        .btn-export-excel svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
         /* Accessible Visual Progress Bar Module */
         .progress-module {
             width: 100%;
@@ -505,9 +555,19 @@
             </div>
         </div>
         
-        <!-- NEW: Chronological Audit Log Panel -->
+        <!-- NEW: Chronological Audit Log Panel with Excel Data Export Module -->
         <div class="panel debit-audit-panel">
-            <h2>Transaction History Log</h2>
+            <div class="header-action-row">
+                <h2>Transaction History Log</h2>
+                <!-- Excel Export Trigger utilizing semantic structural alignment -->
+                <button class="btn-export-excel" onclick="exportHistoryToExcel()" aria-label="Export to Excel Spreadsheet" title="Download Transaction CSV">
+                    <!-- Bootstrap bi-file-earmark-excel-fill highly optimized SVG path -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                        <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM5.884 6.68 8 9.219l2.116-2.54a.5.5 0 1 1 .768.641L8.651 10l2.233 2.68a.5.5 0 0 1-.768.64L8 10.781l-2.116 2.54a.5.5 0 0 1-.768-.641L7.349 10 5.116 7.32a.5.5 0 1 1 .768-.64z"/>
+                    </svg>
+                    Export
+                </button>
+            </div>
             <div class="debit-history-scroll" id="debit-history-container">
                 <ul class="timeline" id="debit-history-list">
                     <!-- Dynamic List Population Zone utilized by DOM manipulation logic -->
@@ -528,19 +588,15 @@
 
 <script>
     // --- Lexicographical Sorting & Architecture Initialization ---
-    // The data array acts as the primary key reference for the local storage database
     const rawFriendsArray = ["thiwakar", "gojo", "mowlish", "goww", "aravindh", "mohan", "gowtham", "parithi", "soukar"];
     const sortedFriends = rawFriendsArray.sort(); 
     
     // State initialization from local persistence handling potentially undefined historical states
     let personalTotalDebit = parseFloat(localStorage.getItem('personalTotalDebit')) || 0;
     let ledgerState = JSON.parse(localStorage.getItem('ledgerState')) || {};
-    
-    // NEW: Initialization of the Debit History State Array
     let debitHistoryState = JSON.parse(localStorage.getItem('debitHistoryState')) || [];
     
     // --- V2 Schema Migration Engine (Expand & Contract Pattern) ---
-    // Ensuring legacy scalar data is robustly expanded into the modern object format
     sortedFriends.forEach(peer => {
         if (ledgerState[peer] === undefined) {
             ledgerState[peer] = { balance: 0, baseline: 0, transactions: [] };
@@ -558,7 +614,6 @@
         }
     });
     
-    // Synchronous blocking commit to the browser storage engine
     localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
 
     // Formatter leveraging native Intl API for robust cross-browser date localization
@@ -570,7 +625,7 @@
     document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('total-debit-val').textContent = personalTotalDebit.toFixed(2);
         renderLedger(); 
-        renderDebitHistory(); // Initialize the visual audit log upon DOM readiness
+        renderDebitHistory(); 
     });
 
     // --- Core Modification: Event-Sourced Debit Accumulation Logic ---
@@ -579,25 +634,20 @@
         const displayEl = document.getElementById('total-debit-val');
         const amount = parseFloat(inputEl.value);
         
-        // Input validation rejecting negative or structurally invalid data types
         if (!isNaN(amount) && amount > 0) {
-            // Update scalar accumulator for computational immediacy
             personalTotalDebit += amount;
             displayEl.textContent = personalTotalDebit.toFixed(2);
             localStorage.setItem('personalTotalDebit', personalTotalDebit);
             
-            // Construct transactional event record with strict schema compliance
             const newEntry = {
                 id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
                 amount: amount,
                 timestamp: new Date().toISOString()
             };
             
-            // Mutate chronological array (unshift forces reverse-chronological indexing)
             debitHistoryState.unshift(newEntry);
             localStorage.setItem('debitHistoryState', JSON.stringify(debitHistoryState));
             
-            // Reconcile user interface and clear buffer
             renderDebitHistory();
             inputEl.value = '';
         }
@@ -606,29 +656,25 @@
     // --- Core Modification: Cascading Reset Functionality ---
     function resetDailyDebit() {
         if (confirm("Reset accumulator to ₹0.00? This will permanently purge the audit log as well.")) {
-            // Purge computational scalars
             personalTotalDebit = 0;
             document.getElementById('total-debit-val').textContent = '0.00';
             localStorage.setItem('personalTotalDebit', 0);
             
-            // Purge historical array and reconcile visual interface
             debitHistoryState = [];
             localStorage.setItem('debitHistoryState', JSON.stringify([]));
             renderDebitHistory();
         }
     }
     
-    // --- New Rendering Pipeline: Audit Log DOM Construction Methodology ---
+    // --- Rendering Pipeline: Audit Log DOM Construction Methodology ---
     function renderDebitHistory() {
         const listEl = document.getElementById('debit-history-list');
         
-        // Graceful handling of null states preventing render anomalies
         if (debitHistoryState.length === 0) {
             listEl.innerHTML = `<li class="no-history-msg">No debits recorded yet.</li>`;
             return;
         }
         
-        // Map the state array to a concatenated HTML string to minimize DOM reflow operations
         listEl.innerHTML = debitHistoryState.map(entry => {
             const dateObj = new Date(entry.timestamp);
             const formattedDate = dateFormatter.format(dateObj);
@@ -645,8 +691,61 @@
         }).join('');
     }
 
+    // --- NEW: Client-Side Microsoft Excel CSV Export Engine ---
+    // Serializes volatile array state into Excel-compatible UTF-8 encoded blobs.
+    function exportHistoryToExcel() {
+        if (!debitHistoryState || debitHistoryState.length === 0) {
+            alert("No transactional history available to export.");
+            return;
+        }
+
+        // Implementation of the UTF-8 Byte Order Mark (BOM). 
+        // This Unicode control character absolutely guarantees Microsoft Excel
+        // allocates the correct decoder logic to prevent Rupee symbol (₹) mojibake.
+        const universalBOM = "\uFEFF";
+        
+        // Define hierarchical column headers mapped to internal schema
+        let csvContent = "Transaction ID,Date,Time,Amount (\u20B9)\n";
+
+        // Iterative serialization mapping objects into CSV string representations
+        debitHistoryState.forEach(entry => {
+            const dateObj = new Date(entry.timestamp);
+            
+            // Isolate semantic date boundaries, removing inherent commas that disrupt CSV delimiting
+            const fullFormattedDate = dateFormatter.format(dateObj);
+            const dateParts = fullFormattedDate.split(','); 
+            
+            // Standardizing extraction indices securely
+            const isolatedDate = dateParts[0] ? dateParts[0].trim() : "Unknown Date";
+            const isolatedTime = dateParts[1] ? dateParts[1].trim() : "Unknown Time";
+            
+            // Enclose the numeric scalar mathematically fixed to 2 decimal locales
+            const serializedRow = `${entry.id},${isolatedDate},${isolatedTime},${entry.amount.toFixed(2)}`;
+            csvContent += serializedRow + "\n";
+        });
+
+        // Initialize binary blob allocation
+        const blobPayload = new Blob([universalBOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+        
+        // Dynamic event-driven download dispatch logic
+        const downloadUrl = URL.createObjectURL(blobPayload);
+        const anchorDispatch = document.createElement("a");
+        
+        anchorDispatch.href = downloadUrl;
+        
+        // Synthesizing a dynamic chronological filename output
+        const timestampMarker = new Date().toISOString().slice(0, 10);
+        anchorDispatch.setAttribute("download", `Transaction_History_${timestampMarker}.csv`);
+        
+        // Programmatic DOM injection, trigger, and rapid cleanup 
+        // preventing memory leakage via lingering URL handlers
+        document.body.appendChild(anchorDispatch);
+        anchorDispatch.click();
+        document.body.removeChild(anchorDispatch);
+        URL.revokeObjectURL(downloadUrl);
+    }
+
     // --- Dynamic Payload Generation Engine ---
-    // Synthesizes the contextual text string based on current relational state polarity
     function generateSharePayload(peer, balance) {
         if (balance > 0) {
             return `Hey ${peer}, just a quick reminder that your pending share is ₹${balance.toFixed(2)} on the dashboard. Let's settle up when you can!`;
@@ -668,7 +767,6 @@
             const currentBaseline = peerData.baseline;
             const transactions = peerData.transactions;
             
-            // Linguistic UI Parsing mapping mathematical balance values to semantic UI classes
             let balanceText = 'Settled (₹0)';
             let balanceClass = 'balance-neutral';
             if (currentBalance > 0) {
@@ -679,13 +777,10 @@
                 balanceClass = 'balance-negative';
             }
 
-            // --- Universal Link Cryptographic Encoding ---
-            // Generates the unaddressed wa.me URI string encoded securely for cross-origin transport
             const rawMessage = generateSharePayload(peer, currentBalance);
             const encodedPayload = encodeURIComponent(rawMessage);
             const whatsappUri = `https://wa.me/?text=${encodedPayload}`;
 
-            // Relative Progress Mathematical Calculation preventing unhandled zero-division errors
             let progress = 0;
             if (currentBalance === 0) {
                 progress = 100;
@@ -695,7 +790,6 @@
             progress = Math.max(0, Math.min(progress, 100));
             const roundedProgress = Math.round(progress);
 
-            // Progress Visualization DOM Generation applying state-dependent CSS modifiers
             const isSettled = roundedProgress === 100 && currentBalance === 0;
             const fillClass = isSettled ? 'progress-fill settled' : 'progress-fill';
             
@@ -713,7 +807,6 @@
                 </div>
             `;
 
-            // Action Container Injecting the highly optimized inline SVG trigger securely
             const actionContainerHTML = `
                 <div class="action-container">
                     <div class="balance-display ${balanceClass}">${balanceText}</div>
@@ -791,7 +884,6 @@
         }
     }
 
-    // --- Relational Financial Mutation Engine defining state transitions ---
     function processTransaction(peer, action) {
         const inputEl = document.getElementById(`input-${peer}`);
         const amount = parseFloat(inputEl.value);
@@ -835,7 +927,6 @@
             localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
             
             renderLedger(); 
-            // Re-open history panel to visualize the newly mutated relational state
             document.getElementById(`history-${peer}`).style.display = 'block';
         }
     }
@@ -854,7 +945,6 @@
         calcDisplay.textContent = calcState.displayValue;
     }
 
-    // Interception of event bubbling phase
     calcKeys.addEventListener('click', (event) => {
         const target = event.target;
         if (!target.matches('button')) return;
