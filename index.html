@@ -36,7 +36,7 @@
             min-height: 100vh;
         }
 
-      .dashboard-container {
+     .dashboard-container {
             display: flex;
             gap: 25px;
             max-width: 1400px;
@@ -45,7 +45,7 @@
             justify-content: center;
         }
 
-      .left-column {
+     .left-column {
             flex: 1 1 380px;
             max-width: 485px;
             display: flex;
@@ -53,14 +53,14 @@
             gap: 25px;
         }
 
-      .right-column {
+     .right-column {
             flex: 2 1 650px;
             display: flex;
             flex-direction: column;
             gap: 25px;
         }
 
-      .panel {
+     .panel {
             background: var(--panel-bg);
             border-radius: 15px;
             padding: 25px;
@@ -77,7 +77,7 @@
         }
         
         /* Personal Debit Module Styles */
-      .debit-display {
+     .debit-display {
             font-size: 2.5rem;
             font-weight: bold;
             color: var(--btn-give);
@@ -88,7 +88,7 @@
             padding: 10px;
         }
 
-      .input-group {
+     .input-group {
             display: flex;
             gap: 10px;
             width: 100%;
@@ -116,11 +116,11 @@
 
         button:hover { transform: scale(1.02); opacity: 0.9; }
         button:active { transform: scale(0.95); }
-      .btn-add { background-color: var(--btn-neutral); flex: 1 1 auto; }
-      .btn-reset { background-color: var(--calc-key-action); flex: 0 0 auto; }
+     .btn-add { background-color: var(--btn-neutral); flex: 1 1 auto; }
+     .btn-reset { background-color: var(--calc-key-action); flex: 0 0 auto; }
         
         /* Peer Ledger Matrix Styles - Perfectly balanced CSS Grid */
-      .ledger-row {
+     .ledger-row {
             display: grid;
             grid-template-columns: 90px 1.9fr 1.1fr; /* Adjusted to maximize space for inputs & buttons */
             align-items: center;
@@ -129,9 +129,9 @@
             gap: 10px;
         }
 
-      .ledger-row:last-child { border-bottom: none; }
+     .ledger-row:last-child { border-bottom: none; }
 
-      .peer-name {
+     .peer-name {
             font-weight: 600;
             text-transform: capitalize;
             font-size: 0.95rem; /* Slightly reduced name size to maximize button space */
@@ -140,14 +140,14 @@
             text-overflow: ellipsis;
         }
 
-      .ledger-controls {
+     .ledger-controls {
             display: flex;
             gap: 6px; /* Reduced gap slightly to prevent horizontal scroll/wrapping */
             align-items: center;
             min-width: 0;
         }
 
-      .ledger-controls input {
+     .ledger-controls input {
             width: 70px; /* Reduced width to leave more space for buttons */
             flex: 0 0 auto;
             padding: 8px 10px;
@@ -156,7 +156,7 @@
             font-size: 0.95rem;
         }
 
-      .ledger-controls button {
+     .ledger-controls button {
             flex: 1 1 auto;
             white-space: nowrap;
             padding: 8px 10px;
@@ -164,10 +164,10 @@
             border-radius: 6px;
         }
 
-      .btn-give { background-color: var(--btn-give); }
-      .btn-receive { background-color: var(--btn-receive); }
+     .btn-give { background-color: var(--btn-give); }
+     .btn-receive { background-color: var(--btn-receive); }
 
-      .balance-display {
+     .balance-display {
             text-align: right;
             font-weight: bold;
             font-size: 0.85rem; /* Slightly reduced so full phrases like "Avunga kudukanum" fit on one line */
@@ -175,18 +175,18 @@
             border-radius: 6px;
             white-space: nowrap; /* Forces text to stay on a single line */
         }
-      .balance-positive { color: #2e7d32; background-color: #e8f5e9; }
-      .balance-negative { color: #c62828; background-color: #ffebee; }
-      .balance-neutral { color: var(--text-main); background-color: #f5f5f5; }
+     .balance-positive { color: #2e7d32; background-color: #e8f5e9; }
+     .balance-negative { color: #c62828; background-color: #ffebee; }
+     .balance-neutral { color: var(--text-main); background-color: #f5f5f5; }
 
         /* Real-Time Calculator Styles */
-      .calculator {
+     .calculator {
             background-color: var(--calc-bg);
             border-radius: 15px;
             padding: 20px;
         }
 
-      .calculator__display {
+     .calculator__display {
             background-color: #ffeb3b;
             color: var(--text-main);
             font-size: 2.2rem;
@@ -199,13 +199,13 @@
             width: 100%;
         }
 
-      .calculator__keys {
+     .calculator__keys {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 12px;
         }
 
-      .calculator__keys button {
+     .calculator__keys button {
             background-color: var(--calc-key);
             color: var(--text-main);
             font-size: 1.4rem;
@@ -214,24 +214,77 @@
             font-weight: bold;
         }
 
-      .calculator__keys button[data-action="add"],
-      .calculator__keys button[data-action="subtract"],
-      .calculator__keys button[data-action="multiply"],
-      .calculator__keys button[data-action="divide"] {
+     .calculator__keys button[data-action="add"],
+     .calculator__keys button[data-action="subtract"],
+     .calculator__keys button[data-action="multiply"],
+     .calculator__keys button[data-action="divide"] {
             background-color: var(--calc-key-op);
             color: white;
         }
 
-      .calculator__keys button[data-action="calculate"] {
+     .calculator__keys button[data-action="calculate"] {
             background-color: var(--btn-receive);
             color: white;
             grid-column: span 2;
         }
 
-      .calculator__keys button[data-action="clear"] {
+     .calculator__keys button[data-action="clear"] {
             background-color: var(--calc-key-action);
             color: white;
             grid-column: span 2;
+        }
+
+        /* History Panel Styles */
+      .history-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+      .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1 1 auto;
+        }
+        select {
+            padding: 8px;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            flex: 1;
+            min-width: 120px;
+            background-color: white;
+            color: var(--text-main);
+        }
+      .history-list {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 10px;
+            background-color: #fafafa;
+        }
+      .history-item {
+            border-bottom: 1px dashed #ccc;
+            padding: 8px 0;
+            font-size: 0.85rem;
+        }
+      .history-item:last-child { border-bottom: none; }
+      .history-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #555;
+            margin-bottom: 2px;
+        }
+      .history-msg { color: #111; font-weight: 500; }
+      .btn-clear-log {
+            background-color: var(--calc-key-action);
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 6px;
         }
 
         /* Mobile Viewports - Elements stack elegantly */
@@ -240,46 +293,46 @@
                 padding: 10px;
             }
 
-          .dashboard-container {
+         .dashboard-container {
                 flex-direction: column;
                 align-items: stretch;
             }
 
-          .left-column,.right-column {
+         .left-column,.right-column {
                 max-width: 100%;
                 flex: 1 1 auto;
             }
 
-          .ledger-row {
+         .ledger-row {
                 grid-template-columns: 1fr;
                 gap: 12px;
                 padding: 20px 0;
                 border-bottom: 2px solid var(--border-light);
             }
 
-          .peer-name {
+         .peer-name {
                 text-align: center;
                 font-size: 1.25rem;
                 width: 100%;
             }
 
-          .ledger-controls {
+         .ledger-controls {
                 width: 100%;
                 gap: 8px;
             }
 
-          .ledger-controls input {
+         .ledger-controls input {
                 flex: 1 1 auto;
                 width: 100%;
                 height: 44px;
             }
 
-          .ledger-controls button {
+         .ledger-controls button {
                 height: 44px;
                 font-size: 0.95rem; /* Restored mobile readable size as they are stacked */
             }
 
-          .balance-display {
+         .balance-display {
                 text-align: center;
                 width: 100%;
                 font-size: 1.1rem;
@@ -325,6 +378,21 @@
                 <button data-action="calculate">=</button>
             </div>
         </div>
+
+        <div class="panel">
+            <h2>Transaction History Log</h2>
+            <div class="history-controls">
+                <div class="filter-group">
+                    <label for="history-filter" style="font-weight: bold; font-size: 0.9rem;">Filter:</label>
+                    <select id="history-filter" onchange="renderHistory()">
+                        <option value="all">All History</option>
+                        <option value="Personal">Personal Debits</option>
+                    </select>
+                </div>
+                <button class="btn-clear-log" onclick="clearHistory()">Clear Log</button>
+            </div>
+            <div id="history-list" class="history-list"></div>
+        </div>
     </div>
 
     <div class="right-column">
@@ -344,6 +412,7 @@
     // Read saved data from browser cache, or default to 0/empty if none exists
     let personalTotalDebit = parseFloat(localStorage.getItem('personalTotalDebit')) || 0;
     const ledgerState = JSON.parse(localStorage.getItem('ledgerState')) || {};
+    let transactionHistory = JSON.parse(localStorage.getItem('transactionHistory')) ||;
     
     // Initialize ledger state to 0 only for new peers who have no saved data
     sortedFriends.forEach(peer => {
@@ -355,7 +424,18 @@
     // Make sure the screen displays your saved daily debit on load
     document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('total-debit-val').textContent = personalTotalDebit.toFixed(2);
+        
+        // Setup filter dropdown dynamically
+        const filterEl = document.getElementById('history-filter');
+        sortedFriends.forEach(peer => {
+            const opt = document.createElement('option');
+            opt.value = peer;
+            opt.textContent = peer.charAt(0).toUpperCase() + peer.slice(1);
+            filterEl.appendChild(opt);
+        });
+
         renderLedger(); // Render the ledger with saved data
+        renderHistory(); // Render the transaction history logs
     });
 
     // --- Personal Debit Accumulator Logic ---
@@ -368,6 +448,10 @@
             personalTotalDebit += amount;
             displayEl.textContent = personalTotalDebit.toFixed(2);
             localStorage.setItem('personalTotalDebit', personalTotalDebit);
+            
+            // Log Personal Debit Event
+            logTransaction('Personal', `Added ₹${amount.toFixed(2)} to daily accumulator.`);
+            
             inputEl.value = '';
         }
     }
@@ -377,6 +461,58 @@
             personalTotalDebit = 0;
             document.getElementById('total-debit-val').textContent = '0.00';
             localStorage.setItem('personalTotalDebit', 0);
+            
+            // Log Personal Debit Reset Event
+            logTransaction('Personal', `Reset daily accumulator to ₹0.00.`);
+        }
+    }
+
+    // --- Dynamic Log History Logic ---
+    function logTransaction(peer, message) {
+        const now = new Date();
+        const dateStr = now.toLocaleDateString();
+        const timeStr = now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const timestamp = `${dateStr} ${timeStr}`;
+        
+        transactionHistory.unshift({ peer, message, timestamp });
+        localStorage.setItem('transactionHistory', JSON.stringify(transactionHistory));
+        renderHistory();
+    }
+
+    function renderHistory() {
+        const filterVal = document.getElementById('history-filter').value;
+        const listEl = document.getElementById('history-list');
+        listEl.innerHTML = '';
+
+        const filtered = transactionHistory.filter(item => {
+            if (filterVal === 'all') return true;
+            return item.peer === filterVal;
+        });
+
+        if (filtered.length === 0) {
+            listEl.innerHTML = '<div style="text-align:center;color:#666;padding:15px;font-size:0.9rem;">No transaction logs found.</div>';
+            return;
+        }
+
+        filtered.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'history-item';
+            div.innerHTML = `
+                <div class="history-meta">
+                    <span style="font-weight:bold;text-transform:capitalize;">${item.peer}</span>
+                    <span style="font-size:0.75rem;color:#777;">${item.timestamp}</span>
+                </div>
+                <div class="history-msg">${item.message}</div>
+            `;
+            listEl.appendChild(div);
+        });
+    }
+
+    function clearHistory() {
+        if (confirm("Are you sure you want to clear your entire transaction history log?")) {
+            transactionHistory =;
+            localStorage.setItem('transactionHistory', JSON.stringify(transactionHistory));
+            renderHistory();
         }
     }
 
@@ -419,13 +555,25 @@
         const amount = parseFloat(inputEl.value);
         
         if (!isNaN(amount) && amount > 0) {
+            let message = '';
             if (action === 'give') {
                 // Disbursement increases peer's debt to primary user
                 ledgerState[peer] += amount;
+                message = `You paid (Naa kuduthen) ₹${amount.toFixed(2)}.`;
             } else if (action === 'receive') {
                 // Receipt decreases peer's debt to primary user
                 ledgerState[peer] -= amount;
+                message = `They paid (Avunga kuduthanga) ₹${amount.toFixed(2)}.`;
             }
+            
+            // Calculate and append the new ledger state to the logged statement
+            const updated = ledgerState[peer];
+            const stateSummary = updated === 0? 'Settled' : (updated > 0? `Owes you ₹${updated.toFixed(2)}` : `You owe ₹${Math.abs(updated).toFixed(2)}`);
+            message += ` Status: ${stateSummary}.`;
+            
+            // Log Transaction Event
+            logTransaction(peer, message);
+            
             inputEl.value = '';
             renderLedger(); // Trigger a DOM repaint pipeline
             localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
