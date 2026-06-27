@@ -231,13 +231,20 @@
     const rawFriendsArray = ["thiwakar", "gojo", "mowlish", "goww", "aravindh", "mohan", "gowtham", "parithi", "soukar"];
     const sortedFriends = rawFriendsArray.sort(); 
     
-    // Application State Object
-    let personalTotalDebit = 0;
-    const ledgerState = {};
+    // Read saved data from browser cache, or default to 0 if empty
+    let personalTotalDebit = parseFloat(localStorage.getItem('personalTotalDebit')) || 0;
+    const ledgerState = JSON.parse(localStorage.getItem('ledgerState')) || {};
     
-    // Initialize ledger state dictionary to 0 for all peers
+    // Initialize ledger state to 0 only for new peers who have no saved data
     sortedFriends.forEach(peer => {
-        ledgerState[peer] = 0;
+        if (ledgerState[peer] === undefined) {
+            ledgerState[peer] = 0;
+        }
+    });
+
+    // Make sure the screen displays your saved daily debit on load
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById('total-debit-val').textContent = personalTotalDebit.toFixed(2);
     });
 
     // --- Personal Debit Accumulator Logic ---
@@ -249,6 +256,7 @@
         if (!isNaN(amount) && amount > 0) {
             personalTotalDebit += amount;
             displayEl.textContent = personalTotalDebit.toFixed(2);
+            localStorage.setItem('personalTotalDebit', personalTotalDebit);
             inputEl.value = '';
         }
     }
@@ -301,6 +309,7 @@
             }
             inputEl.value = '';
             renderLedger(); // Trigger a DOM repaint pipeline
+            localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
         }
     }
 
