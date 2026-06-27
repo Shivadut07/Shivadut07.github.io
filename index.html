@@ -281,10 +281,10 @@
             let balanceText = 'Settled (₹0)';
             let balanceClass = 'balance-neutral';
             if (currentBalance > 0) {
-                balanceText = `Enaku Tharanum ₹${currentBalance.toFixed(2)}`;
+                balanceText = `Avunga kuduthanga ₹${currentBalance.toFixed(2)}`;
                 balanceClass = 'balance-positive';
             } else if (currentBalance < 0) {
-                balanceText = `Naan Tharanum ₹${Math.abs(currentBalance).toFixed(2)}`;
+                balanceText = `Naan Kuduthen ₹${Math.abs(currentBalance).toFixed(2)}`;
                 balanceClass = 'balance-negative';
             }
 
