@@ -395,14 +395,16 @@
     
     <div class="left-column">
         <div class="panel">
-            <h2>Personal Daily Debit Accumulator</h2>
-            <div class="debit-display">₹<span id="total-debit-val">0.00</span></div>
-            <div class="input-group">
-                <input type="number" id="daily-debit-input" placeholder="Enter daily debit..." step="0.01" min="0">
-                <button class="btn-add" onclick="addDailyDebit()">Add to Total</button>
-                <button class="btn-reset" onclick="resetDailyDebit()">Reset</button>
-            </div>
-        </div>
+    <h2>Personal Daily Debit Accumulator</h2>
+    <div class="debit-display">₹<span id="total-debit-val">0.00</span></div>
+    <div class="input-group">
+        <input type="number" id="daily-debit-input" placeholder="Enter daily debit..." step="0.01" min="0">
+        <button class="btn-add" onclick="addDailyDebit()">Add to Total</button>
+        <button class="btn-reset" onclick="resetDailyDebit()">Reset</button>
+    </div>
+    <!-- Injection point for the temporal timeline -->
+    <div id="personal-history-container" style="margin-top: 25px;"></div>
+</div>
 
         <div class="panel calculator">
             <div class="calculator__display" id="calc-display">0</div>
@@ -443,7 +445,34 @@
     const sortedFriends = rawFriendsArray.sort(); 
     
     // Retrieve persistence layer; instantiate empty defaults if purged
-    let personalTotalDebit = parseFloat(localStorage.getItem('personalTotalDebit')) || 0;
+    // Retrieve the newly architected state object from the hardware layer
+let personalLedger = JSON.parse(localStorage.getItem('personalLedgerState'));
+
+// Legacy Migration & Genesis Initialization Engine
+if (!personalLedger) {
+    // Check if the legacy scalar value exists in the user's browser
+    const legacyDebit = parseFloat(localStorage.getItem('personalTotalDebit'));
+    if (!isNaN(legacyDebit) && legacyDebit > 0) {
+        // Encapsulate legacy data into the new schema
+        personalLedger = { total: legacyDebit, transactions: [] };
+    } else {
+        // Instantiate a pristine genesis state
+        personalLedger = { total: 0, transactions: [] };
+    }
+    // Flush migrated schema back to persistent storage immediately
+    localStorage.setItem('personalLedgerState', JSON.stringify(personalLedger));
+}
+    // Generates the grouping keys (e.g., "June 2026")
+const monthYearFormatter = new Intl.DateTimeFormat('en-IN', { 
+    month: 'long', 
+    year: 'numeric' 
+});
+
+// Generates the granular visual timestamps (e.g., "27 Jun 2026, 5:01 pm")
+const exactTimeFormatter = new Intl.DateTimeFormat('en-IN', {
+    dateStyle: 'medium',
+    timeStyle: 'short'
+});
     let ledgerState = JSON.parse(localStorage.getItem('ledgerState')) || {};
     
     // --- V2 Schema Migration Engine (Expand & Contract Pattern) ---
@@ -471,11 +500,13 @@
         timeStyle: 'short'
     });
 
-    // Hydrate the DOM once parsing concludes
-    document.addEventListener("DOMContentLoaded", () => {
-        document.getElementById('total-debit-val').textContent = personalTotalDebit.toFixed(2);
-        renderLedger(); 
-    });
+document.addEventListener("DOMContentLoaded", () => {
+    // Boot up legacy cohort modules
+    renderLedger(); 
+    
+    // Boot up the modernized personal accumulator
+    renderPersonalAccumulator();
+});
 
     // --- Personal Accumulator Mechanics ---
     function addDailyDebit() {
