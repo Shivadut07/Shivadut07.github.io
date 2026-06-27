@@ -257,49 +257,18 @@
         .balance-negative { color: #c62828; background-color: #ffebee; }
         .balance-neutral { color: var(--text-main); background-color: #f5f5f5; }
 
-        /* Modern CSS Grid Accordion Architecture */
-        .history-panel-wrapper {
-            display: grid;
-            grid-template-rows: 0fr; /* Initial closed state */
-            transition: grid-template-rows 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            width: 100%;
-        }
-
-        .history-panel-wrapper.is-open {
-            grid-template-rows: 1fr;
-        }
-
-        /* Inner Node: Enforce clipping and override auto-sizing locks */
+        /* Pure CSS Expandable Transaction Timeline */
         .history-panel {
-            min-height: 0; 
-            overflow: hidden; 
+            display: none;
+            margin-top: 15px;
+            padding: 15px 20px;
             background-color: #f4f6f8;
             border-radius: 8px;
-            border: 1px solid transparent; 
-            padding: 0 20px; 
-            opacity: 0;
-            
-            /* Concurrently transition dimensional constraints and opacity */
-            transition: 
-                padding 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
-                border-color 0.4s ease,
-                opacity 0.3s ease,
-                margin-top 0.4s ease;
-        }
-
-        /* Apply final presentation metrics when the wrapper dictates an open state */
-        .history-panel-wrapper.is-open .history-panel {
-            padding: 15px 20px; 
-            border-color: var(--border-light);
-            margin-top: 15px;
-            opacity: 1; 
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
-        }
-
-        /* Scrollable container specifically for the timeline lines to avoid height interference */
-        .timeline-container {
             max-height: 280px;
             overflow-y: auto;
+            min-height: 0; 
+            border: 1px solid var(--border-light);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
         }
 
         .history-panel h4 {
@@ -657,6 +626,7 @@
             `;
 
             // Action Container Injecting the highly optimized inline SVG trigger securely
+            // Employs strict target blank and noopener noreferrer for cross-origin security
             const actionContainerHTML = `
                 <div class="action-container">
                     <div class="balance-display ${balanceClass}">${balanceText}</div>
@@ -693,10 +663,6 @@
                 historyHTML = `<ul class="timeline">${listItems}</ul>`;
             }
 
-            // Synthesize unique IDs to map ARIA relationships programmatically
-            const btnId = `btn-toggle-${peer}`;
-            const wrapperId = `history-wrapper-${peer}`;
-
             // Root node creation and architectural synthesis
             const itemContainer = document.createElement('div');
             itemContainer.className = 'ledger-item-container';
@@ -704,11 +670,7 @@
                 <div class="ledger-row">
                     <div class="peer-info">
                         <div class="peer-name">${peer}</div>
-                        <button class="btn-history-toggle" 
-                                id="${btnId}"
-                                aria-expanded="false" 
-                                aria-controls="${wrapperId}"
-                                onclick="toggleHistory('${peer}')">
+                        <button class="btn-history-toggle" onclick="toggleHistory('${peer}')">
                             View Timeline
                         </button>
                     </div>
@@ -724,13 +686,9 @@
                     </div>
                 </div>
                 
-                <div class="history-panel-wrapper" id="${wrapperId}" role="region" aria-labelledby="${btnId}">
-                    <div class="history-panel">
-                        <h4>Transaction Timeline</h4>
-                        <div class="timeline-container">
-                            ${historyHTML}
-                        </div>
-                    </div>
+                <div class="history-panel" id="history-${peer}">
+                    <h4>Transaction Timeline</h4>
+                    ${historyHTML}
                 </div>
             `;
             container.appendChild(itemContainer);
@@ -738,17 +696,11 @@
     }
 
     function toggleHistory(peer) {
-        const wrapper = document.getElementById(`history-wrapper-${peer}`);
-        const triggerBtn = document.getElementById(`btn-toggle-${peer}`);
-        
-        const isOpen = wrapper.classList.contains('is-open');
-
-        if (isOpen) {
-            wrapper.classList.remove('is-open');
-            triggerBtn.setAttribute('aria-expanded', 'false');
+        const panel = document.getElementById(`history-${peer}`);
+        if (panel.style.display === 'block') {
+            panel.style.display = 'none';
         } else {
-            wrapper.classList.add('is-open');
-            triggerBtn.setAttribute('aria-expanded', 'true');
+            panel.style.display = 'block';
         }
     }
 
@@ -796,16 +748,8 @@
             localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
             
             renderLedger(); 
-
-            // Re-open history panel to visualize the newly mutated state securely
-            const newWrapper = document.getElementById(`history-wrapper-${peer}`);
-            const newBtn = document.getElementById(`btn-toggle-${peer}`);
-            
-            // Force a synchronous reflow to establish a baseline 0fr state before applying the open class
-            void newWrapper.offsetWidth; 
-            
-            newWrapper.classList.add('is-open');
-            newBtn.setAttribute('aria-expanded', 'true');
+            // Re-open history panel to visualize the newly mutated state
+            document.getElementById(`history-${peer}`).style.display = 'block';
         }
     }
 
@@ -832,7 +776,7 @@
 
         if (!action) {
             if (calcState.waitingForSecondOperand) {
-                calcState.displayValue = keyContent;
+                calcState.displayValue = key (content);
                 calcState.waitingForSecondOperand = false;
             } else {
                 calcState.displayValue = calcState.displayValue === '0'? keyContent : calcState.displayValue + keyContent;
