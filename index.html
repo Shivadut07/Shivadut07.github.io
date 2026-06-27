@@ -17,6 +17,7 @@
             --btn-give: #ff5722;
             --btn-receive: #8bc34a;
             --btn-neutral: #03a9f4;
+            --btn-whatsapp: #25D366; /* Official WhatsApp Brand Color */
             
             /* Calculator Module Colors */
             --calc-bg: #2c3e50;
@@ -29,7 +30,7 @@
             --timeline-node-bg: #ffffff;
         }
         
-        /* Global Reset for layout stability */
+        /* Global Reset for layout stability and box-model predictability */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -46,7 +47,7 @@
             min-height: 100vh;
         }
 
-        /* Macro Layout Containers */
+        /* Macro Layout Containers establishing the fundamental dashboard structure */
         .dashboard-container {
             display: flex;
             gap: 25px;
@@ -87,7 +88,7 @@
             margin-bottom: 15px;
         }
         
-        /* Personal Debit Module */
+        /* Personal Debit Module Styling Architecture */
         .debit-display {
             font-size: 2.5rem;
             font-weight: bold;
@@ -142,7 +143,7 @@
             border-bottom: none;
         }
 
-        /* Strict Grid Layout for the primary interaction zone */
+        /* Strict Grid Layout defining the primary interaction zone */
         .ledger-row {
             display: grid;
             grid-template-columns: 100px 1.9fr 1.1fr; 
@@ -206,13 +207,50 @@
         .btn-give { background-color: var(--btn-give); }
         .btn-receive { background-color: var(--btn-receive); }
 
+        /* Integrated Communication & Status Panel Reflow */
+        .action-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            width: 100%;
+        }
+
         .balance-display {
             text-align: right;
             font-weight: bold;
             font-size: 0.85rem; 
             padding: 10px 12px;
             border-radius: 6px;
-            white-space: nowrap; 
+            white-space: nowrap;
+            flex-grow: 1; /* Forces the text to occupy remaining space */
+        }
+
+        .btn-share-wa {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background-color: var(--btn-whatsapp);
+            color: white;
+            border-radius: 50%;
+            text-decoration: none;
+            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            flex-shrink: 0; /* Prevents dimensional distortion on small viewports */
+        }
+
+        .btn-share-wa:hover {
+            transform: scale(1.15);
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.35); /* Glow effect matching brand identity */
+        }
+
+        /* SVG scaling and cascade color inheritance */
+        .btn-share-wa svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
         }
 
         .balance-positive { color: #2e7d32; background-color: #e8f5e9; }
@@ -286,26 +324,10 @@
         .timeline-item.give::before { border-color: var(--btn-give); }
         .timeline-item.receive::before { border-color: var(--btn-receive); }
 
-        .timeline-meta {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .timeline-desc {
-            font-weight: 600;
-            color: var(--text-main);
-        }
-
-        .timeline-date {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .timeline-amount {
-            font-weight: bold;
-            font-size: 0.95rem;
-        }
+        .timeline-meta { display: flex; flex-direction: column; gap: 2px; }
+        .timeline-desc { font-weight: 600; color: var(--text-main); }
+        .timeline-date { font-size: 0.75rem; color: var(--text-muted); }
+        .timeline-amount { font-weight: bold; font-size: 0.95rem; }
         
         .timeline-item.give .timeline-amount { color: var(--btn-give); }
         .timeline-item.receive .timeline-amount { color: var(--btn-receive); }
@@ -405,7 +427,7 @@
             font-weight: 600;
         }
 
-        /* Responsive Reflow Logic */
+        /* Responsive Reflow Logic maintaining layout stability across viewports */
         @media (max-width: 850px) {
             body { padding: 10px; }
             .dashboard-container { flex-direction: column; align-items: stretch; }
@@ -420,6 +442,7 @@
             .ledger-controls { width: 100%; gap: 8px; justify-content: center; }
             .ledger-controls input { flex: 1 1 auto; width: 100%; height: 46px; }
             .ledger-controls button { height: 46px; font-size: 0.95rem; }
+            .action-container { flex-direction: row; width: 100%; }
             .balance-display { text-align: center; width: 100%; font-size: 1.1rem; padding: 12px; }
         }
     </style>
@@ -474,6 +497,7 @@
 
 <script>
     // --- Lexicographical Sorting & Architecture Initialization ---
+    // The data array acts as the primary key reference for the local storage database
     const rawFriendsArray = ["thiwakar", "gojo", "mowlish", "goww", "aravindh", "mohan", "gowtham", "parithi", "soukar"];
     const sortedFriends = rawFriendsArray.sort(); 
     
@@ -481,6 +505,7 @@
     let ledgerState = JSON.parse(localStorage.getItem('ledgerState')) || {};
     
     // --- V2 Schema Migration Engine (Expand & Contract Pattern) ---
+    // Ensuring legacy scalar data is robustly expanded into the modern object format
     sortedFriends.forEach(peer => {
         if (ledgerState[peer] === undefined) {
             ledgerState[peer] = { balance: 0, baseline: 0, transactions: [] };
@@ -500,6 +525,7 @@
     
     localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
 
+    // Formatter leveraging native Intl API for robust cross-browser date localization
     const dateFormatter = new Intl.DateTimeFormat('en-IN', {
         dateStyle: 'medium',
         timeStyle: 'short'
@@ -531,7 +557,19 @@
         }
     }
 
-    // --- Core Rendering Pipeline: Matrix and Timelines ---
+    // --- Dynamic Payload Generation Engine ---
+    // Synthesizes the contextual text string based on current state polarity
+    function generateSharePayload(peer, balance) {
+        if (balance > 0) {
+            return `Hey ${peer}, just a quick reminder that your pending share is ₹${balance.toFixed(2)} on the dashboard. Let's settle up when you can!`;
+        } else if (balance < 0) {
+            return `Hey ${peer}, just a heads up that I currently owe you ₹${Math.abs(balance).toFixed(2)}. I'll be sending this over to you shortly.`;
+        } else {
+            return `Hey ${peer}, looks like our financial ledger is currently completely settled up at ₹0.00!`;
+        }
+    }
+
+    // --- Core Rendering Pipeline: Matrix, Timelines, and Communication ---
     function renderLedger() {
         const container = document.getElementById('ledger-container');
         container.innerHTML = ''; 
@@ -542,7 +580,7 @@
             const currentBaseline = peerData.baseline;
             const transactions = peerData.transactions;
             
-            // Linguistic UI Parsing
+            // Linguistic UI Parsing mapping balance values to semantic UI classes
             let balanceText = 'Settled (₹0)';
             let balanceClass = 'balance-neutral';
             if (currentBalance > 0) {
@@ -553,7 +591,13 @@
                 balanceClass = 'balance-negative';
             }
 
-            // Relative Progress Mathematical Calculation
+            // --- Universal Link Cryptographic Encoding ---
+            // Generates the unaddressed wa.me URI string encoded securely for transport
+            const rawMessage = generateSharePayload(peer, currentBalance);
+            const encodedPayload = encodeURIComponent(rawMessage);
+            const whatsappUri = `https://wa.me/?text=${encodedPayload}`;
+
+            // Relative Progress Mathematical Calculation preventing zero-division errors
             let progress = 0;
             if (currentBalance === 0) {
                 progress = 100;
@@ -563,7 +607,7 @@
             progress = Math.max(0, Math.min(progress, 100));
             const roundedProgress = Math.round(progress);
 
-            // Progress Visualization DOM Generation
+            // Progress Visualization DOM Generation applying stateful styling
             const isSettled = roundedProgress === 100 && currentBalance === 0;
             const fillClass = isSettled ? 'progress-fill settled' : 'progress-fill';
             
@@ -581,7 +625,20 @@
                 </div>
             `;
 
-            // Timeline DOM Generation
+            // Action Container Injecting the highly optimized inline SVG trigger securely
+            // Employs strict target blank and noopener noreferrer for cross-origin security
+            const actionContainerHTML = `
+                <div class="action-container">
+                    <div class="balance-display ${balanceClass}">${balanceText}</div>
+                    <a href="${whatsappUri}" target="_blank" rel="noopener noreferrer" class="btn-share-wa" aria-label="Send reminder to ${peer} via WhatsApp" title="Send WhatsApp Message">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                            <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+                        </svg>
+                    </a>
+                </div>
+            `;
+
+            // Timeline DOM Generation parsing historical array structs
             let historyHTML = '';
             if (transactions.length === 0) {
                 historyHTML = `<p class="no-history-msg">No historical transactions available.</p>`;
@@ -606,11 +663,11 @@
                 historyHTML = `<ul class="timeline">${listItems}</ul>`;
             }
 
-            // Injection into Hybrid DOM Construct
+            // Root node creation and architectural synthesis
             const itemContainer = document.createElement('div');
             itemContainer.className = 'ledger-item-container';
             itemContainer.innerHTML = `
-                <div class="ledger-row" style="grid-template-columns: 100px 1.8fr 1.2fr;">
+                <div class="ledger-row">
                     <div class="peer-info">
                         <div class="peer-name">${peer}</div>
                         <button class="btn-history-toggle" onclick="toggleHistory('${peer}')">
@@ -624,7 +681,7 @@
                         <button class="btn-receive" onclick="processTransaction('${peer}', 'receive')">Avunga kuduthanga</button>
                     </div>
                     <div style="display:flex; flex-direction:column; justify-content:center; width:100%;">
-                        <div class="balance-display ${balanceClass}">${balanceText}</div>
+                        ${actionContainerHTML}
                         ${progressHTML}
                     </div>
                 </div>
@@ -647,7 +704,7 @@
         }
     }
 
-    // --- Financial Mutation Engine ---
+    // --- Financial Mutation Engine defining state transitions ---
     function processTransaction(peer, action) {
         const inputEl = document.getElementById(`input-${peer}`);
         const amount = parseFloat(inputEl.value);
@@ -691,11 +748,12 @@
             localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
             
             renderLedger(); 
+            // Re-open history panel to visualize the newly mutated state
             document.getElementById(`history-${peer}`).style.display = 'block';
         }
     }
 
-    // --- Isolated Event Delegation: Calculator Module ---
+    // --- Isolated Event Delegation for the Calculator Module ---
     const calcKeys = document.getElementById('calc-keys');
     const calcDisplay = document.getElementById('calc-display');
     let calcState = {
@@ -718,7 +776,7 @@
 
         if (!action) {
             if (calcState.waitingForSecondOperand) {
-                calcState.displayValue = keyContent;
+                calcState.displayValue = key (content);
                 calcState.waitingForSecondOperand = false;
             } else {
                 calcState.displayValue = calcState.displayValue === '0'? keyContent : calcState.displayValue + keyContent;
