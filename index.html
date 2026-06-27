@@ -3,23 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Integrated Financial Ledger & Calculator</title>
+    <title>Integrated Financial Ledger & Transaction Timeline</title>
     <style>
         :root {
+            /* Core Application Color Palette */
             --bg-color: #e0e3eb;
             --panel-bg: #ffffff;
             --text-main: #000e1a;
+            --text-muted: #6c7a89;
             --border-light: #cccccc;
+            
+            /* Semantic Financial Action Colors */
             --btn-give: #ff5722;
             --btn-receive: #8bc34a;
             --btn-neutral: #03a9f4;
+            
+            /* Calculator Module Colors */
             --calc-bg: #2c3e50;
             --calc-key: #eee;
             --calc-key-op: #ff9800;
             --calc-key-action: #e74c3c;
+            
+            /* Timeline Specific Variables */
+            --timeline-spine: #d2d7d3;
+            --timeline-node-bg: #ffffff;
         }
         
-        /* Apply box-sizing border-box globally to prevent visual padding spillover */
+        /* Global Reset for layout stability */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -36,7 +46,8 @@
             min-height: 100vh;
         }
 
-      .dashboard-container {
+        /* Macro Layout Containers */
+        .dashboard-container {
             display: flex;
             gap: 25px;
             max-width: 1400px;
@@ -45,7 +56,7 @@
             justify-content: center;
         }
 
-      .left-column {
+        .left-column {
             flex: 1 1 380px;
             max-width: 485px;
             display: flex;
@@ -53,14 +64,14 @@
             gap: 25px;
         }
 
-      .right-column {
+        .right-column {
             flex: 2 1 650px;
             display: flex;
             flex-direction: column;
             gap: 25px;
         }
 
-      .panel {
+        .panel {
             background: var(--panel-bg);
             border-radius: 15px;
             padding: 25px;
@@ -76,8 +87,8 @@
             margin-bottom: 15px;
         }
         
-        /* Personal Debit Module Styles */
-      .debit-display {
+        /* Personal Debit Module */
+        .debit-display {
             font-size: 2.5rem;
             font-weight: bold;
             color: var(--btn-give);
@@ -88,7 +99,7 @@
             padding: 10px;
         }
 
-      .input-group {
+        .input-group {
             display: flex;
             gap: 10px;
             width: 100%;
@@ -100,7 +111,7 @@
             border: 1px solid var(--border-light);
             border-radius: 8px;
             font-size: 1.1rem;
-            min-width: 0; /* Critical: allows input to shrink on small containers */
+            min-width: 0; 
         }
 
         button {
@@ -111,44 +122,72 @@
             cursor: pointer;
             color: white;
             transition: transform 0.2s, opacity 0.2s;
-            white-space: nowrap; /* Prevents text from breaking onto multiple lines */
+            white-space: nowrap; 
         }
 
         button:hover { transform: scale(1.02); opacity: 0.9; }
         button:active { transform: scale(0.95); }
-      .btn-add { background-color: var(--btn-neutral); flex: 1 1 auto; }
-      .btn-reset { background-color: var(--calc-key-action); flex: 0 0 auto; }
+        .btn-add { background-color: var(--btn-neutral); flex: 1 1 auto; }
+        .btn-reset { background-color: var(--calc-key-action); flex: 0 0 auto; }
         
-        /* Peer Ledger Matrix Styles - Perfectly balanced CSS Grid */
-      .ledger-row {
-            display: grid;
-            grid-template-columns: 90px 1.9fr 1.1fr; /* Adjusted to maximize space for inputs & buttons */
-            align-items: center;
-            padding: 15px 0;
+        /* Hybrid Layout Architecture: Flex Container wrapping a Grid Row */
+        .ledger-item-container {
+            display: flex;
+            flex-direction: column;
             border-bottom: 1px solid var(--border-light);
-            gap: 10px;
+            padding: 18px 0;
         }
 
-      .ledger-row:last-child { border-bottom: none; }
+        .ledger-item-container:last-child {
+            border-bottom: none;
+        }
 
-      .peer-name {
+        /* Strict Grid Layout for the primary interaction zone */
+        .ledger-row {
+            display: grid;
+            grid-template-columns: 100px 1.9fr 1.1fr; 
+            align-items: center;
+            gap: 12px;
+        }
+
+        .peer-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .peer-name {
             font-weight: 600;
             text-transform: capitalize;
-            font-size: 0.95rem; /* Slightly reduced name size to maximize button space */
+            font-size: 0.95rem; 
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-      .ledger-controls {
+        .btn-history-toggle {
+            padding: 5px 8px;
+            font-size: 0.72rem;
+            background-color: var(--text-muted);
+            border-radius: 4px;
+            align-self: flex-start;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .btn-history-toggle:hover {
+            background-color: #535f6b;
+        }
+
+        .ledger-controls {
             display: flex;
-            gap: 6px; /* Reduced gap slightly to prevent horizontal scroll/wrapping */
+            gap: 6px; 
             align-items: center;
             min-width: 0;
         }
 
-      .ledger-controls input {
-            width: 70px; /* Reduced width to leave more space for buttons */
+        .ledger-controls input {
+            width: 75px; 
             flex: 0 0 auto;
             padding: 8px 10px;
             border: 1px solid var(--border-light);
@@ -156,37 +195,134 @@
             font-size: 0.95rem;
         }
 
-      .ledger-controls button {
+        .ledger-controls button {
             flex: 1 1 auto;
             white-space: nowrap;
             padding: 8px 10px;
-            font-size: 0.78rem; /* Reduced button font size so full text fits beautifully */
+            font-size: 0.78rem; 
             border-radius: 6px;
         }
 
-      .btn-give { background-color: var(--btn-give); }
-      .btn-receive { background-color: var(--btn-receive); }
+        .btn-give { background-color: var(--btn-give); }
+        .btn-receive { background-color: var(--btn-receive); }
 
-      .balance-display {
+        .balance-display {
             text-align: right;
             font-weight: bold;
-            font-size: 0.85rem; /* Slightly reduced so full phrases like "Avunga kudukanum" fit on one line */
-            padding: 8px 12px;
+            font-size: 0.85rem; 
+            padding: 10px 12px;
             border-radius: 6px;
-            white-space: nowrap; /* Forces text to stay on a single line */
+            white-space: nowrap; 
         }
-      .balance-positive { color: #2e7d32; background-color: #e8f5e9; }
-      .balance-negative { color: #c62828; background-color: #ffebee; }
-      .balance-neutral { color: var(--text-main); background-color: #f5f5f5; }
 
-        /* Real-Time Calculator Styles */
-      .calculator {
+        .balance-positive { color: #2e7d32; background-color: #e8f5e9; }
+        .balance-negative { color: #c62828; background-color: #ffebee; }
+        .balance-neutral { color: var(--text-main); background-color: #f5f5f5; }
+
+        /* Pure CSS Expandable Transaction Timeline */
+        .history-panel {
+            display: none; /* Managed dynamically via JavaScript state */
+            margin-top: 15px;
+            padding: 15px 20px;
+            background-color: #f4f6f8;
+            border-radius: 8px;
+            max-height: 280px;
+            overflow-y: auto;
+            /* Critical Flexbox constraint to prevent layout explosion */
+            min-height: 0; 
+            border: 1px solid var(--border-light);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+        }
+
+        .history-panel h4 {
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            color: var(--text-main);
+            border-bottom: 1px dashed var(--border-light);
+            padding-bottom: 8px;
+        }
+
+        .timeline {
+            list-style: none;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        /* The central visual spine of the timeline */
+        .timeline::before {
+            content: "";
+            position: absolute;
+            left: 5px;
+            top: 5px;
+            bottom: 0;
+            width: 2px;
+            background-color: var(--timeline-spine);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 18px;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        /* The individual transaction nodes along the spine */
+        .timeline-item::before {
+            content: "";
+            position: absolute;
+            left: -21px; /* Precision alignment over the pseudo-spine */
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--timeline-node-bg);
+            border: 2px solid var(--text-muted);
+            z-index: 1;
+        }
+
+        /* Semantic coloring applied via class injection */
+        .timeline-item.give::before { border-color: var(--btn-give); }
+        .timeline-item.receive::before { border-color: var(--btn-receive); }
+
+        .timeline-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .timeline-desc {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .timeline-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .timeline-amount {
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+        
+        .timeline-item.give .timeline-amount { color: var(--btn-give); }
+        .timeline-item.receive .timeline-amount { color: var(--btn-receive); }
+        .no-history-msg { font-size: 0.85rem; color: var(--text-muted); font-style: italic; text-align: center; padding: 10px 0; }
+
+        /* Calculator Styles */
+        .calculator {
             background-color: var(--calc-bg);
             border-radius: 15px;
             padding: 20px;
         }
 
-      .calculator__display {
+        .calculator__display {
             background-color: #ffeb3b;
             color: var(--text-main);
             font-size: 2.2rem;
@@ -199,13 +335,13 @@
             width: 100%;
         }
 
-      .calculator__keys {
+        .calculator__keys {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 12px;
         }
 
-      .calculator__keys button {
+        .calculator__keys button {
             background-color: var(--calc-key);
             color: var(--text-main);
             font-size: 1.4rem;
@@ -214,77 +350,42 @@
             font-weight: bold;
         }
 
-      .calculator__keys button[data-action="add"],
-      .calculator__keys button[data-action="subtract"],
-      .calculator__keys button[data-action="multiply"],
-      .calculator__keys button[data-action="divide"] {
+        .calculator__keys button[data-action="add"],
+        .calculator__keys button[data-action="subtract"],
+        .calculator__keys button[data-action="multiply"],
+        .calculator__keys button[data-action="divide"] {
             background-color: var(--calc-key-op);
             color: white;
         }
 
-      .calculator__keys button[data-action="calculate"] {
+        .calculator__keys button[data-action="calculate"] {
             background-color: var(--btn-receive);
             color: white;
             grid-column: span 2;
         }
 
-      .calculator__keys button[data-action="clear"] {
+        .calculator__keys button[data-action="clear"] {
             background-color: var(--calc-key-action);
             color: white;
             grid-column: span 2;
         }
 
-        /* Mobile Viewports - Elements stack elegantly */
+        /* Responsive Reflow Logic */
         @media (max-width: 850px) {
-            body {
-                padding: 10px;
-            }
-
-          .dashboard-container {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-          .left-column,.right-column {
-                max-width: 100%;
-                flex: 1 1 auto;
-            }
-
-          .ledger-row {
+            body { padding: 10px; }
+            .dashboard-container { flex-direction: column; align-items: stretch; }
+            .left-column, .right-column { max-width: 100%; flex: 1 1 auto; }
+            
+            .ledger-row {
                 grid-template-columns: 1fr;
-                gap: 12px;
-                padding: 20px 0;
-                border-bottom: 2px solid var(--border-light);
+                gap: 14px;
             }
-
-          .peer-name {
-                text-align: center;
-                font-size: 1.25rem;
-                width: 100%;
-            }
-
-          .ledger-controls {
-                width: 100%;
-                gap: 8px;
-            }
-
-          .ledger-controls input {
-                flex: 1 1 auto;
-                width: 100%;
-                height: 44px;
-            }
-
-          .ledger-controls button {
-                height: 44px;
-                font-size: 0.95rem; /* Restored mobile readable size as they are stacked */
-            }
-
-          .balance-display {
-                text-align: center;
-                width: 100%;
-                font-size: 1.1rem;
-                padding: 10px;
-            }
+            .peer-info { align-items: center; border-bottom: 1px dashed var(--border-light); padding-bottom: 10px; }
+            .peer-name { text-align: center; font-size: 1.25rem; width: 100%; }
+            .ledger-controls { width: 100%; gap: 8px; justify-content: center; }
+            .ledger-controls input { flex: 1 1 auto; width: 100%; height: 46px; }
+            .ledger-controls button { height: 46px; font-size: 0.95rem; }
+            .balance-display { text-align: center; width: 100%; font-size: 1.1rem; padding: 12px; }
         }
     </style>
 </head>
@@ -329,7 +430,7 @@
 
     <div class="right-column">
         <div class="panel">
-            <h2>Cohort Ledger (Pending Balances)</h2>
+            <h2>Cohort Ledger & Transaction History</h2>
             <div id="ledger-container"></div>
         </div>
     </div>
@@ -337,28 +438,46 @@
 </div>
 
 <script>
-    // --- Data Initialization & Lexicographical Sorting ---
+    // --- Lexicographical Sorting & Architecture Initialization ---
     const rawFriendsArray = ["thiwakar", "gojo", "mowlish", "goww", "aravindh", "mohan", "gowtham", "parithi", "soukar"];
     const sortedFriends = rawFriendsArray.sort(); 
     
-    // Read saved data from browser cache, or default to 0/empty if none exists
+    // Retrieve persistence layer; instantiate empty defaults if purged
     let personalTotalDebit = parseFloat(localStorage.getItem('personalTotalDebit')) || 0;
-    const ledgerState = JSON.parse(localStorage.getItem('ledgerState')) || {};
+    let ledgerState = JSON.parse(localStorage.getItem('ledgerState')) || {};
     
-    // Initialize ledger state to 0 only for new peers who have no saved data
+    // --- V2 Schema Migration Engine (Expand & Contract Pattern) ---
+    // Defensively isolates primitive numbers and transforms them into hierarchical objects
     sortedFriends.forEach(peer => {
         if (ledgerState[peer] === undefined) {
-            ledgerState[peer] = 0;
+            // Genesis peer initialization
+            ledgerState[peer] = { balance: 0, transactions: [] };
+        } else if (typeof ledgerState[peer] === 'number') {
+            // Legacy schema detected: Preserve net balance and inject array structure
+            ledgerState[peer] = { balance: ledgerState[peer], transactions: [] };
+        } else if (typeof ledgerState[peer] === 'object' && !ledgerState[peer].transactions) {
+            // Structural integrity check for corrupted entries
+            ledgerState[peer].transactions = [];
         }
     });
+    
+    // Flush the corrected schema back to physical storage immediately
+    localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
 
-    // Make sure the screen displays your saved daily debit on load
-    document.addEventListener("DOMContentLoaded", () => {
-        document.getElementById('total-debit-val').textContent = personalTotalDebit.toFixed(2);
-        renderLedger(); // Render the ledger with saved data
+    // --- Global Instantiation of Intl.DateTimeFormat API ---
+    // Instantiating globally avoids rendering-loop garbage collection bottlenecks
+    const dateFormatter = new Intl.DateTimeFormat('en-IN', {
+        dateStyle: 'medium',
+        timeStyle: 'short'
     });
 
-    // --- Personal Debit Accumulator Logic ---
+    // Hydrate the DOM once parsing concludes
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById('total-debit-val').textContent = personalTotalDebit.toFixed(2);
+        renderLedger(); 
+    });
+
+    // --- Personal Accumulator Mechanics ---
     function addDailyDebit() {
         const inputEl = document.getElementById('daily-debit-input');
         const displayEl = document.getElementById('total-debit-val');
@@ -373,22 +492,24 @@
     }
 
     function resetDailyDebit() {
-        if (confirm("Are you sure you want to reset your personal daily debit accumulator to ₹0.00?")) {
+        if (confirm("Reset accumulator to ₹0.00? Data will be permanently purged.")) {
             personalTotalDebit = 0;
             document.getElementById('total-debit-val').textContent = '0.00';
             localStorage.setItem('personalTotalDebit', 0);
         }
     }
 
-    // --- Dynamic Ledger Rendering Pipeline ---
+    // --- Core Rendering Pipeline: Matrix and Timelines ---
     function renderLedger() {
         const container = document.getElementById('ledger-container');
-        container.innerHTML = ''; // Purge existing DOM nodes
+        container.innerHTML = ''; 
 
         sortedFriends.forEach(peer => {
-            const currentBalance = ledgerState[peer];
+            const peerData = ledgerState[peer];
+            const currentBalance = peerData.balance;
+            const transactions = peerData.transactions;
             
-            // Format balance display text and semantic classes
+            // Linguistic UI Parsing
             let balanceText = 'Settled (₹0)';
             let balanceClass = 'balance-neutral';
             if (currentBalance > 0) {
@@ -399,40 +520,110 @@
                 balanceClass = 'balance-negative';
             }
 
-            const row = document.createElement('div');
-            row.className = 'ledger-row';
-            row.innerHTML = `
-                <div class="peer-name">${peer}</div>
-                <div class="ledger-controls">
-                    <input type="number" id="input-${peer}" placeholder="Amount" step="0.01" min="0">
-                    <button class="btn-give" onclick="processTransaction('${peer}', 'give')">Naa kuduthen</button>
-                    <button class="btn-receive" onclick="processTransaction('${peer}', 'receive')">Avunga kuduthanga</button>
+            // Timeline DOM Generation
+            let historyHTML = '';
+            if (transactions.length === 0) {
+                historyHTML = `<p class="no-history-msg">No historical transactions available.</p>`;
+            } else {
+                let listItems = transactions.map(txn => {
+                    // Temporal Parsing: Hydrate ISO 8601 string back to Date object
+                    const dateObj = new Date(txn.timestamp);
+                    const formattedDate = dateFormatter.format(dateObj);
+                    
+                    const actionLabel = txn.action === 'give' ? 'Naa Kuduthen' : 'Avunga Kuduthanga';
+                    const symbol = txn.action === 'give' ? '+' : '-';
+                    
+                    return `
+                        <li class="timeline-item ${txn.action}">
+                            <div class="timeline-meta">
+                                <span class="timeline-desc">${actionLabel}</span>
+                                <span class="timeline-date">${formattedDate}</span>
+                            </div>
+                            <div class="timeline-amount">${symbol}₹${txn.amount.toFixed(2)}</div>
+                        </li>
+                    `;
+                }).join('');
+                historyHTML = `<ul class="timeline">${listItems}</ul>`;
+            }
+
+            // Injection into Hybrid DOM Construct
+            const itemContainer = document.createElement('div');
+            itemContainer.className = 'ledger-item-container';
+            itemContainer.innerHTML = `
+                <div class="ledger-row">
+                    <div class="peer-info">
+                        <div class="peer-name">${peer}</div>
+                        <button class="btn-history-toggle" onclick="toggleHistory('${peer}')">
+                            View Timeline
+                        </button>
+                    </div>
+                    
+                    <div class="ledger-controls">
+                        <input type="number" id="input-${peer}" placeholder="Amount" step="0.01" min="0">
+                        <button class="btn-give" onclick="processTransaction('${peer}', 'give')">Naa kuduthen</button>
+                        <button class="btn-receive" onclick="processTransaction('${peer}', 'receive')">Avunga kuduthanga</button>
+                    </div>
+                    <div class="balance-display ${balanceClass}">${balanceText}</div>
                 </div>
-                <div class="balance-display ${balanceClass}">${balanceText}</div>
+                
+                <div class="history-panel" id="history-${peer}">
+                    <h4>Transaction Timeline</h4>
+                    ${historyHTML}
+                </div>
             `;
-            container.appendChild(row);
+            container.appendChild(itemContainer);
         });
     }
 
+    // --- State Manipulation: Layout Toggling ---
+    function toggleHistory(peer) {
+        const panel = document.getElementById(`history-${peer}`);
+        // Simple discrete transition; relies on hardware-accelerated CSS rendering
+        if (panel.style.display === 'block') {
+            panel.style.display = 'none';
+        } else {
+            panel.style.display = 'block';
+        }
+    }
+
+    // --- Financial Mutation Engine ---
     function processTransaction(peer, action) {
         const inputEl = document.getElementById(`input-${peer}`);
         const amount = parseFloat(inputEl.value);
         
         if (!isNaN(amount) && amount > 0) {
+            
+            // Construct immutable chronological record using absolute UTC timing
+            const newTransaction = {
+                id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+                amount: amount,
+                action: action,
+                timestamp: new Date().toISOString()
+            };
+
+            // Recompute mathematical aggregate
             if (action === 'give') {
-                // Disbursement increases peer's debt to primary user
-                ledgerState[peer] += amount;
+                ledgerState[peer].balance += amount;
             } else if (action === 'receive') {
-                // Receipt decreases peer's debt to primary user
-                ledgerState[peer] -= amount;
+                ledgerState[peer].balance -= amount;
             }
+            
+            // Inject to index 0 ensuring inverse-chronological sorting (newest first)
+            ledgerState[peer].transactions.unshift(newTransaction);
+            
+            // Reset state, serialize, and commit to local hardware
             inputEl.value = '';
-            renderLedger(); // Trigger a DOM repaint pipeline
             localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
+            
+            // Dispatch reflow
+            renderLedger(); 
+            
+            // Retain open state of the history panel for immediate analytical feedback
+            document.getElementById(`history-${peer}`).style.display = 'block';
         }
     }
 
-    // --- Event Delegation State Machine for Calculator ---
+    // --- Isolated Event Delegation: Calculator Module ---
     const calcKeys = document.getElementById('calc-keys');
     const calcDisplay = document.getElementById('calc-display');
     let calcState = {
@@ -454,7 +645,6 @@
         const keyContent = target.textContent;
 
         if (!action) {
-            // Numerical Input Handling
             if (calcState.waitingForSecondOperand) {
                 calcState.displayValue = keyContent;
                 calcState.waitingForSecondOperand = false;
