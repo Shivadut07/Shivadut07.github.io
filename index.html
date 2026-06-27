@@ -23,134 +23,107 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 15px;
+            padding: 20px;
             display: flex;
             justify-content: center;
         }
        .dashboard-container {
             display: flex;
-            gap: 20px;
+            gap: 25px;
             max-width: 1400px;
             width: 100%;
             flex-wrap: wrap;
-            justify-content: center;
         }
        .left-column {
-            flex: 1 1 350px;
-            max-width: 450px;
+            flex: 1;
+            min-width: 350px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 25px;
         }
        .right-column {
-            flex: 2 1 600px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+            flex: 2;
+            min-width: 500px;
         }
        .panel {
             background: var(--panel-bg);
             border-radius: 15px;
-            padding: 20px;
+            padding: 25px;
             box-shadow: 0 8px 16px rgba(0,0,0,0.1);
         }
         h2 {
             margin-top: 0;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             border-bottom: 2px solid var(--border-light);
-            padding-bottom: 10px;
+            padding-bottom: 12px;
         }
         
         /* Personal Debit Module Styles */
        .debit-display {
-            font-size: 2.3rem;
+            font-size: 2.5rem;
             font-weight: bold;
             color: var(--btn-give);
-            margin: 15px 0;
+            margin: 20px 0;
             text-align: center;
             background-color: #fff3e0;
             border-radius: 8px;
             padding: 10px;
         }
-       .budget-status {
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 1rem;
-            transition: background-color 0.3s;
-        }
-       .input-row {
+       .input-group {
             display: flex;
-            flex-wrap: wrap;
             gap: 10px;
-            margin-bottom: 10px;
         }
         input[type="number"] {
             flex: 1;
-            min-width: 130px;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid var(--border-light);
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 1.1rem;
         }
         button {
-            padding: 10px 15px;
+            padding: 12px 18px;
             border: none;
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
             color: white;
             transition: transform 0.2s, opacity 0.2s;
-            font-size: 0.95rem;
         }
         button:hover { transform: scale(1.02); opacity: 0.9; }
         button:active { transform: scale(0.95); }
        .btn-add { background-color: var(--btn-neutral); }
        .btn-reset { background-color: var(--calc-key-action); }
-       .btn-limit { background-color: #9c27b0; }
         
         /* Peer Ledger Matrix Styles */
        .ledger-row {
             display: flex;
-            flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 0;
+            padding: 15px 0;
             border-bottom: 1px solid var(--border-light);
-            gap: 10px;
+            gap: 15px;
         }
        .ledger-row:last-child { border-bottom: none; }
        .peer-name {
-            min-width: 100px;
+            width: 100px;
             font-weight: 600;
             text-transform: capitalize;
-            font-size: 1.05rem;
-            flex: 1 0 auto;
+            font-size: 1.1rem;
         }
        .ledger-controls {
             display: flex;
-            gap: 8px;
-            flex: 2 1 auto;
-            flex-wrap: wrap;
+            gap: 10px;
+            flex: 1;
         }
-       .ledger-controls input {
-            max-width: 120px;
-            min-width: 80px;
-            padding: 8px;
-            font-size: 0.95rem;
-        }
-       .btn-give { background-color: var(--btn-give); font-size: 0.85rem; padding: 8px 12px; }
-       .btn-receive { background-color: var(--btn-receive); font-size: 0.85rem; padding: 8px 12px; }
+       .btn-give { background-color: var(--btn-give); font-size: 0.9rem; }
+       .btn-receive { background-color: var(--btn-receive); font-size: 0.9rem; }
        .balance-display {
-            min-width: 150px;
+            width: 160px;
             text-align: right;
             font-weight: bold;
-            font-size: 1.1rem;
-            padding: 6px 10px;
+            font-size: 1.2rem;
+            padding: 8px;
             border-radius: 5px;
-            flex: 1 0 auto;
         }
        .balance-positive { color: #2e7d32; background-color: #e8f5e9; }
        .balance-negative { color: #c62828; background-color: #ffebee; }
@@ -160,29 +133,29 @@
        .calculator {
             background-color: var(--calc-bg);
             border-radius: 15px;
-            padding: 15px;
+            padding: 20px;
         }
        .calculator__display {
             background-color: #ffeb3b;
             color: var(--text-main);
-            font-size: 2rem;
+            font-size: 2.2rem;
             text-align: right;
-            padding: 12px;
+            padding: 15px;
             border-radius: 8px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             overflow-x: auto;
             border: none;
         }
        .calculator__keys {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            gap: 12px;
         }
        .calculator__keys button {
             background-color: var(--calc-key);
             color: var(--text-main);
-            font-size: 1.3rem;
-            padding: 14px 0;
+            font-size: 1.4rem;
+            padding: 18px 0;
             border-radius: 10px;
         }
        .calculator__keys button[data-action="add"],
@@ -202,90 +175,6 @@
             color: white;
             grid-column: span 2;
         }
-
-        /* History Panel Styles */
-       .history-controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 12px;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-       .filter-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex: 1 1 auto;
-        }
-        select {
-            padding: 8px;
-            border: 1px solid var(--border-light);
-            border-radius: 6px;
-            font-size: 0.9rem;
-            flex: 1;
-            min-width: 120px;
-        }
-       .history-list {
-            max-height: 250px;
-            overflow-y: auto;
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            padding: 10px;
-            background-color: #fafafa;
-        }
-       .history-item {
-            border-bottom: 1px dashed #ccc;
-            padding: 8px 0;
-            font-size: 0.85rem;
-        }
-       .history-item:last-child { border-bottom: none; }
-       .history-meta {
-            display: flex;
-            justify-content: space-between;
-            color: #555;
-            margin-bottom: 2px;
-        }
-       .history-msg { color: #111; font-weight: 500; }
-
-        /* Media Queries for Mobile Screens */
-        @media (max-width: 900px) {
-            body {
-                padding: 10px;
-            }
-           .dashboard-container {
-                flex-direction: column;
-                align-items: stretch;
-            }
-           .left-column,.right-column {
-                max-width: 100%;
-                flex: 1 1 auto;
-            }
-        }
-        @media (max-width: 600px) {
-           .ledger-row {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 12px;
-            }
-           .peer-name {
-                text-align: center;
-                font-size: 1.15rem;
-                width: 100%;
-            }
-           .ledger-controls {
-                width: 100%;
-                justify-content: center;
-            }
-           .ledger-controls input {
-                max-width: 100%;
-                flex: 1;
-            }
-           .balance-display {
-                width: 100%;
-                text-align: center;
-            }
-        }
     </style>
 </head>
 <body>
@@ -296,18 +185,9 @@
         <div class="panel">
             <h2>Personal Daily Debit Accumulator</h2>
             <div class="debit-display">₹<span id="total-debit-val">0.00</span></div>
-            
-            <div id="remaining-container" class="budget-status">
-                Monthly Limit: ₹<span id="budget-limit-val">10000.00</span> | Remaining: ₹<span id="remaining-budget-val">10000.00</span>
-            </div>
-
-            <div class="input-row">
+            <div class="input-group">
                 <input type="number" id="daily-debit-input" placeholder="Enter daily debit..." step="0.01" min="0">
                 <button class="btn-add" onclick="addDailyDebit()">Add to Total</button>
-            </div>
-            <div class="input-row">
-                <input type="number" id="budget-limit-input" placeholder="Set Monthly Limit (Ex: 10000)" step="1" min="0">
-                <button class="btn-limit" onclick="setBudgetLimit()">Set Limit</button>
                 <button class="btn-reset" onclick="resetDailyDebit()">Reset</button>
             </div>
         </div>
@@ -334,21 +214,6 @@
                 <button data-action="calculate">=</button>
             </div>
         </div>
-
-        <div class="panel">
-            <h2>Transaction History Log</h2>
-            <div class="history-controls">
-                <div class="filter-group">
-                    <label for="history-filter" style="font-weight: bold; font-size: 0.9rem;">Filter:</label>
-                    <select id="history-filter" onchange="renderHistory()">
-                        <option value="all">All History</option>
-                        <option value="Personal">Personal Debits</option>
-                    </select>
-                </div>
-                <button class="btn-reset" onclick="clearHistory()" style="padding: 6px 10px; font-size: 0.8rem;">Clear Log</button>
-            </div>
-            <div id="history-list" class="history-list"></div>
-        </div>
     </div>
 
     <div class="right-column">
@@ -365,55 +230,24 @@
     const rawFriendsArray = ["thiwakar", "gojo", "mowlish", "goww", "aravindh", "mohan", "gowtham", "parithi", "soukar"];
     const sortedFriends = rawFriendsArray.sort(); 
     
-    // Read saved values from browser LocalStorage securely
+    // Read saved data from browser cache, or default to 0/empty if none exists
     let personalTotalDebit = parseFloat(localStorage.getItem('personalTotalDebit')) || 0;
-    let monthlyBudgetLimit = parseFloat(localStorage.getItem('monthlyBudgetLimit')) || 10000;
     const ledgerState = JSON.parse(localStorage.getItem('ledgerState')) || {};
-    let transactionHistory = JSON.parse(localStorage.getItem('transactionHistory')) ||;
     
-    // Initialize ledger state dictionary to 0 for missing peers
+    // Initialize ledger state to 0 only for new peers who have no saved data
     sortedFriends.forEach(peer => {
         if (ledgerState[peer] === undefined) {
             ledgerState[peer] = 0;
         }
     });
 
-    // Populate drop-down filter with peers and execute rendering upon initialization
+    // Make sure the screen displays your saved daily debit on load
     document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('total-debit-val').textContent = personalTotalDebit.toFixed(2);
-        updateBudgetDisplay();
-        
-        // Setup filter dropdown
-        const filterEl = document.getElementById('history-filter');
-        sortedFriends.forEach(peer => {
-            const opt = document.createElement('option');
-            opt.value = peer;
-            opt.textContent = peer.charAt(0).toUpperCase() + peer.slice(1);
-            filterEl.appendChild(opt);
-        });
-
-        renderLedger();
-        renderHistory();
+        renderLedger(); // Render the ledger with saved data
     });
 
-    // --- Personal Debit & Budgeting Logic ---
-    function updateBudgetDisplay() {
-        document.getElementById('budget-limit-val').textContent = monthlyBudgetLimit.toFixed(2);
-        const remaining = monthlyBudgetLimit - personalTotalDebit;
-        const remainingValEl = document.getElementById('remaining-budget-val');
-        const containerEl = document.getElementById('remaining-container');
-        
-        remainingValEl.textContent = remaining.toFixed(2);
-        
-        if (remaining < 0) {
-            containerEl.style.color = '#c62828';
-            containerEl.style.backgroundColor = '#ffebee';
-        } else {
-            containerEl.style.color = '#2e7d32';
-            containerEl.style.backgroundColor = '#e8f5e9';
-        }
-    }
-
+    // --- Personal Debit Accumulator Logic ---
     function addDailyDebit() {
         const inputEl = document.getElementById('daily-debit-input');
         const displayEl = document.getElementById('total-debit-val');
@@ -423,24 +257,6 @@
             personalTotalDebit += amount;
             displayEl.textContent = personalTotalDebit.toFixed(2);
             localStorage.setItem('personalTotalDebit', personalTotalDebit);
-            
-            // Add to transaction log history
-            logHistoryEvent('Personal', `Spent ₹${amount.toFixed(2)} added to accumulator.`);
-            
-            inputEl.value = '';
-            updateBudgetDisplay();
-        }
-    }
-
-    function setBudgetLimit() {
-        const inputEl = document.getElementById('budget-limit-input');
-        const amount = parseFloat(inputEl.value);
-        
-        if (!isNaN(amount) && amount >= 0) {
-            monthlyBudgetLimit = amount;
-            localStorage.setItem('monthlyBudgetLimit', monthlyBudgetLimit);
-            logHistoryEvent('Personal', `Updated Monthly Limit to: ₹${amount.toFixed(2)}`);
-            updateBudgetDisplay();
             inputEl.value = '';
         }
     }
@@ -450,54 +266,6 @@
             personalTotalDebit = 0;
             document.getElementById('total-debit-val').textContent = '0.00';
             localStorage.setItem('personalTotalDebit', 0);
-            logHistoryEvent('Personal', `Reset Daily Accumulator total to ₹0.00`);
-            updateBudgetDisplay();
-        }
-    }
-
-    // --- Dynamic Log-History Pipeline ---
-    function logHistoryEvent(peer, message) {
-        const now = new Date();
-        const timestamp = now.toLocaleDateString() + ' ' + now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
-        transactionHistory.unshift({ peer, message, timestamp });
-        localStorage.setItem('transactionHistory', JSON.stringify(transactionHistory));
-        renderHistory();
-    }
-
-    function renderHistory() {
-        const filterVal = document.getElementById('history-filter').value;
-        const listEl = document.getElementById('history-list');
-        listEl.innerHTML = '';
-
-        const filtered = transactionHistory.filter(item => {
-            if (filterVal === 'all') return true;
-            return item.peer === filterVal;
-        });
-
-        if (filtered.length === 0) {
-            listEl.innerHTML = '<div style="text-align:center;color:#666;padding:15px;font-size:0.9rem;">No transaction logs found.</div>';
-            return;
-        }
-
-        filtered.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'history-item';
-            div.innerHTML = `
-                <div class="history-meta">
-                    <span style="font-weight:bold;text-transform:capitalize;">${item.peer}</span>
-                    <span style="font-size:0.75rem;color:#777;">${item.timestamp}</span>
-                </div>
-                <div class="history-msg">${item.message}</div>
-            `;
-            listEl.appendChild(div);
-        });
-    }
-
-    function clearHistory() {
-        if (confirm("Are you sure you want to delete your entire transaction history log?")) {
-            transactionHistory =;
-            localStorage.setItem('transactionHistory', JSON.stringify());
-            renderHistory();
         }
     }
 
@@ -513,10 +281,10 @@
             let balanceText = 'Settled (₹0)';
             let balanceClass = 'balance-neutral';
             if (currentBalance > 0) {
-                balanceText = `Owes you ₹${currentBalance.toFixed(2)}`;
+                balanceText = `Avunga kudukanum ₹${currentBalance.toFixed(2)}`;
                 balanceClass = 'balance-positive';
             } else if (currentBalance < 0) {
-                balanceText = `You owe ₹${Math.abs(currentBalance).toFixed(2)}`;
+                balanceText = `Naan Kudukanum ₹${Math.abs(currentBalance).toFixed(2)}`;
                 balanceClass = 'balance-negative';
             }
 
@@ -540,22 +308,13 @@
         const amount = parseFloat(inputEl.value);
         
         if (!isNaN(amount) && amount > 0) {
-            let logMsg = '';
             if (action === 'give') {
+                // Disbursement increases peer's debt to primary user
                 ledgerState[peer] += amount;
-                logMsg = `Disbursed ₹${amount.toFixed(2)} via "Naa kuduthen"`;
             } else if (action === 'receive') {
+                // Receipt decreases peer's debt to primary user
                 ledgerState[peer] -= amount;
-                logMsg = `Received ₹${amount.toFixed(2)} via "Avunga kuduthanga"`;
             }
-            
-            // Calculate and append the new ledger state to the logged statement
-            const updated = ledgerState[peer];
-            const stateSummary = updated === 0? 'Settled' : (updated > 0? `Owes: ₹${updated.toFixed(2)}` : `Owed: ₹${Math.abs(updated).toFixed(2)}`);
-            logMsg += `. New ledger status: ${stateSummary}`;
-            
-            logHistoryEvent(peer, logMsg);
-            
             inputEl.value = '';
             renderLedger(); // Trigger a DOM repaint pipeline
             localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
