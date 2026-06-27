@@ -18,8 +18,8 @@
             --calc-key-op: #ff9800;
             --calc-key-action: #e74c3c;
         }
-
-        /* Apply box-sizing border-box globally to prevent clipping issues */
+        
+        /* Apply box-sizing border-box globally to prevent visual padding spillover */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -100,7 +100,7 @@
             border: 1px solid var(--border-light);
             border-radius: 8px;
             font-size: 1.1rem;
-            min-width: 0; /* Allows inputs to shrink cleanly */
+            min-width: 0; /* Critical: allows input to shrink on small containers */
         }
 
         button {
@@ -111,7 +111,7 @@
             cursor: pointer;
             color: white;
             transition: transform 0.2s, opacity 0.2s;
-            white-space: nowrap; /* Prevents text wrap inside buttons */
+            white-space: nowrap; /* Prevents text from breaking onto multiple lines */
         }
 
         button:hover { transform: scale(1.02); opacity: 0.9; }
@@ -122,11 +122,11 @@
         /* Peer Ledger Matrix Styles - Perfectly balanced CSS Grid */
       .ledger-row {
             display: grid;
-            grid-template-columns: 110px 1.2fr 1.5fr; /* Maximizes the balance text space */
+            grid-template-columns: 90px 1.9fr 1.1fr; /* Adjusted to maximize space for inputs & buttons */
             align-items: center;
             padding: 15px 0;
             border-bottom: 1px solid var(--border-light);
-            gap: 15px;
+            gap: 10px;
         }
 
       .ledger-row:last-child { border-bottom: none; }
@@ -134,7 +134,7 @@
       .peer-name {
             font-weight: 600;
             text-transform: capitalize;
-            font-size: 1.1rem;
+            font-size: 0.95rem; /* Slightly reduced name size to maximize button space */
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -142,26 +142,26 @@
 
       .ledger-controls {
             display: flex;
-            gap: 8px;
+            gap: 6px; /* Reduced gap slightly to prevent horizontal scroll/wrapping */
             align-items: center;
             min-width: 0;
         }
 
       .ledger-controls input {
-            width: 80px; /* Reduced input box width to free space for the balance display */
+            width: 70px; /* Reduced width to leave more space for buttons */
             flex: 0 0 auto;
             padding: 8px 10px;
             border: 1px solid var(--border-light);
             border-radius: 6px;
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
 
       .ledger-controls button {
             flex: 1 1 auto;
-            padding: 8px 10px;
-            font-size: 0.85rem;
-            border-radius: 6px;
             white-space: nowrap;
+            padding: 8px 10px;
+            font-size: 0.78rem; /* Reduced button font size so full text fits beautifully */
+            border-radius: 6px;
         }
 
       .btn-give { background-color: var(--btn-give); }
@@ -170,11 +170,10 @@
       .balance-display {
             text-align: right;
             font-weight: bold;
-            font-size: 1.05rem; /* Clean, slightly smaller font size to fit long text comfortably */
+            font-size: 0.85rem; /* Slightly reduced so full phrases like "Avunga kudukanum" fit on one line */
             padding: 8px 12px;
             border-radius: 6px;
-            white-space: nowrap; /* Forces text to stay beautifully on a single line */
-            /* Removed overflow: hidden and text-overflow: ellipsis to ensure amount is ALWAYS fully visible */
+            white-space: nowrap; /* Forces text to stay on a single line */
         }
       .balance-positive { color: #2e7d32; background-color: #e8f5e9; }
       .balance-negative { color: #c62828; background-color: #ffebee; }
@@ -266,6 +265,7 @@
 
           .ledger-controls {
                 width: 100%;
+                gap: 8px;
             }
 
           .ledger-controls input {
@@ -276,13 +276,13 @@
 
           .ledger-controls button {
                 height: 44px;
-                font-size: 1rem;
+                font-size: 0.95rem; /* Restored mobile readable size as they are stacked */
             }
 
           .balance-display {
                 text-align: center;
                 width: 100%;
-                font-size: 1.15rem;
+                font-size: 1.1rem;
                 padding: 10px;
             }
         }
