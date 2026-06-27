@@ -4,11 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Integrated Financial Ledger & Transaction Timeline</title>
-    <!-- 
-      SheetJS Dependency for parsing binary Excel and CSV files via jsDelivr CDN.
-      Utilizing the full minified version to ensure comprehensive support for all CFB and XML traversal requirements.
-    -->
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
             /* Core Application Color Palette */
@@ -22,7 +17,7 @@
             --btn-give: #ff5722;
             --btn-receive: #8bc34a;
             --btn-neutral: #03a9f4;
-            --btn-whatsapp: #25D366; 
+            --btn-whatsapp: #25D366; /* Official WhatsApp Brand Color */
             
             /* Calculator Module Colors */
             --calc-bg: #2c3e50;
@@ -35,7 +30,12 @@
             --timeline-node-bg: #ffffff;
         }
         
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        /* Global Reset for layout stability and box-model predictability */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         body {
             font-family: 'Poppins', Arial, sans-serif;
@@ -47,6 +47,7 @@
             min-height: 100vh;
         }
 
+        /* Macro Layout Containers establishing the fundamental dashboard structure */
         .dashboard-container {
             display: flex;
             gap: 25px;
@@ -56,8 +57,20 @@
             justify-content: center;
         }
 
-        .left-column { flex: 1 1 380px; max-width: 485px; display: flex; flex-direction: column; gap: 25px; }
-        .right-column { flex: 2 1 650px; display: flex; flex-direction: column; gap: 25px; }
+        .left-column {
+            flex: 1 1 380px;
+            max-width: 485px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .right-column {
+            flex: 2 1 650px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
 
         .panel {
             background: var(--panel-bg);
@@ -67,53 +80,246 @@
             width: 100%;
         }
 
-        h2 { margin-top: 0; font-size: 1.4rem; border-bottom: 2px solid var(--border-light); padding-bottom: 12px; margin-bottom: 15px; }
+        h2 {
+            margin-top: 0;
+            font-size: 1.4rem;
+            border-bottom: 2px solid var(--border-light);
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
         
-        .debit-display { font-size: 2.5rem; font-weight: bold; color: var(--btn-give); margin: 20px 0; text-align: center; background-color: #fff3e0; border-radius: 8px; padding: 10px; }
-        .input-group { display: flex; gap: 10px; width: 100%; }
-        input[type="number"] { flex: 1 1 auto; padding: 12px; border: 1px solid var(--border-light); border-radius: 8px; font-size: 1.1rem; min-width: 0; }
+        /* Personal Debit Module Styling Architecture */
+        .debit-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--btn-give);
+            margin: 20px 0;
+            text-align: center;
+            background-color: #fff3e0;
+            border-radius: 8px;
+            padding: 10px;
+        }
 
-        button { padding: 12px 18px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; transition: transform 0.2s, opacity 0.2s; white-space: nowrap; }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        input[type="number"] {
+            flex: 1 1 auto;
+            padding: 12px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-size: 1.1rem;
+            min-width: 0; 
+        }
+
+        button {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.2s, opacity 0.2s;
+            white-space: nowrap; 
+        }
+
         button:hover { transform: scale(1.02); opacity: 0.9; }
         button:active { transform: scale(0.95); }
         .btn-add { background-color: var(--btn-neutral); flex: 1 1 auto; }
         .btn-reset { background-color: var(--calc-key-action); flex: 0 0 auto; }
         
-        .ledger-item-container { display: flex; flex-direction: column; border-bottom: 1px solid var(--border-light); padding: 18px 0; }
-        .ledger-item-container:last-child { border-bottom: none; }
-        .ledger-row { display: grid; grid-template-columns: 100px 1.9fr 1.1fr; align-items: center; gap: 12px; }
+        /* Hybrid Layout Architecture: Flex Container wrapping a Grid Row */
+        .ledger-item-container {
+            display: flex;
+            flex-direction: column;
+            border-bottom: 1px solid var(--border-light);
+            padding: 18px 0;
+        }
 
-        .peer-info { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-        .peer-name { font-weight: 600; text-transform: capitalize; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .btn-history-toggle { padding: 5px 8px; font-size: 0.72rem; background-color: var(--text-muted); border-radius: 4px; align-self: flex-start; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .btn-history-toggle:hover { background-color: #535f6b; }
+        .ledger-item-container:last-child {
+            border-bottom: none;
+        }
 
-        .ledger-controls { display: flex; gap: 6px; align-items: center; min-width: 0; }
-        .ledger-controls input { width: 75px; flex: 0 0 auto; padding: 8px 10px; border: 1px solid var(--border-light); border-radius: 6px; font-size: 0.95rem; }
-        .ledger-controls button { flex: 1 1 auto; white-space: nowrap; padding: 8px 10px; font-size: 0.78rem; border-radius: 6px; }
+        /* Strict Grid Layout defining the primary interaction zone */
+        .ledger-row {
+            display: grid;
+            grid-template-columns: 100px 1.9fr 1.1fr; 
+            align-items: center;
+            gap: 12px;
+        }
+
+        .peer-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .peer-name {
+            font-weight: 600;
+            text-transform: capitalize;
+            font-size: 0.95rem; 
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .btn-history-toggle {
+            padding: 5px 8px;
+            font-size: 0.72rem;
+            background-color: var(--text-muted);
+            border-radius: 4px;
+            align-self: flex-start;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .btn-history-toggle:hover {
+            background-color: #535f6b;
+        }
+
+        .ledger-controls {
+            display: flex;
+            gap: 6px; 
+            align-items: center;
+            min-width: 0;
+        }
+
+        .ledger-controls input {
+            width: 75px; 
+            flex: 0 0 auto;
+            padding: 8px 10px;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .ledger-controls button {
+            flex: 1 1 auto;
+            white-space: nowrap;
+            padding: 8px 10px;
+            font-size: 0.78rem; 
+            border-radius: 6px;
+        }
 
         .btn-give { background-color: var(--btn-give); }
         .btn-receive { background-color: var(--btn-receive); }
 
-        .action-container { display: flex; align-items: center; justify-content: flex-end; gap: 8px; width: 100%; }
-        .balance-display { text-align: right; font-weight: bold; font-size: 0.85rem; padding: 10px 12px; border-radius: 6px; white-space: nowrap; flex-grow: 1; }
-        .btn-share-wa { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background-color: var(--btn-whatsapp); color: white; border-radius: 50%; text-decoration: none; transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.15); flex-shrink: 0; }
-        .btn-share-wa:hover { transform: scale(1.15); box-shadow: 0 4px 12px rgba(37, 211, 102, 0.35); }
-        .btn-share-wa svg { width: 18px; height: 18px; fill: currentColor; }
+        /* Integrated Communication & Status Panel Reflow */
+        .action-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .balance-display {
+            text-align: right;
+            font-weight: bold;
+            font-size: 0.85rem; 
+            padding: 10px 12px;
+            border-radius: 6px;
+            white-space: nowrap;
+            flex-grow: 1; 
+        }
+
+        .btn-share-wa {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background-color: var(--btn-whatsapp);
+            color: white;
+            border-radius: 50%;
+            text-decoration: none;
+            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            flex-shrink: 0; 
+        }
+
+        .btn-share-wa:hover {
+            transform: scale(1.15);
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.35); 
+        }
+
+        .btn-share-wa svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
 
         .balance-positive { color: #2e7d32; background-color: #e8f5e9; }
         .balance-negative { color: #c62828; background-color: #ffebee; }
         .balance-neutral { color: var(--text-main); background-color: #f5f5f5; }
 
-        .history-panel { display: none; margin-top: 15px; padding: 15px 20px; background-color: #f4f6f8; border-radius: 8px; max-height: 280px; overflow-y: auto; min-height: 0; border: 1px solid var(--border-light); box-shadow: inset 0 2px 4px rgba(0,0,0,0.03); }
-        .history-panel h4 { font-size: 0.9rem; margin-bottom: 15px; color: var(--text-main); border-bottom: 1px dashed var(--border-light); padding-bottom: 8px; }
+        /* Pure CSS Expandable Transaction Timeline */
+        .history-panel {
+            display: none;
+            margin-top: 15px;
+            padding: 15px 20px;
+            background-color: #f4f6f8;
+            border-radius: 8px;
+            max-height: 280px;
+            overflow-y: auto;
+            min-height: 0; 
+            border: 1px solid var(--border-light);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+        }
 
-        .timeline { list-style: none; position: relative; padding-left: 20px; }
-        .timeline::before { content: ""; position: absolute; left: 5px; top: 5px; bottom: 0; width: 2px; background-color: var(--timeline-spine); }
-        .timeline-item { position: relative; padding-bottom: 18px; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; }
-        .timeline-item:last-child { padding-bottom: 0; }
-        .timeline-item::before { content: ""; position: absolute; left: -21px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background-color: var(--timeline-node-bg); border: 2px solid var(--text-muted); z-index: 1; }
-        
+        .history-panel h4 {
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            color: var(--text-main);
+            border-bottom: 1px dashed var(--border-light);
+            padding-bottom: 8px;
+        }
+
+        .timeline {
+            list-style: none;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .timeline::before {
+            content: "";
+            position: absolute;
+            left: 5px;
+            top: 5px;
+            bottom: 0;
+            width: 2px;
+            background-color: var(--timeline-spine);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 18px;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-item::before {
+            content: "";
+            position: absolute;
+            left: -21px; 
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--timeline-node-bg);
+            border: 2px solid var(--text-muted);
+            z-index: 1;
+        }
+
         .timeline-item.give::before { border-color: var(--btn-give); }
         .timeline-item.receive::before { border-color: var(--btn-receive); }
 
@@ -121,44 +327,134 @@
         .timeline-desc { font-weight: 600; color: var(--text-main); }
         .timeline-date { font-size: 0.75rem; color: var(--text-muted); }
         .timeline-amount { font-weight: bold; font-size: 0.95rem; }
+        
         .timeline-item.give .timeline-amount { color: var(--btn-give); }
         .timeline-item.receive .timeline-amount { color: var(--btn-receive); }
         .no-history-msg { font-size: 0.85rem; color: var(--text-muted); font-style: italic; text-align: center; padding: 10px 0; }
 
-        .calculator { background-color: var(--calc-bg); border-radius: 15px; padding: 20px; }
-        .calculator__display { background-color: #ffeb3b; color: var(--text-main); font-size: 2.2rem; text-align: right; padding: 15px; border-radius: 8px; margin-bottom: 20px; overflow-x: auto; border: none; width: 100%; }
-        .calculator__keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-        .calculator__keys button { background-color: var(--calc-key); color: var(--text-main); font-size: 1.4rem; padding: 18px 0; border-radius: 10px; font-weight: bold; }
-        .calculator__keys button[data-action="add"], .calculator__keys button[data-action="subtract"], .calculator__keys button[data-action="multiply"], .calculator__keys button[data-action="divide"] { background-color: var(--calc-key-op); color: white; }
-        .calculator__keys button[data-action="calculate"] { background-color: var(--btn-receive); color: white; grid-column: span 2; }
-        .calculator__keys button[data-action="clear"] { background-color: var(--calc-key-action); color: white; grid-column: span 2; }
+        /* Calculator Styles */
+        .calculator {
+            background-color: var(--calc-bg);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .calculator__display {
+            background-color: #ffeb3b;
+            color: var(--text-main);
+            font-size: 2.2rem;
+            text-align: right;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            border: none;
+            width: 100%;
+        }
+
+        .calculator__keys {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .calculator__keys button {
+            background-color: var(--calc-key);
+            color: var(--text-main);
+            font-size: 1.4rem;
+            padding: 18px 0;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .calculator__keys button[data-action="add"],
+        .calculator__keys button[data-action="subtract"],
+        .calculator__keys button[data-action="multiply"],
+        .calculator__keys button[data-action="divide"] {
+            background-color: var(--calc-key-op);
+            color: white;
+        }
+
+        .calculator__keys button[data-action="calculate"] {
+            background-color: var(--btn-receive);
+            color: white;
+            grid-column: span 2;
+        }
+
+        .calculator__keys button[data-action="clear"] {
+            background-color: var(--calc-key-action);
+            color: white;
+            grid-column: span 2;
+        }
         
-        .debit-audit-panel { display: flex; flex-direction: column; gap: 15px; }
-        .debit-history-scroll { background-color: #f4f6f8; border-radius: 8px; max-height: 250px; overflow-y: auto; padding: 15px 20px; border: 1px solid var(--border-light); box-shadow: inset 0 2px 4px rgba(0,0,0,0.03); -webkit-overflow-scrolling: touch; }
-
-        .progress-module { width: 100%; margin-top: 12px; display: flex; flex-direction: column; gap: 4px; }
-        .progress-container { width: 100%; height: 12px; background-color: var(--bg-color); border-radius: 6px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.06); position: relative; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #03a9f4, #288cfa); border-radius: 6px; transform-origin: left; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.4s ease; transform: scaleX(0); }
-        .progress-fill.settled { background: linear-gradient(90deg, #7cb342, #8bc34a); }
-        .progress-label-text { font-size: 0.72rem; color: var(--text-muted); text-align: right; font-weight: 600; }
-
-        /* Custom File Upload Styling Integrations */
-        .file-upload-container { display: flex; flex-direction: column; gap: 15px; }
-        .custom-file-input { border: 2px dashed var(--border-light); padding: 15px; text-align: center; border-radius: 8px; cursor: pointer; font-size: 0.9rem; color: var(--text-muted); background: #fafafa; transition: border-color 0.3s; }
-        .custom-file-input:hover { border-color: var(--btn-neutral); }
-        .custom-file-input input[type="file"] { display: none; }
+        /* Newly Architected Audit Log Constraints */
+        .debit-audit-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
         
-        /* Summary Block Styling */
-        .summary-block { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-light); align-items: center;}
-        .summary-block:last-child { border-bottom: none; }
-        .summary-month { font-weight: bold; font-size: 0.95rem; }
-        .summary-amount { color: var(--btn-give); font-weight: bold; font-size: 1.1rem; }
+        .debit-history-scroll {
+            background-color: #f4f6f8;
+            border-radius: 8px;
+            max-height: 250px;
+            overflow-y: auto;
+            padding: 15px 20px;
+            border: 1px solid var(--border-light);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+            /* Preserves smooth scrolling on touch devices */
+            -webkit-overflow-scrolling: touch; 
+        }
 
+        /* Accessible Visual Progress Bar Module */
+        .progress-module {
+            width: 100%;
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 12px;
+            background-color: var(--bg-color); 
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #03a9f4, #288cfa);
+            border-radius: 6px;
+            transform-origin: left;
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.4s ease;
+            transform: scaleX(0);
+        }
+
+        .progress-fill.settled {
+            background: linear-gradient(90deg, #7cb342, #8bc34a);
+        }
+
+        .progress-label-text {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-align: right;
+            font-weight: 600;
+        }
+
+        /* Responsive Reflow Logic maintaining layout stability across viewports */
         @media (max-width: 850px) {
             body { padding: 10px; }
             .dashboard-container { flex-direction: column; align-items: stretch; }
             .left-column, .right-column { max-width: 100%; flex: 1 1 auto; }
-            .ledger-row { grid-template-columns: 1fr !important; gap: 14px; }
+            
+            .ledger-row {
+                grid-template-columns: 1fr !important;
+                gap: 14px;
+            }
             .peer-info { align-items: center; border-bottom: 1px dashed var(--border-light); padding-bottom: 10px; }
             .peer-name { text-align: center; font-size: 1.25rem; width: 100%; }
             .ledger-controls { width: 100%; gap: 8px; justify-content: center; }
@@ -172,22 +468,9 @@
 <body>
 
 <div class="dashboard-container">
+    
     <div class="left-column">
-        
-        <!-- NEW COMPONENT: File Upload and Aggregation Module -->
-        <div class="panel">
-            <h2>Batch Transaction Importer</h2>
-            <div class="file-upload-container">
-                <label class="custom-file-input">
-                    Click to select .xlsx or .csv ledger file
-                    <input type="file" id="ledger-upload-input" accept=".xlsx, .csv">
-                </label>
-                <div id="monthly-summary-output" class="debit-history-scroll" style="display: none;">
-                    <!-- JavaScript DOM reconciliation injects the Map-Reduce aggregates here -->
-                </div>
-            </div>
-        </div>
-
+        <!-- Scalar Accumulator Panel -->
         <div class="panel">
             <h2>Personal Daily Debit Accumulator</h2>
             <div class="debit-display">₹<span id="total-debit-val">0.00</span></div>
@@ -198,6 +481,7 @@
             </div>
         </div>
 
+        <!-- Utility Computation Module -->
         <div class="panel calculator">
             <div class="calculator__display" id="calc-display">0</div>
             <div class="calculator__keys" id="calc-keys">
@@ -221,36 +505,51 @@
             </div>
         </div>
         
+        <!-- NEW: Chronological Audit Log Panel -->
         <div class="panel debit-audit-panel">
             <h2>Transaction History Log</h2>
             <div class="debit-history-scroll" id="debit-history-container">
                 <ul class="timeline" id="debit-history-list">
+                    <!-- Dynamic List Population Zone utilized by DOM manipulation logic -->
                 </ul>
             </div>
         </div>
     </div>
 
+    <!-- Right Column: Cohort Relational Mapping -->
     <div class="right-column">
         <div class="panel">
             <h2>Cohort Ledger & Transaction History</h2>
             <div id="ledger-container"></div>
         </div>
     </div>
+
 </div>
 
 <script>
+    // --- Lexicographical Sorting & Architecture Initialization ---
+    // The data array acts as the primary key reference for the local storage database
     const rawFriendsArray = ["thiwakar", "gojo", "mowlish", "goww", "aravindh", "mohan", "gowtham", "parithi", "soukar"];
     const sortedFriends = rawFriendsArray.sort(); 
     
+    // State initialization from local persistence handling potentially undefined historical states
     let personalTotalDebit = parseFloat(localStorage.getItem('personalTotalDebit')) || 0;
     let ledgerState = JSON.parse(localStorage.getItem('ledgerState')) || {};
+    
+    // NEW: Initialization of the Debit History State Array
     let debitHistoryState = JSON.parse(localStorage.getItem('debitHistoryState')) || [];
     
+    // --- V2 Schema Migration Engine (Expand & Contract Pattern) ---
+    // Ensuring legacy scalar data is robustly expanded into the modern object format
     sortedFriends.forEach(peer => {
         if (ledgerState[peer] === undefined) {
             ledgerState[peer] = { balance: 0, baseline: 0, transactions: [] };
         } else if (typeof ledgerState[peer] === 'number') {
-            ledgerState[peer] = { balance: ledgerState[peer], baseline: Math.abs(ledgerState[peer]), transactions: [] };
+            ledgerState[peer] = { 
+                balance: ledgerState[peer], 
+                baseline: Math.abs(ledgerState[peer]), 
+                transactions: [] 
+            };
         } else if (typeof ledgerState[peer] === 'object') {
             if (!ledgerState[peer].transactions) ledgerState[peer].transactions = [];
             if (ledgerState[peer].baseline === undefined) {
@@ -259,210 +558,81 @@
         }
     });
     
+    // Synchronous blocking commit to the browser storage engine
     localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
 
+    // Formatter leveraging native Intl API for robust cross-browser date localization
     const dateFormatter = new Intl.DateTimeFormat('en-IN', {
         dateStyle: 'medium',
         timeStyle: 'short'
     });
 
-    // Dedicated Formatter for creating standard "Month Year" grouping keys (e.g., "June 2026")
-    // By utilizing the native Intl.DateTimeFormat, we avoid external dependencies like Moment.js,
-    // reducing bundle size and execution overhead.
-    const monthYearFormatter = new Intl.DateTimeFormat('en-US', {
-        month: 'long',
-        year: 'numeric'
-    });
-
     document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('total-debit-val').textContent = personalTotalDebit.toFixed(2);
         renderLedger(); 
-        renderDebitHistory(); 
+        renderDebitHistory(); // Initialize the visual audit log upon DOM readiness
     });
 
-    // ---------------------------------------------------------
-    // BATCH TRANSACTION IMPORTER LOGIC (FILE UPLOAD & AGGREGATION)
-    // ---------------------------------------------------------
-    
-    const fileUploadInput = document.getElementById('ledger-upload-input');
-    
-    fileUploadInput.addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        // Establish an asynchronous FileReader instance to ingest the binary payload
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            // Convert file bytes into a contiguous Uint8Array suitable for SheetJS CFB traversal
-            const bufferArray = new Uint8Array(e.target.result);
-            
-            try {
-                // Initialize the WorkBook parsing sequence.
-                // The crucial parameter here is `cellDates: true`. This flags the library to evaluate 
-                // Excel's internal epoch timestamps (integer days since 1900) and automatically instantiate 
-                // standard JavaScript Date objects based on the UTC specification, compensating for the 1900 leap year bug.
-                const workbook = XLSX.read(bufferArray, { 
-                    type: 'array', 
-                    cellDates: true 
-                });
-                
-                // Identify the first active worksheet within the container structure
-                const primarySheetName = workbook.SheetNames[0];
-                const activeSheet = workbook.Sheets[primarySheetName];
-                
-                // Project the two-dimensional matrix into an array of normalized JSON records.
-                // Setting `raw: true` preserves the newly constructed JS Date objects generated above,
-                // preventing them from being coerced into unformatted string outputs.
-                const jsonDataset = XLSX.utils.sheet_to_json(activeSheet, { raw: true });
-                
-                // Route the projected JSON array into the Map-Reduce aggregation pipeline
-                aggregateMonthlyDebits(jsonDataset);
-
-            } catch (error) {
-                console.error("Critical failure during binary parsing lifecycle: ", error);
-                alert("Failed to parse the uploaded file. Ensure it is a valid .xlsx or .csv container.");
-            }
-        };
-        
-        // Execute the memory-mapped read operation as an ArrayBuffer to support both CSV text and ZIP binaries
-        reader.readAsArrayBuffer(file);
-    });
-
-    /**
-     * Map-Reduce Architecture for Temporal Aggregation
-     * 
-     * Iterates over a flat dataset, heuristically detects chronological and scalar indices, 
-     * and compiles a consolidated ledger summary organized by "Month Year".
-     * 
-     * @param {Array} dataset - An array of unstructured transaction objects extracted from the spreadsheet.
-     */
-    function aggregateMonthlyDebits(dataset) {
-        // State accumulator utilized during the reduction phase to build temporal sums
-        const monthlySumMap = {};
-
-        dataset.forEach(rowRecord => {
-            // Dynamic Key Discovery:
-            // Spreadsheets lack enforced schemas. This logic scans the keys of each row object, 
-            // employing substring matching to dynamically assign references to dates and amounts. 
-            // Fallback routing targets positional indices [0] and [1] if standard nomenclature is absent.
-            const objectKeys = Object.keys(rowRecord);
-            if (objectKeys.length < 2) return; // Discard structurally malformed records
-            
-            const dateKey = objectKeys.find(key => key.toLowerCase().includes('date') || key.toLowerCase().includes('time')) || objectKeys[0];
-            const amountKey = objectKeys.find(key => key.toLowerCase().includes('amount') || key.toLowerCase().includes('debit') || key.toLowerCase().includes('val')) || objectKeys[1];
-            
-            const rawDateEntity = rowRecord[dateKey];
-            const transactionValue = parseFloat(rowRecord[amountKey]);
-            
-            // Bypass mathematical operations on structural anomalies (e.g., text embedded in amount columns)
-            if (isNaN(transactionValue)) return;
-
-            let sanitizedDateObject;
-
-            // Type Evaluation:
-            // If the `cellDates: true` operation successfully intercepted an Excel epoch date, the entity 
-            // is natively an instance of Date. If the file was a CSV, the entity operates as a raw String representation.
-            if (rawDateEntity instanceof Date) {
-                sanitizedDateObject = rawDateEntity;
-            } else {
-                sanitizedDateObject = new Date(rawDateEntity);
-            }
-
-            // Reject invalid Date constructors resulting from un-parsable string sequences
-            if (isNaN(sanitizedDateObject.getTime())) return; 
-
-            // Lexical String Transformation: Output generation (e.g., "June 2026")
-            const formattedMonthYear = monthYearFormatter.format(sanitizedDateObject);
-
-            // Conditional Object Property Initialization and Mathematical Accumulation
-            // Values are tracked as absolute sums of debited values.
-            if (!monthlySumMap[formattedMonthYear]) {
-                monthlySumMap[formattedMonthYear] = 0;
-            }
-            monthlySumMap[formattedMonthYear] += Math.abs(transactionValue); 
-        });
-
-        // Trigger the DOM reflow with the completed map
-        reconcileSummaryDOM(monthlySumMap);
-    }
-
-    /**
-     * Synthesizes the grouped JSON metadata into valid HTML structures and performs a singular DOM write operation.
-     */
-    function reconcileSummaryDOM(summaryMap) {
-        const outputContainer = document.getElementById('monthly-summary-output');
-        
-        // Iterating over the map keys to build a single interpolated string of HTML nodes.
-        // This avoids costly layout thrashing that would occur if nodes were appended sequentially in a loop.
-        const generatedHtmlString = Object.keys(summaryMap).map(monthLabel => {
-            const accumulatedTotal = summaryMap[monthLabel];
-            return `
-                <div class="summary-block">
-                    <span class="summary-month">${monthLabel}</span>
-                    <span class="summary-amount">₹${accumulatedTotal.toFixed(2)}</span>
-                </div>
-            `;
-        }).join('');
-
-        if (generatedHtmlString.trim() === '') {
-            outputContainer.innerHTML = `<p class="no-history-msg">No valid temporal data identified.</p>`;
-        } else {
-            outputContainer.innerHTML = `<h4>Monthly Aggregation Output</h4>${generatedHtmlString}`;
-        }
-        
-        // Expose the dynamically generated module to the visual layout
-        outputContainer.style.display = 'block';
-    }
-    
-    // ---------------------------------------------------------
-    // ORIGINAL LEDGER & CALCULATOR LOGIC (MAINTAINED)
-    // ---------------------------------------------------------
-
+    // --- Core Modification: Event-Sourced Debit Accumulation Logic ---
     function addDailyDebit() {
         const inputEl = document.getElementById('daily-debit-input');
         const displayEl = document.getElementById('total-debit-val');
         const amount = parseFloat(inputEl.value);
         
+        // Input validation rejecting negative or structurally invalid data types
         if (!isNaN(amount) && amount > 0) {
+            // Update scalar accumulator for computational immediacy
             personalTotalDebit += amount;
             displayEl.textContent = personalTotalDebit.toFixed(2);
             localStorage.setItem('personalTotalDebit', personalTotalDebit);
             
+            // Construct transactional event record with strict schema compliance
             const newEntry = {
                 id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
                 amount: amount,
                 timestamp: new Date().toISOString()
             };
             
+            // Mutate chronological array (unshift forces reverse-chronological indexing)
             debitHistoryState.unshift(newEntry);
             localStorage.setItem('debitHistoryState', JSON.stringify(debitHistoryState));
+            
+            // Reconcile user interface and clear buffer
             renderDebitHistory();
             inputEl.value = '';
         }
     }
 
+    // --- Core Modification: Cascading Reset Functionality ---
     function resetDailyDebit() {
         if (confirm("Reset accumulator to ₹0.00? This will permanently purge the audit log as well.")) {
+            // Purge computational scalars
             personalTotalDebit = 0;
             document.getElementById('total-debit-val').textContent = '0.00';
             localStorage.setItem('personalTotalDebit', 0);
+            
+            // Purge historical array and reconcile visual interface
             debitHistoryState = [];
             localStorage.setItem('debitHistoryState', JSON.stringify([]));
             renderDebitHistory();
         }
     }
     
+    // --- New Rendering Pipeline: Audit Log DOM Construction Methodology ---
     function renderDebitHistory() {
         const listEl = document.getElementById('debit-history-list');
+        
+        // Graceful handling of null states preventing render anomalies
         if (debitHistoryState.length === 0) {
             listEl.innerHTML = `<li class="no-history-msg">No debits recorded yet.</li>`;
             return;
         }
         
+        // Map the state array to a concatenated HTML string to minimize DOM reflow operations
         listEl.innerHTML = debitHistoryState.map(entry => {
             const dateObj = new Date(entry.timestamp);
             const formattedDate = dateFormatter.format(dateObj);
+            
             return `
                 <li class="timeline-item give">
                     <div class="timeline-meta">
@@ -475,12 +645,19 @@
         }).join('');
     }
 
+    // --- Dynamic Payload Generation Engine ---
+    // Synthesizes the contextual text string based on current relational state polarity
     function generateSharePayload(peer, balance) {
-        if (balance > 0) return `Hey ${peer}, just a quick reminder that your pending share is ₹${balance.toFixed(2)} on the dashboard. Let's settle up when you can!`;
-        else if (balance < 0) return `Hey ${peer}, just a heads up that I currently owe you ₹${Math.abs(balance).toFixed(2)}. I'll be sending this over to you shortly.`;
-        else return `Hey ${peer}, looks like our financial ledger is currently completely settled up at ₹0.00!`;
+        if (balance > 0) {
+            return `Hey ${peer}, just a quick reminder that your pending share is ₹${balance.toFixed(2)} on the dashboard. Let's settle up when you can!`;
+        } else if (balance < 0) {
+            return `Hey ${peer}, just a heads up that I currently owe you ₹${Math.abs(balance).toFixed(2)}. I'll be sending this over to you shortly.`;
+        } else {
+            return `Hey ${peer}, looks like our financial ledger is currently completely settled up at ₹0.00!`;
+        }
     }
 
+    // --- Core Rendering Pipeline: Matrix, Timelines, and Communication Routing ---
     function renderLedger() {
         const container = document.getElementById('ledger-container');
         container.innerHTML = ''; 
@@ -491,6 +668,7 @@
             const currentBaseline = peerData.baseline;
             const transactions = peerData.transactions;
             
+            // Linguistic UI Parsing mapping mathematical balance values to semantic UI classes
             let balanceText = 'Settled (₹0)';
             let balanceClass = 'balance-neutral';
             if (currentBalance > 0) {
@@ -501,37 +679,53 @@
                 balanceClass = 'balance-negative';
             }
 
+            // --- Universal Link Cryptographic Encoding ---
+            // Generates the unaddressed wa.me URI string encoded securely for cross-origin transport
             const rawMessage = generateSharePayload(peer, currentBalance);
             const encodedPayload = encodeURIComponent(rawMessage);
             const whatsappUri = `https://wa.me/?text=${encodedPayload}`;
 
+            // Relative Progress Mathematical Calculation preventing unhandled zero-division errors
             let progress = 0;
-            if (currentBalance === 0) progress = 100;
-            else if (currentBaseline > 0) progress = ((currentBaseline - Math.abs(currentBalance)) / currentBaseline) * 100;
+            if (currentBalance === 0) {
+                progress = 100;
+            } else if (currentBaseline > 0) {
+                progress = ((currentBaseline - Math.abs(currentBalance)) / currentBaseline) * 100;
+            }
             progress = Math.max(0, Math.min(progress, 100));
             const roundedProgress = Math.round(progress);
 
+            // Progress Visualization DOM Generation applying state-dependent CSS modifiers
             const isSettled = roundedProgress === 100 && currentBalance === 0;
             const fillClass = isSettled ? 'progress-fill settled' : 'progress-fill';
             
             const progressHTML = `
                 <div class="progress-module">
-                    <div class="progress-container" role="progressbar" aria-valuenow="${roundedProgress}" aria-valuemin="0" aria-valuemax="100" aria-label="Settlement progress for ${peer}">
+                    <div class="progress-container" 
+                         role="progressbar" 
+                         aria-valuenow="${roundedProgress}" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100" 
+                         aria-label="Settlement progress for ${peer}">
                         <div class="${fillClass}" style="transform: scaleX(${progress / 100});"></div>
                     </div>
                     <div class="progress-label-text">${roundedProgress}% Settled</div>
                 </div>
             `;
 
+            // Action Container Injecting the highly optimized inline SVG trigger securely
             const actionContainerHTML = `
                 <div class="action-container">
                     <div class="balance-display ${balanceClass}">${balanceText}</div>
                     <a href="${whatsappUri}" target="_blank" rel="noopener noreferrer" class="btn-share-wa" aria-label="Send reminder to ${peer} via WhatsApp" title="Send WhatsApp Message">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                            <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+                        </svg>
                     </a>
                 </div>
             `;
 
+            // Relational Timeline DOM Generation parsing historical array structures
             let historyHTML = '';
             if (transactions.length === 0) {
                 historyHTML = `<p class="no-history-msg">No historical transactions available.</p>`;
@@ -539,8 +733,10 @@
                 let listItems = transactions.map(txn => {
                     const dateObj = new Date(txn.timestamp);
                     const formattedDate = dateFormatter.format(dateObj);
+                    
                     const actionLabel = txn.action === 'give' ? 'Naa Kuduthen' : 'Avunga Kuduthanga';
                     const symbol = txn.action === 'give' ? '+' : '-';
+                    
                     return `
                         <li class="timeline-item ${txn.action}">
                             <div class="timeline-meta">
@@ -554,13 +750,16 @@
                 historyHTML = `<ul class="timeline">${listItems}</ul>`;
             }
 
+            // Root node architectural synthesis
             const itemContainer = document.createElement('div');
             itemContainer.className = 'ledger-item-container';
             itemContainer.innerHTML = `
                 <div class="ledger-row">
                     <div class="peer-info">
                         <div class="peer-name">${peer}</div>
-                        <button class="btn-history-toggle" onclick="toggleHistory('${peer}')">View Timeline</button>
+                        <button class="btn-history-toggle" onclick="toggleHistory('${peer}')">
+                            View Timeline
+                        </button>
                     </div>
                     
                     <div class="ledger-controls">
@@ -585,9 +784,14 @@
 
     function toggleHistory(peer) {
         const panel = document.getElementById(`history-${peer}`);
-        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+        if (panel.style.display === 'block') {
+            panel.style.display = 'none';
+        } else {
+            panel.style.display = 'block';
+        }
     }
 
+    // --- Relational Financial Mutation Engine defining state transitions ---
     function processTransaction(peer, action) {
         const inputEl = document.getElementById(`input-${peer}`);
         const amount = parseFloat(inputEl.value);
@@ -607,12 +811,18 @@
 
             if (action === 'give') {
                 new_balance = prev_balance + amount;
-                if (prev_balance >= 0) new_baseline = prev_baseline + amount;
-                else new_baseline = (new_balance > 0) ? new_balance : prev_baseline;
+                if (prev_balance >= 0) {
+                    new_baseline = prev_baseline + amount;
+                } else {
+                    new_baseline = (new_balance > 0) ? new_balance : prev_baseline;
+                }
             } else if (action === 'receive') {
                 new_balance = prev_balance - amount;
-                if (prev_balance <= 0) new_baseline = prev_baseline + amount; 
-                else new_baseline = (new_balance < 0) ? Math.abs(new_balance) : prev_baseline;
+                if (prev_balance <= 0) {
+                    new_baseline = prev_baseline + amount; 
+                } else {
+                    new_baseline = (new_balance < 0) ? Math.abs(new_balance) : prev_baseline;
+                }
             }
             
             if (new_balance === 0) new_baseline = 0;
@@ -625,16 +835,26 @@
             localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
             
             renderLedger(); 
+            // Re-open history panel to visualize the newly mutated relational state
             document.getElementById(`history-${peer}`).style.display = 'block';
         }
     }
 
+    // --- Isolated Event Delegation routing logic for the Calculator Module ---
     const calcKeys = document.getElementById('calc-keys');
     const calcDisplay = document.getElementById('calc-display');
-    let calcState = { firstOperand: null, operator: null, waitingForSecondOperand: false, displayValue: '0' };
+    let calcState = {
+        firstOperand: null,
+        operator: null,
+        waitingForSecondOperand: false,
+        displayValue: '0'
+    };
 
-    function updateCalcDisplay() { calcDisplay.textContent = calcState.displayValue; }
+    function updateCalcDisplay() {
+        calcDisplay.textContent = calcState.displayValue;
+    }
 
+    // Interception of event bubbling phase
     calcKeys.addEventListener('click', (event) => {
         const target = event.target;
         if (!target.matches('button')) return;
@@ -650,7 +870,9 @@
                 calcState.displayValue = calcState.displayValue === '0' ? keyContent : calcState.displayValue + keyContent;
             }
         } else if (action === 'decimal') {
-            if (!calcState.displayValue.includes('.')) calcState.displayValue += '.';
+            if (!calcState.displayValue.includes('.')) {
+                calcState.displayValue += '.';
+            }
         } else if (['add', 'subtract', 'multiply', 'divide'].includes(action)) {
             handleOperator(action);
         } else if (action === 'calculate') {
@@ -672,6 +894,7 @@
 
     function handleOperator(nextOperator) {
         const inputValue = parseFloat(calcState.displayValue);
+        
         if (calcState.operator && calcState.waitingForSecondOperand) {
             calcState.operator = nextOperator;
             return;
