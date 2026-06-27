@@ -221,14 +221,13 @@
 
         /* Pure CSS Expandable Transaction Timeline */
         .history-panel {
-            display: none; /* Managed dynamically via JavaScript state */
+            display: none;
             margin-top: 15px;
             padding: 15px 20px;
             background-color: #f4f6f8;
             border-radius: 8px;
             max-height: 280px;
             overflow-y: auto;
-            /* Critical Flexbox constraint to prevent layout explosion */
             min-height: 0; 
             border: 1px solid var(--border-light);
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
@@ -248,7 +247,6 @@
             padding-left: 20px;
         }
 
-        /* The central visual spine of the timeline */
         .timeline::before {
             content: "";
             position: absolute;
@@ -272,11 +270,10 @@
             padding-bottom: 0;
         }
 
-        /* The individual transaction nodes along the spine */
         .timeline-item::before {
             content: "";
             position: absolute;
-            left: -21px; /* Precision alignment over the pseudo-spine */
+            left: -21px; 
             top: 4px;
             width: 12px;
             height: 12px;
@@ -286,7 +283,6 @@
             z-index: 1;
         }
 
-        /* Semantic coloring applied via class injection */
         .timeline-item.give::before { border-color: var(--btn-give); }
         .timeline-item.receive::before { border-color: var(--btn-receive); }
 
@@ -370,6 +366,45 @@
             grid-column: span 2;
         }
 
+        /* Accessible Visual Progress Bar Module */
+        .progress-module {
+            width: 100%;
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 12px;
+            background-color: var(--bg-color); 
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #03a9f4, #288cfa);
+            border-radius: 6px;
+            transform-origin: left;
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.4s ease;
+            transform: scaleX(0);
+        }
+
+        .progress-fill.settled {
+            background: linear-gradient(90deg, #7cb342, #8bc34a);
+        }
+
+        .progress-label-text {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-align: right;
+            font-weight: 600;
+        }
+
         /* Responsive Reflow Logic */
         @media (max-width: 850px) {
             body { padding: 10px; }
@@ -377,7 +412,7 @@
             .left-column, .right-column { max-width: 100%; flex: 1 1 auto; }
             
             .ledger-row {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr !important;
                 gap: 14px;
             }
             .peer-info { align-items: center; border-bottom: 1px dashed var(--border-light); padding-bottom: 10px; }
@@ -442,42 +477,39 @@
     const rawFriendsArray = ["thiwakar", "gojo", "mowlish", "goww", "aravindh", "mohan", "gowtham", "parithi", "soukar"];
     const sortedFriends = rawFriendsArray.sort(); 
     
-    // Retrieve persistence layer; instantiate empty defaults if purged
     let personalTotalDebit = parseFloat(localStorage.getItem('personalTotalDebit')) || 0;
     let ledgerState = JSON.parse(localStorage.getItem('ledgerState')) || {};
     
     // --- V2 Schema Migration Engine (Expand & Contract Pattern) ---
-    // Defensively isolates primitive numbers and transforms them into hierarchical objects
     sortedFriends.forEach(peer => {
         if (ledgerState[peer] === undefined) {
-            // Genesis peer initialization
-            ledgerState[peer] = { balance: 0, transactions: [] };
+            ledgerState[peer] = { balance: 0, baseline: 0, transactions: [] };
         } else if (typeof ledgerState[peer] === 'number') {
-            // Legacy schema detected: Preserve net balance and inject array structure
-            ledgerState[peer] = { balance: ledgerState[peer], transactions: [] };
-        } else if (typeof ledgerState[peer] === 'object' && !ledgerState[peer].transactions) {
-            // Structural integrity check for corrupted entries
-            ledgerState[peer].transactions = [];
+            ledgerState[peer] = { 
+                balance: ledgerState[peer], 
+                baseline: Math.abs(ledgerState[peer]), 
+                transactions: [] 
+            };
+        } else if (typeof ledgerState[peer] === 'object') {
+            if (!ledgerState[peer].transactions) ledgerState[peer].transactions = [];
+            if (ledgerState[peer].baseline === undefined) {
+                ledgerState[peer].baseline = Math.abs(ledgerState[peer].balance || 0);
+            }
         }
     });
     
-    // Flush the corrected schema back to physical storage immediately
     localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
 
-    // --- Global Instantiation of Intl.DateTimeFormat API ---
-    // Instantiating globally avoids rendering-loop garbage collection bottlenecks
     const dateFormatter = new Intl.DateTimeFormat('en-IN', {
         dateStyle: 'medium',
         timeStyle: 'short'
     });
 
-    // Hydrate the DOM once parsing concludes
     document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('total-debit-val').textContent = personalTotalDebit.toFixed(2);
         renderLedger(); 
     });
 
-    // --- Personal Accumulator Mechanics ---
     function addDailyDebit() {
         const inputEl = document.getElementById('daily-debit-input');
         const displayEl = document.getElementById('total-debit-val');
@@ -507,6 +539,7 @@
         sortedFriends.forEach(peer => {
             const peerData = ledgerState[peer];
             const currentBalance = peerData.balance;
+            const currentBaseline = peerData.baseline;
             const transactions = peerData.transactions;
             
             // Linguistic UI Parsing
@@ -520,13 +553,40 @@
                 balanceClass = 'balance-negative';
             }
 
+            // Relative Progress Mathematical Calculation
+            let progress = 0;
+            if (currentBalance === 0) {
+                progress = 100;
+            } else if (currentBaseline > 0) {
+                progress = ((currentBaseline - Math.abs(currentBalance)) / currentBaseline) * 100;
+            }
+            progress = Math.max(0, Math.min(progress, 100));
+            const roundedProgress = Math.round(progress);
+
+            // Progress Visualization DOM Generation
+            const isSettled = roundedProgress === 100 && currentBalance === 0;
+            const fillClass = isSettled ? 'progress-fill settled' : 'progress-fill';
+            
+            const progressHTML = `
+                <div class="progress-module">
+                    <div class="progress-container" 
+                         role="progressbar" 
+                         aria-valuenow="${roundedProgress}" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100" 
+                         aria-label="Settlement progress for ${peer}">
+                        <div class="${fillClass}" style="transform: scaleX(${progress / 100});"></div>
+                    </div>
+                    <div class="progress-label-text">${roundedProgress}% Settled</div>
+                </div>
+            `;
+
             // Timeline DOM Generation
             let historyHTML = '';
             if (transactions.length === 0) {
                 historyHTML = `<p class="no-history-msg">No historical transactions available.</p>`;
             } else {
                 let listItems = transactions.map(txn => {
-                    // Temporal Parsing: Hydrate ISO 8601 string back to Date object
                     const dateObj = new Date(txn.timestamp);
                     const formattedDate = dateFormatter.format(dateObj);
                     
@@ -550,7 +610,7 @@
             const itemContainer = document.createElement('div');
             itemContainer.className = 'ledger-item-container';
             itemContainer.innerHTML = `
-                <div class="ledger-row">
+                <div class="ledger-row" style="grid-template-columns: 100px 1.8fr 1.2fr;">
                     <div class="peer-info">
                         <div class="peer-name">${peer}</div>
                         <button class="btn-history-toggle" onclick="toggleHistory('${peer}')">
@@ -563,7 +623,10 @@
                         <button class="btn-give" onclick="processTransaction('${peer}', 'give')">Naa kuduthen</button>
                         <button class="btn-receive" onclick="processTransaction('${peer}', 'receive')">Avunga kuduthanga</button>
                     </div>
-                    <div class="balance-display ${balanceClass}">${balanceText}</div>
+                    <div style="display:flex; flex-direction:column; justify-content:center; width:100%;">
+                        <div class="balance-display ${balanceClass}">${balanceText}</div>
+                        ${progressHTML}
+                    </div>
                 </div>
                 
                 <div class="history-panel" id="history-${peer}">
@@ -575,10 +638,8 @@
         });
     }
 
-    // --- State Manipulation: Layout Toggling ---
     function toggleHistory(peer) {
         const panel = document.getElementById(`history-${peer}`);
-        // Simple discrete transition; relies on hardware-accelerated CSS rendering
         if (panel.style.display === 'block') {
             panel.style.display = 'none';
         } else {
@@ -592,8 +653,6 @@
         const amount = parseFloat(inputEl.value);
         
         if (!isNaN(amount) && amount > 0) {
-            
-            // Construct immutable chronological record using absolute UTC timing
             const newTransaction = {
                 id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
                 amount: amount,
@@ -601,24 +660,37 @@
                 timestamp: new Date().toISOString()
             };
 
-            // Recompute mathematical aggregate
+            let prev_balance = ledgerState[peer].balance;
+            let prev_baseline = ledgerState[peer].baseline;
+            let new_balance = prev_balance;
+            let new_baseline = prev_baseline;
+
             if (action === 'give') {
-                ledgerState[peer].balance += amount;
+                new_balance = prev_balance + amount;
+                if (prev_balance >= 0) {
+                    new_baseline = prev_baseline + amount;
+                } else {
+                    new_baseline = (new_balance > 0) ? new_balance : prev_baseline;
+                }
             } else if (action === 'receive') {
-                ledgerState[peer].balance -= amount;
+                new_balance = prev_balance - amount;
+                if (prev_balance <= 0) {
+                    new_baseline = prev_baseline + amount; 
+                } else {
+                    new_baseline = (new_balance < 0) ? Math.abs(new_balance) : prev_baseline;
+                }
             }
             
-            // Inject to index 0 ensuring inverse-chronological sorting (newest first)
+            if (new_balance === 0) new_baseline = 0;
+
+            ledgerState[peer].balance = new_balance;
+            ledgerState[peer].baseline = new_baseline;
             ledgerState[peer].transactions.unshift(newTransaction);
             
-            // Reset state, serialize, and commit to local hardware
             inputEl.value = '';
             localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
             
-            // Dispatch reflow
             renderLedger(); 
-            
-            // Retain open state of the history panel for immediate analytical feedback
             document.getElementById(`history-${peer}`).style.display = 'block';
         }
     }
