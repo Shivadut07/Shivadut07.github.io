@@ -14,10 +14,10 @@
             --border-light: #cccccc;
             
             /* Semantic Financial Action Colors */
-            --btn-give: #ff5722;
-            --btn-receive: #8bc34a;
-            --btn-neutral: #03a9f4;
-            --btn-whatsapp: #25D366; /* Official WhatsApp Brand Color */
+            --btn-give: #ff5722;      /* Represents Debits / Money Out */
+            --btn-receive: #8bc34a;   /* Represents Credits / Money In / Success State */
+            --btn-neutral: #03a9f4;   /* Represents Standard Interactions */
+            --btn-whatsapp: #25D366;  /* Official WhatsApp Brand Color */
             
             /* Calculator Module Colors */
             --calc-bg: #2c3e50;
@@ -30,7 +30,7 @@
             --timeline-node-bg: #ffffff;
         }
         
-        /* Global Reset for layout stability and box-model predictability */
+        /* Global Reset for layout stability and strict box-model predictability */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -47,7 +47,7 @@
             min-height: 100vh;
         }
 
-        /* Macro Layout Containers establishing the fundamental dashboard structure */
+        /* Macro Layout Containers establishing the fundamental dashboard topology */
         .dashboard-container {
             display: flex;
             gap: 25px;
@@ -98,7 +98,65 @@
             background-color: #fff3e0;
             border-radius: 8px;
             padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
         }
+
+        /* ==========================================================================
+           NEW VISUAL FEEDBACK ANIMATION CSS ARCHITECTURE
+           ========================================================================== */
+        
+        /* The scalar target must be isolated via inline-block to allow dimensional 
+           transformations without breaking the adjacent layout matrix. */
+        [span_44](start_span)[span_44](end_span)[span_46](start_span)[span_46](end_span).scalar-target {
+            display: inline-block;
+            transform-origin: center center;
+            /* Ensures non-animated states fallback to smooth color transitions */
+            transition: color 0.3s ease;
+        }
+
+        /* Hardware-accelerated Keyframe defining the specific physical 'pop' 
+           and chromatic pulse effect. */
+        @keyframes flashSuccess {
+            0%   { 
+                color: var(--btn-give); 
+                transform: scale(1); 
+            }
+            40%  { 
+                color: var(--btn-[span_16](start_span)[span_16](end_span)[span_18](start_span)[span_18](end_span)receive); 
+                transform: scale(1.18); 
+                /* Subtle text-shadow enhances the flash perception without opacity drops[span_53](start_span)[span_53](end_span) */
+                text-shadow: 0px 4px 12px rgba(139, 195, 74, 0.4);
+            }
+            100% { 
+                color: var(--btn-give); 
+                transform: scale(1); 
+                text-shadow: none;
+            }
+        }
+
+        /* The active directive appended dynamically by JavaScript during the event lifecycle.
+           Utilizes cubic-bezier to bypass linear motion in favor of organic elasticity. */
+        .flash-active {
+            animation: flashSuccess 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* will-change hints the browser to allocate compositor resour[span_22](start_span)[span_22](end_span)ces early */
+            will-change: transform, color;
+        }
+        
+        /* Interactive dopamine-driven feedback state for the primary input action button */
+        .btn-add.success-state {
+            background-color: var(--btn-receive) !important;
+            transfo[span_12](start_span)[span_12](end_span)rm: scale(1.04);
+            box-shadow: 0 4px 12px rgba(139, 195, 74, 0.4);
+            /* Smooth interpolation between standard and success states */
+            transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+      [span_3](start_span)[span_3](end_span)  /* ==========================================================================
+           END VISUAL FEEDBACK CSS
+           ========================================================================== */
 
         .input-group {
             display: flex;
@@ -122,11 +180,11 @@
             font-weight: bold;
             cursor: pointer;
             color: white;
-            transition: transform 0.2s, opacity 0.2s;
+            transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
             white-space: nowrap; 
         }
 
-        button:hover { transform: scale(1.02); opacity: 0.9; }
+        button:hover { transform: scale(1.02); opacity: 0.95; }
         button:active { transform: scale(0.95); }
         .btn-add { background-color: var(--btn-neutral); flex: 1 1 auto; }
         .btn-reset { background-color: var(--calc-key-action); flex: 0 0 auto; }
@@ -473,10 +531,14 @@
         <!-- Scalar Accumulator Panel -->
         <div class="panel">
             <h2>Personal Daily Debit Accumulator</h2>
-            <div class="debit-display">₹<span id="total-debit-val">0.00</span></div>
+            <!-- Updated structural wrapper: The span isolates the numeric value 
+                 allowing isolated geometric transformations. -->
+            <div class="debit-display">
+                <span>₹</span><span id="total-debit-val" class="scalar-target">0.00</span>[span_28](start_span)[span_28](end_span)
+            </div>
             <div class="input-group">
                 <input type="number" id="daily-debit-input" placeholder="Enter daily debit..." step="0.01" min="0">
-                <button class="btn-add" onclick="addDailyDebit()">Add to Total</button>
+                <button class="btn-add" id="btn-add-debit" onclick="addDailyDebit()">Add to Total</button>
                 <button class="btn-reset" onclick="resetDailyDebit()">Reset</button>
             </div>
         </div>
@@ -505,7 +567,7 @@
             </div>
         </div>
         
-        <!-- NEW: Chronological Audit Log Panel -->
+        <!-- Chronological Audit Log Panel -->
         <div class="panel debit-audit-panel">
             <h2>Transaction History Log</h2>
             <div class="debit-history-scroll" id="debit-history-container">
@@ -536,7 +598,7 @@
     let personalTotalDebit = parseFloat(localStorage.getItem('personalTotalDebit')) || 0;
     let ledgerState = JSON.parse(localStorage.getItem('ledgerState')) || {};
     
-    // NEW: Initialization of the Debit History State Array
+    // Initialization of the Debit History State Array
     let debitHistoryState = JSON.parse(localStorage.getItem('debitHistoryState')) || [];
     
     // --- V2 Schema Migration Engine (Expand & Contract Pattern) ---
@@ -573,20 +635,50 @@
         renderDebitHistory(); // Initialize the visual audit log upon DOM readiness
     });
 
-    // --- Core Modification: Event-Sourced Debit Accumulation Logic ---
-    function addDailyDebit() {
+    // --- EVENT-SOURCED DEBIT ACCUMULATION LOGIC WITH VISUAL FEEDBACK INTEGRATION ---
+    // This architecture incorporates cognitive closure loops via immediate visual state mutations
+    functi[span_48](start_span)[span_48](end_span)[span_51](start_span)[span_51](end_span)on addDailyDebit() {
         const inputEl = document.getElementById('daily-debit-input');
         const displayEl = document.getElementById('total-debit-val');
+        const btnEl = document.getElementById('btn-add-debit');
         const amount = parseFloat(inputEl.value);
         
         // Input validation rejecting negative or structurally invalid data types
         if (!isNaN(amount) && amount > 0) {
-            // Update scalar accumulator for computational immediacy
+            
+            // 1. Update scalar accumulator for computational immediacy
             personalTotalDebit += amount;
             displayEl.textContent = personalTotalDebit.toFixed(2);
             localStorage.setItem('personalTotalDebit', personalTotalDebit);
             
-            // Construct transactional event record with strict schema compliance
+            // 2. --- TRIGGER VISUAL CUE: TEXT FLASH & PULSE ---
+            // Remove class to ensure animation can be re-triggered consecutively
+            displayEl.classList.remove('flash-active');
+            
+            // DOM Reflow Trick: Forces the browser to recalculate layout synchronously.
+            // This flushes the CSSOM queue, allowing the subsequent class addition to register
+            // as a new state change, thus restarting the CSS keyframe animation from 0% deterministically.
+            void displayEl.offsetWidth; 
+            
+            // Re-apply class to execute the @keyframes flashSuccess
+            displayEl.classList.add('flash-active');
+            
+            // 3. --- TRIGGER VISUAL CUE: BUTTON SUCCESS CHECKMARK SWAP ---
+            // Cache the original contextual string to prevent data loss
+            const originalBtnText = btnEl.innerHTML;
+            
+            // Mutate visual state to success, leveraging Unicode for high cross-platform compatibility
+            btnEl.classList.add('success-state');
+            btnEl.innerHTML = '&#10003; Added!'; 
+            
+            // Non-blocking asynchr[span_29](start_span)[span_29](end_span)onous timer to revert button state gracefully after 
+            // the interaction dopaminergic loop resolves
+          [span_49](start_span)[span_49](end_span)[span_52](start_span)[span_52](end_span)  setTimeout(() => {
+                btnEl.classList.remove('success-state');
+                btnEl.innerHTML = 'Add to Total';
+            }, 1200);
+
+            // 4. Construct transactional event record with strict schema compliance
             const newEntry = {
                 id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
                 amount: amount,
@@ -597,13 +689,13 @@
             debitHistoryState.unshift(newEntry);
             localStorage.setItem('debitHistoryState', JSON.stringify(debitHistoryState));
             
-            // Reconcile user interface and clear buffer
+            // Reconcile user interface and clear buffer memory
             renderDebitHistory();
             inputEl.value = '';
         }
     }
 
-    // --- Core Modification: Cascading Reset Functionality ---
+    // --- Cascading Reset Functionality ---
     function resetDailyDebit() {
         if (confirm("Reset accumulator to ₹0.00? This will permanently purge the audit log as well.")) {
             // Purge computational scalars
@@ -618,7 +710,7 @@
         }
     }
     
-    // --- New Rendering Pipeline: Audit Log DOM Construction Methodology ---
+    // --- Rendering Pipeline: Audit Log DOM Construction Methodology ---
     function renderDebitHistory() {
         const listEl = document.getElementById('debit-history-list');
         
@@ -628,7 +720,7 @@
             return;
         }
         
-        // Map the state array to a concatenated HTML string to minimize DOM reflow operations
+        // Map the state array to a concatenated HTML string to minimize heavy DOM reflow operations
         listEl.innerHTML = debitHistoryState.map(entry => {
             const dateObj = new Date(entry.timestamp);
             const formattedDate = dateFormatter.format(dateObj);
@@ -653,7 +745,7 @@
         } else if (balance < 0) {
             return `Hey ${peer}, just a heads up that I currently owe you ₹${Math.abs(balance).toFixed(2)}. I'll be sending this over to you shortly.`;
         } else {
-            return `Hey ${peer}, looks like our financial ledger is currently completely settled up at ₹0.00!`;
+            return `Hey ${peer}, looks like our financial ledger is completely settled up at ₹0.00!`;
         }
     }
 
@@ -679,8 +771,7 @@
                 balanceClass = 'balance-negative';
             }
 
-            // --- Universal Link Cryptographic Encoding ---
-            // Generates the unaddressed wa.me URI string encoded securely for cross-origin transport
+            // Universal Link Cryptographic Encoding
             const rawMessage = generateSharePayload(peer, currentBalance);
             const encodedPayload = encodeURIComponent(rawMessage);
             const whatsappUri = `https://wa.me/?text=${encodedPayload}`;
