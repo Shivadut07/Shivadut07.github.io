@@ -27,25 +27,25 @@
             display: flex;
             justify-content: center;
         }
-        .dashboard-container {
+       .dashboard-container {
             display: flex;
             gap: 25px;
             max-width: 1400px;
             width: 100%;
             flex-wrap: wrap;
         }
-        .left-column {
+       .left-column {
             flex: 1;
             min-width: 350px;
             display: flex;
             flex-direction: column;
             gap: 25px;
         }
-        .right-column {
+       .right-column {
             flex: 2;
             min-width: 500px;
         }
-        .panel {
+       .panel {
             background: var(--panel-bg);
             border-radius: 15px;
             padding: 25px;
@@ -59,7 +59,7 @@
         }
         
         /* Personal Debit Module Styles */
-        .debit-display {
+       .debit-display {
             font-size: 2.5rem;
             font-weight: bold;
             color: var(--btn-give);
@@ -69,9 +69,9 @@
             border-radius: 8px;
             padding: 10px;
         }
-        .input-group {
+       .input-group {
             display: flex;
-            gap: 15px;
+            gap: 10px;
         }
         input[type="number"] {
             flex: 1;
@@ -91,10 +91,11 @@
         }
         button:hover { transform: scale(1.02); opacity: 0.9; }
         button:active { transform: scale(0.95); }
-        .btn-add { background-color: var(--btn-neutral); }
+       .btn-add { background-color: var(--btn-neutral); }
+       .btn-reset { background-color: var(--calc-key-action); }
         
         /* Peer Ledger Matrix Styles */
-        .ledger-row {
+       .ledger-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -102,21 +103,21 @@
             border-bottom: 1px solid var(--border-light);
             gap: 15px;
         }
-        .ledger-row:last-child { border-bottom: none; }
-        .peer-name {
+       .ledger-row:last-child { border-bottom: none; }
+       .peer-name {
             width: 100px;
             font-weight: 600;
             text-transform: capitalize;
             font-size: 1.1rem;
         }
-        .ledger-controls {
+       .ledger-controls {
             display: flex;
             gap: 10px;
             flex: 1;
         }
-        .btn-give { background-color: var(--btn-give); font-size: 0.9rem; }
-        .btn-receive { background-color: var(--btn-receive); font-size: 0.9rem; }
-        .balance-display {
+       .btn-give { background-color: var(--btn-give); font-size: 0.9rem; }
+       .btn-receive { background-color: var(--btn-receive); font-size: 0.9rem; }
+       .balance-display {
             width: 160px;
             text-align: right;
             font-weight: bold;
@@ -124,17 +125,17 @@
             padding: 8px;
             border-radius: 5px;
         }
-        .balance-positive { color: #2e7d32; background-color: #e8f5e9; }
-        .balance-negative { color: #c62828; background-color: #ffebee; }
-        .balance-neutral { color: var(--text-main); background-color: #f5f5f5; }
+       .balance-positive { color: #2e7d32; background-color: #e8f5e9; }
+       .balance-negative { color: #c62828; background-color: #ffebee; }
+       .balance-neutral { color: var(--text-main); background-color: #f5f5f5; }
 
         /* Real-Time Calculator Styles */
-        .calculator {
+       .calculator {
             background-color: var(--calc-bg);
             border-radius: 15px;
             padding: 20px;
         }
-        .calculator__display {
+       .calculator__display {
             background-color: #ffeb3b;
             color: var(--text-main);
             font-size: 2.2rem;
@@ -145,31 +146,31 @@
             overflow-x: auto;
             border: none;
         }
-        .calculator__keys {
+       .calculator__keys {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 12px;
         }
-        .calculator__keys button {
+       .calculator__keys button {
             background-color: var(--calc-key);
             color: var(--text-main);
             font-size: 1.4rem;
             padding: 18px 0;
             border-radius: 10px;
         }
-        .calculator__keys button[data-action="add"],
-        .calculator__keys button[data-action="subtract"],
-        .calculator__keys button[data-action="multiply"],
-        .calculator__keys button[data-action="divide"] {
+       .calculator__keys button[data-action="add"],
+       .calculator__keys button[data-action="subtract"],
+       .calculator__keys button[data-action="multiply"],
+       .calculator__keys button[data-action="divide"] {
             background-color: var(--calc-key-op);
             color: white;
         }
-        .calculator__keys button[data-action="calculate"] {
+       .calculator__keys button[data-action="calculate"] {
             background-color: var(--btn-receive);
             color: white;
             grid-column: span 2;
         }
-        .calculator__keys button[data-action="clear"] {
+       .calculator__keys button[data-action="clear"] {
             background-color: var(--calc-key-action);
             color: white;
             grid-column: span 2;
@@ -181,17 +182,16 @@
 <div class="dashboard-container">
     
     <div class="left-column">
-        <!-- Personal Daily Debit Accumulator Module -->
         <div class="panel">
             <h2>Personal Daily Debit Accumulator</h2>
             <div class="debit-display">₹<span id="total-debit-val">0.00</span></div>
             <div class="input-group">
                 <input type="number" id="daily-debit-input" placeholder="Enter daily debit..." step="0.01" min="0">
                 <button class="btn-add" onclick="addDailyDebit()">Add to Total</button>
+                <button class="btn-reset" onclick="resetDailyDebit()">Reset</button>
             </div>
         </div>
 
-        <!-- Real-Time Calculator Widget -->
         <div class="panel calculator">
             <div class="calculator__display" id="calc-display">0</div>
             <div class="calculator__keys" id="calc-keys">
@@ -216,7 +216,6 @@
         </div>
     </div>
 
-    <!-- Peer-to-Peer Financial Ledger Module -->
     <div class="right-column">
         <div class="panel">
             <h2>Cohort Ledger (Pending Balances)</h2>
@@ -231,7 +230,7 @@
     const rawFriendsArray = ["thiwakar", "gojo", "mowlish", "goww", "aravindh", "mohan", "gowtham", "parithi", "soukar"];
     const sortedFriends = rawFriendsArray.sort(); 
     
-    // Read saved data from browser cache, or default to 0 if empty
+    // Read saved data from browser cache, or default to 0/empty if none exists
     let personalTotalDebit = parseFloat(localStorage.getItem('personalTotalDebit')) || 0;
     const ledgerState = JSON.parse(localStorage.getItem('ledgerState')) || {};
     
@@ -245,6 +244,7 @@
     // Make sure the screen displays your saved daily debit on load
     document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('total-debit-val').textContent = personalTotalDebit.toFixed(2);
+        renderLedger(); // Render the ledger with saved data
     });
 
     // --- Personal Debit Accumulator Logic ---
@@ -258,6 +258,14 @@
             displayEl.textContent = personalTotalDebit.toFixed(2);
             localStorage.setItem('personalTotalDebit', personalTotalDebit);
             inputEl.value = '';
+        }
+    }
+
+    function resetDailyDebit() {
+        if (confirm("Are you sure you want to reset your personal daily debit accumulator to ₹0.00?")) {
+            personalTotalDebit = 0;
+            document.getElementById('total-debit-val').textContent = '0.00';
+            localStorage.setItem('personalTotalDebit', 0);
         }
     }
 
@@ -286,8 +294,8 @@
                 <div class="peer-name">${peer}</div>
                 <div class="ledger-controls">
                     <input type="number" id="input-${peer}" placeholder="Amount" step="0.01" min="0">
-                    <button class="btn-give" onclick="processTransaction('${peer}', 'give')">I Give</button>
-                    <button class="btn-receive" onclick="processTransaction('${peer}', 'receive')">They Give</button>
+                    <button class="btn-give" onclick="processTransaction('${peer}', 'give')">Naa kudukanum</button>
+                    <button class="btn-receive" onclick="processTransaction('${peer}', 'receive')">Enaku tharanum</button>
                 </div>
                 <div class="balance-display ${balanceClass}">${balanceText}</div>
             `;
@@ -312,9 +320,6 @@
             localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
         }
     }
-
-    // Initialize the ledger rendering upon page load
-    renderLedger();
 
     // --- Event Delegation State Machine for Calculator ---
     const calcKeys = document.getElementById('calc-keys');
@@ -343,7 +348,7 @@
                 calcState.displayValue = keyContent;
                 calcState.waitingForSecondOperand = false;
             } else {
-                calcState.displayValue = calcState.displayValue === '0' ? keyContent : calcState.displayValue + keyContent;
+                calcState.displayValue = calcState.displayValue === '0'? keyContent : calcState.displayValue + keyContent;
             }
         } else if (action === 'decimal') {
             if (!calcState.displayValue.includes('.')) {
@@ -352,7 +357,7 @@
         } else if (['add', 'subtract', 'multiply', 'divide'].includes(action)) {
             handleOperator(action);
         } else if (action === 'calculate') {
-            if (calcState.operator && calcState.firstOperand !== null) {
+            if (calcState.operator && calcState.firstOperand!== null) {
                 const secondOperand = parseFloat(calcState.displayValue);
                 calcState.displayValue = String(calculateResult(calcState.firstOperand, secondOperand, calcState.operator));
                 calcState.firstOperand = null;
@@ -375,7 +380,7 @@
             calcState.operator = nextOperator;
             return;
         }
-        if (calcState.firstOperand == null && !isNaN(inputValue)) {
+        if (calcState.firstOperand == null &&!isNaN(inputValue)) {
             calcState.firstOperand = inputValue;
         } else if (calcState.operator) {
             const result = calculateResult(calcState.firstOperand, inputValue, calcState.operator);
