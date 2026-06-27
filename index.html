@@ -36,14 +36,14 @@
             justify-content: center;
         }
        .left-column {
-            flex: 1 1 400px;
-            max-width: 500px;
+            flex: 1 1 350px;
+            max-width: 450px;
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
        .right-column {
-            flex: 1.5 1 600px;
+            flex: 2 1 600px;
             display: flex;
             flex-direction: column;
             gap: 20px;
@@ -247,6 +247,45 @@
             margin-bottom: 2px;
         }
        .history-msg { color: #111; font-weight: 500; }
+
+        /* Media Queries for Mobile Screens */
+        @media (max-width: 900px) {
+            body {
+                padding: 10px;
+            }
+           .dashboard-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+           .left-column,.right-column {
+                max-width: 100%;
+                flex: 1 1 auto;
+            }
+        }
+        @media (max-width: 600px) {
+           .ledger-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+           .peer-name {
+                text-align: center;
+                font-size: 1.15rem;
+                width: 100%;
+            }
+           .ledger-controls {
+                width: 100%;
+                justify-content: center;
+            }
+           .ledger-controls input {
+                max-width: 100%;
+                flex: 1;
+            }
+           .balance-display {
+                width: 100%;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -326,7 +365,7 @@
     const rawFriendsArray = ["thiwakar", "gojo", "mowlish", "goww", "aravindh", "mohan", "gowtham", "parithi", "soukar"];
     const sortedFriends = rawFriendsArray.sort(); 
     
-    // Read saved values from browser LocalStorage
+    // Read saved values from browser LocalStorage securely
     let personalTotalDebit = parseFloat(localStorage.getItem('personalTotalDebit')) || 0;
     let monthlyBudgetLimit = parseFloat(localStorage.getItem('monthlyBudgetLimit')) || 10000;
     const ledgerState = JSON.parse(localStorage.getItem('ledgerState')) || {};
@@ -419,7 +458,7 @@
     // --- Dynamic Log-History Pipeline ---
     function logHistoryEvent(peer, message) {
         const now = new Date();
-        const timestamp = now.toLocaleDateString() + ' ' + now.toLocaleTimeString(, { hour: '2-digit', minute: '2-digit' });
+        const timestamp = now.toLocaleDateString() + ' ' + now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
         transactionHistory.unshift({ peer, message, timestamp });
         localStorage.setItem('transactionHistory', JSON.stringify(transactionHistory));
         renderHistory();
@@ -487,8 +526,8 @@
                 <div class="peer-name">${peer}</div>
                 <div class="ledger-controls">
                     <input type="number" id="input-${peer}" placeholder="Amount" step="0.01" min="0">
-                    <button class="btn-give" onclick="processTransaction('${peer}', 'give')">Naa kudukanum</button>
-                    <button class="btn-receive" onclick="processTransaction('${peer}', 'receive')">Enaku tharanum</button>
+                    <button class="btn-give" onclick="processTransaction('${peer}', 'give')">Naa kuduthen</button>
+                    <button class="btn-receive" onclick="processTransaction('${peer}', 'receive')">Avunga kuduthanga</button>
                 </div>
                 <div class="balance-display ${balanceClass}">${balanceText}</div>
             `;
@@ -504,16 +543,16 @@
             let logMsg = '';
             if (action === 'give') {
                 ledgerState[peer] += amount;
-                logMsg = `Disbursed ₹${amount.toFixed(2)} via "Naa kudukanum"`;
+                logMsg = `Disbursed ₹${amount.toFixed(2)} via "Naa kuduthen"`;
             } else if (action === 'receive') {
                 ledgerState[peer] -= amount;
-                logMsg = `Received ₹${amount.toFixed(2)} via "Enaku tharanum"`;
+                logMsg = `Received ₹${amount.toFixed(2)} via "Avunga kuduthanga"`;
             }
             
             // Calculate and append the new ledger state to the logged statement
             const updated = ledgerState[peer];
             const stateSummary = updated === 0? 'Settled' : (updated > 0? `Owes: ₹${updated.toFixed(2)}` : `Owed: ₹${Math.abs(updated).toFixed(2)}`);
-            logMsg += `. New ledger status:`;
+            logMsg += `. New ledger status: ${stateSummary}`;
             
             logHistoryEvent(peer, logMsg);
             
