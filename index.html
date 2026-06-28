@@ -689,7 +689,12 @@
     <!-- Right Column: Cohort Relational Mapping -->
     <div class="right-column">
         <div class="panel">
-            <h2>Cohort Ledger & Transaction History</h2>
+            <div class="header-action-row">
+                <h2>Cohort Ledger & Transaction History</h2>
+                <button class="btn-reset" onclick="resetAllCohortHistories()" aria-label="Reset all cohort timelines" title="Clear all friend histories">
+                    Reset All Timelines
+                </button>
+            </div>
             <div id="ledger-container"></div>
         </div>
     </div>
@@ -808,6 +813,21 @@
             debitHistoryState = [];
             localStorage.setItem('debitHistoryState', JSON.stringify([]));
             renderDebitHistory();
+        }
+    }
+
+    // --- Batch State Mutation Engine: Cohort Ledger Reset ---
+    function resetAllCohortHistories() {
+        if (confirm("Are you certain you wish to completely reset the ledger and transaction history for ALL cohort members? This action cannot be undone and permanently deletes the history.")) {
+            sortedFriends.forEach(peer => {
+                if(ledgerState[peer]) {
+                    ledgerState[peer].balance = 0;
+                    ledgerState[peer].baseline = 0;
+                    ledgerState[peer].transactions = [];
+                }
+            });
+            localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
+            renderLedger(); 
         }
     }
     
