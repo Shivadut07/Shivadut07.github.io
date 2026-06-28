@@ -51,22 +51,22 @@
         .dashboard-container {
             display: flex;
             gap: 25px;
-            max-width: 1400px;
+            max-width: 1500px;
             width: 100%;
             flex-wrap: wrap;
             justify-content: center;
         }
 
         .left-column {
-            flex: 1 1 380px;
-            max-width: 485px;
+            flex: 1 1 420px;
+            max-width: 520px;
             display: flex;
             flex-direction: column;
             gap: 25px;
         }
 
         .right-column {
-            flex: 2 1 650px;
+            flex: 2 1 700px;
             display: flex;
             flex-direction: column;
             gap: 25px;
@@ -102,17 +102,71 @@
 
         .input-group {
             display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+        
+        .input-row {
+            display: flex;
             gap: 10px;
             width: 100%;
         }
 
-        input[type="number"] {
+        input[type="number"], input[type="text"] {
             flex: 1 1 auto;
             padding: 12px;
             border: 1px solid var(--border-light);
             border-radius: 8px;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             min-width: 0; 
+        }
+
+        /* Modern CSS Dropdown Implementation with robust legacy fallbacks */
+        select.modern-select {
+            flex: 1 1 auto;
+            padding: 12px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-size: 1rem;
+            color: var(--text-main);
+            background-color: white;
+            cursor: pointer;
+            font-family: inherit;
+            min-width: 140px;
+            
+            /* Standard fallback styling stripping the OS rendering shell */
+            appearance: none;
+            /* Synthetic SVG background arrow injection for legacy support */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+            padding-right: 30px;
+        }
+        
+        select.modern-select:focus, input:focus {
+            outline: 2px solid var(--btn-neutral);
+            border-color: transparent;
+        }
+
+        /* Progressive enhancement utilizing the experimental base-select API */
+        @supports (appearance: base-select) {
+            select.modern-select {
+                appearance: base-select;
+                background-image: none; /* Remove legacy SVG hack */
+                padding-right: 12px;
+            }
+            
+            /* Target the listbox bounding container */
+            select.modern-select::picker(select) {
+                appearance: base-select;
+                background: var(--panel-bg);
+                border: 1px solid var(--border-light);
+                border-radius: 8px;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+                padding: 5px;
+            }
         }
 
         button {
@@ -146,7 +200,7 @@
         /* Strict Grid Layout defining the primary interaction zone */
         .ledger-row {
             display: grid;
-            grid-template-columns: 100px 1.9fr 1.1fr; 
+            grid-template-columns: 100px 2.2fr 1.1fr; 
             align-items: center;
             gap: 12px;
         }
@@ -182,21 +236,47 @@
 
         .ledger-controls {
             display: flex;
-            gap: 6px; 
-            align-items: center;
+            flex-direction: column;
+            gap: 8px; 
             min-width: 0;
         }
+        
+        .ledger-inputs {
+            display: flex;
+            gap: 6px;
+            width: 100%;
+        }
 
-        .ledger-controls input {
-            width: 75px; 
+        .ledger-inputs input[type="number"] {
+            width: 90px; 
             flex: 0 0 auto;
             padding: 8px 10px;
             border: 1px solid var(--border-light);
             border-radius: 6px;
             font-size: 0.95rem;
         }
+        
+        .ledger-inputs select {
+            flex: 1 1 auto;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+        
+        .ledger-inputs input[type="text"] {
+            flex: 1 1 auto;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
 
-        .ledger-controls button {
+        .ledger-buttons {
+            display: flex;
+            gap: 6px;
+            width: 100%;
+        }
+
+        .ledger-buttons button {
             flex: 1 1 auto;
             white-space: nowrap;
             padding: 8px 10px;
@@ -263,7 +343,7 @@
             padding: 15px 20px;
             background-color: #f4f6f8;
             border-radius: 8px;
-            max-height: 280px;
+            max-height: 320px;
             overflow-y: auto;
             min-height: 0; 
             border: 1px solid var(--border-light);
@@ -323,9 +403,21 @@
         .timeline-item.give::before { border-color: var(--btn-give); }
         .timeline-item.receive::before { border-color: var(--btn-receive); }
 
-        .timeline-meta { display: flex; flex-direction: column; gap: 2px; }
+        .timeline-meta { display: flex; flex-direction: column; gap: 2px; max-width: 65%; }
         .timeline-desc { font-weight: 600; color: var(--text-main); }
-        .timeline-date { font-size: 0.75rem; color: var(--text-muted); }
+        .timeline-category-tag { 
+            font-size: 0.7rem; 
+            background-color: #e2e8f0; 
+            color: #475569; 
+            padding: 2px 6px; 
+            border-radius: 4px; 
+            display: inline-block;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .timeline-date { font-size: 0.7rem; color: var(--text-muted); }
         .timeline-amount { font-weight: bold; font-size: 0.95rem; }
         
         .timeline-item.give .timeline-amount { color: var(--btn-give); }
@@ -406,7 +498,6 @@
             -webkit-overflow-scrolling: touch; 
         }
 
-        /* NEW: Flex header for Excel Export button integration */
         .header-action-row {
             display: flex;
             justify-content: space-between;
@@ -424,7 +515,7 @@
 
         /* Excel Export Button Architecture */
         .btn-export-excel {
-            background-color: #107c41; /* Microsoft Excel Brand Green */
+            background-color: #107c41; 
             color: #ffffff;
             border: none;
             border-radius: 6px;
@@ -507,11 +598,15 @@
             }
             .peer-info { align-items: center; border-bottom: 1px dashed var(--border-light); padding-bottom: 10px; }
             .peer-name { text-align: center; font-size: 1.25rem; width: 100%; }
-            .ledger-controls { width: 100%; gap: 8px; justify-content: center; }
-            .ledger-controls input { flex: 1 1 auto; width: 100%; height: 46px; }
-            .ledger-controls button { height: 46px; font-size: 0.95rem; }
+            .ledger-controls { width: 100%; gap: 10px; }
+            .ledger-inputs { flex-direction: column; }
+            .ledger-inputs input[type="number"], .ledger-inputs select, .ledger-inputs input[type="text"] { width: 100%; height: 46px; }
+            .ledger-buttons button { height: 46px; font-size: 0.95rem; }
             .action-container { flex-direction: row; width: 100%; }
             .balance-display { text-align: center; width: 100%; font-size: 1.1rem; padding: 12px; }
+            
+            .input-row { flex-direction: column; }
+            .input-row select, .input-row input { height: 46px; }
         }
     </style>
 </head>
@@ -520,14 +615,31 @@
 <div class="dashboard-container">
     
     <div class="left-column">
-        <!-- Scalar Accumulator Panel -->
+        <!-- Scalar Accumulator Panel with Enhanced Auditing Input -->
         <div class="panel">
             <h2>Personal Daily Debit Accumulator</h2>
             <div class="debit-display">₹<span id="total-debit-val">0.00</span></div>
             <div class="input-group">
-                <input type="number" id="daily-debit-input" placeholder="Enter daily debit..." step="0.01" min="0">
-                <button class="btn-add" onclick="addDailyDebit()">Add to Total</button>
-                <button class="btn-reset" onclick="resetDailyDebit()">Reset</button>
+                <div class="input-row">
+                    <input type="number" id="daily-debit-input" placeholder="Amount (₹)" step="0.01" min="0">
+                    <select id="daily-debit-category" class="modern-select" onchange="toggleCustomInput('daily-debit-category', 'daily-debit-custom')">
+                        <option value="" disabled selected>Select Category</option>
+                        <option value="Train tickets">Train tickets</option>
+                        <option value="Bus tickets">Bus tickets</option>
+                        <option value="Breakfast">Breakfast</option>
+                        <option value="Lunch">Lunch</option>
+                        <option value="Dinner">Dinner</option>
+                        <option value="Tea">Tea</option>
+                        <option value="Snacks">Snacks</option>
+                        <option value="Project components">Project components</option>
+                        <option value="Other">Other (Type below)</option>
+                    </select>
+                </div>
+                <input type="text" id="daily-debit-custom" placeholder="Enter custom description..." style="display: none;">
+                <div class="input-row">
+                    <button class="btn-add" onclick="addDailyDebit()">Add to Total</button>
+                    <button class="btn-reset" onclick="resetDailyDebit()">Reset</button>
+                </div>
             </div>
         </div>
 
@@ -555,13 +667,11 @@
             </div>
         </div>
         
-        <!-- NEW: Chronological Audit Log Panel with Excel Data Export Module -->
+        <!-- Chronological Audit Log Panel with Excel Data Export Module -->
         <div class="panel debit-audit-panel">
             <div class="header-action-row">
                 <h2>Transaction History Log</h2>
-                <!-- Excel Export Trigger utilizing semantic structural alignment -->
                 <button class="btn-export-excel" onclick="exportHistoryToExcel()" aria-label="Export to Excel Spreadsheet" title="Download Transaction CSV">
-                    <!-- Bootstrap bi-file-earmark-excel-fill highly optimized SVG path -->
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
                         <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM5.884 6.68 8 9.219l2.116-2.54a.5.5 0 1 1 .768.641L8.651 10l2.233 2.68a.5.5 0 0 1-.768.64L8 10.781l-2.116 2.54a.5.5 0 0 1-.768-.641L7.349 10 5.116 7.32a.5.5 0 1 1 .768-.64z"/>
                     </svg>
@@ -570,7 +680,7 @@
             </div>
             <div class="debit-history-scroll" id="debit-history-container">
                 <ul class="timeline" id="debit-history-list">
-                    <!-- Dynamic List Population Zone utilized by DOM manipulation logic -->
+                    <!-- Dynamic List Population Zone -->
                 </ul>
             </div>
         </div>
@@ -597,6 +707,7 @@
     let debitHistoryState = JSON.parse(localStorage.getItem('debitHistoryState')) || [];
     
     // --- V2 Schema Migration Engine (Expand & Contract Pattern) ---
+    // Ensuring older objects adapt to receive categorical metadata gracefully.
     sortedFriends.forEach(peer => {
         if (ledgerState[peer] === undefined) {
             ledgerState[peer] = { balance: 0, baseline: 0, transactions: [] };
@@ -627,12 +738,38 @@
         renderLedger(); 
         renderDebitHistory(); 
     });
+    
+    // Utility function to toggle custom text inputs dynamically when 'Other' is selected
+    function toggleCustomInput(selectId, inputId) {
+        const selectEl = document.getElementById(selectId);
+        const inputEl = document.getElementById(inputId);
+        if (selectEl.value === 'Other') {
+            inputEl.style.display = 'block';
+            inputEl.focus();
+        } else {
+            inputEl.style.display = 'none';
+        }
+    }
 
-    // --- Core Modification: Event-Sourced Debit Accumulation Logic ---
+    // Resolves the final qualitative description string based on user UI selection
+    function resolveCategoryValue(selectId, inputId) {
+        const selectVal = document.getElementById(selectId).value;
+        if (selectVal === 'Other') {
+            const customVal = document.getElementById(inputId).value.trim();
+            return customVal !== "" ? customVal : "Uncategorized Transaction";
+        }
+        return selectVal !== "" ? selectVal : "Uncategorized Transaction";
+    }
+
+    // --- Core Modification: Event-Sourced Debit Accumulation with Categorical Logging ---
     function addDailyDebit() {
         const inputEl = document.getElementById('daily-debit-input');
+        const selectEl = document.getElementById('daily-debit-category');
+        const customEl = document.getElementById('daily-debit-custom');
         const displayEl = document.getElementById('total-debit-val');
+        
         const amount = parseFloat(inputEl.value);
+        const categoryDesc = resolveCategoryValue('daily-debit-category', 'daily-debit-custom');
         
         if (!isNaN(amount) && amount > 0) {
             personalTotalDebit += amount;
@@ -642,6 +779,7 @@
             const newEntry = {
                 id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
                 amount: amount,
+                category: categoryDesc,
                 timestamp: new Date().toISOString()
             };
             
@@ -649,7 +787,14 @@
             localStorage.setItem('debitHistoryState', JSON.stringify(debitHistoryState));
             
             renderDebitHistory();
+            
+            // Clean up UI state
             inputEl.value = '';
+            selectEl.selectedIndex = 0;
+            customEl.value = '';
+            customEl.style.display = 'none';
+        } else {
+            alert("Please enter a valid numeric amount.");
         }
     }
 
@@ -666,7 +811,7 @@
         }
     }
     
-    // --- Rendering Pipeline: Audit Log DOM Construction Methodology ---
+    // --- Rendering Pipeline: Categorical Audit Log DOM Construction Methodology ---
     function renderDebitHistory() {
         const listEl = document.getElementById('debit-history-list');
         
@@ -678,11 +823,14 @@
         listEl.innerHTML = debitHistoryState.map(entry => {
             const dateObj = new Date(entry.timestamp);
             const formattedDate = dateFormatter.format(dateObj);
+            // Defensive check for older entries lacking a category
+            const displayCat = entry.category || "General Expense";
             
             return `
                 <li class="timeline-item give">
                     <div class="timeline-meta">
                         <span class="timeline-desc">Debit Added</span>
+                        <div class="timeline-category-tag">${displayCat}</div>
                         <span class="timeline-date">${formattedDate}</span>
                     </div>
                     <div class="timeline-amount">+₹${entry.amount.toFixed(2)}</div>
@@ -691,7 +839,7 @@
         }).join('');
     }
 
-    // --- NEW: Client-Side Microsoft Excel CSV Export Engine ---
+    // --- NEW: Client-Side Microsoft Excel CSV Export Engine (Expanded Schema) ---
     // Serializes volatile array state into Excel-compatible UTF-8 encoded blobs.
     function exportHistoryToExcel() {
         if (!debitHistoryState || debitHistoryState.length === 0) {
@@ -700,12 +848,12 @@
         }
 
         // Implementation of the UTF-8 Byte Order Mark (BOM). 
-        // This Unicode control character absolutely guarantees Microsoft Excel
+        // This Unicode control character guarantees Microsoft Excel
         // allocates the correct decoder logic to prevent Rupee symbol (₹) mojibake.
         const universalBOM = "\uFEFF";
         
-        // Define hierarchical column headers mapped to internal schema
-        let csvContent = "Transaction ID,Date,Time,Amount (\u20B9)\n";
+        // Define hierarchical column headers mapped to the newly expanded internal schema
+        let csvContent = "Transaction ID,Date,Time,Category/Description,Amount (\u20B9)\n";
 
         // Iterative serialization mapping objects into CSV string representations
         debitHistoryState.forEach(entry => {
@@ -719,8 +867,12 @@
             const isolatedDate = dateParts[0] ? dateParts[0].trim() : "Unknown Date";
             const isolatedTime = dateParts[1] ? dateParts[1].trim() : "Unknown Time";
             
+            // Sanitize the user-generated category string to prevent CSV injection or boundary breaking
+            const rawCategory = entry.category || "General Expense";
+            const sanitizedCategory = `"${rawCategory.replace(/"/g, '""')}"`;
+            
             // Enclose the numeric scalar mathematically fixed to 2 decimal locales
-            const serializedRow = `${entry.id},${isolatedDate},${isolatedTime},${entry.amount.toFixed(2)}`;
+            const serializedRow = `${entry.id},${isolatedDate},${isolatedTime},${sanitizedCategory},${entry.amount.toFixed(2)}`;
             csvContent += serializedRow + "\n";
         });
 
@@ -738,7 +890,6 @@
         anchorDispatch.setAttribute("download", `Transaction_History_${timestampMarker}.csv`);
         
         // Programmatic DOM injection, trigger, and rapid cleanup 
-        // preventing memory leakage via lingering URL handlers
         document.body.appendChild(anchorDispatch);
         anchorDispatch.click();
         document.body.removeChild(anchorDispatch);
@@ -829,11 +980,13 @@
                     
                     const actionLabel = txn.action === 'give' ? 'Naa Kuduthen' : 'Avunga Kuduthanga';
                     const symbol = txn.action === 'give' ? '+' : '-';
+                    const displayCat = txn.category || "General Context";
                     
                     return `
                         <li class="timeline-item ${txn.action}">
                             <div class="timeline-meta">
                                 <span class="timeline-desc">${actionLabel}</span>
+                                <div class="timeline-category-tag">${displayCat}</div>
                                 <span class="timeline-date">${formattedDate}</span>
                             </div>
                             <div class="timeline-amount">${symbol}₹${txn.amount.toFixed(2)}</div>
@@ -843,7 +996,21 @@
                 historyHTML = `<ul class="timeline">${listItems}</ul>`;
             }
 
-            // Root node architectural synthesis
+            // Creating the unified dropdown options template strictly mapping to Rasipuram regional context
+            const dropdownOptions = `
+                <option value="" disabled selected>Description</option>
+                <option value="Train tickets">Train tickets</option>
+                <option value="Bus tickets">Bus tickets</option>
+                <option value="Breakfast">Breakfast</option>
+                <option value="Lunch">Lunch</option>
+                <option value="Dinner">Dinner</option>
+                <option value="Tea">Tea</option>
+                <option value="Snacks">Snacks</option>
+                <option value="Project components">Project components</option>
+                <option value="Other">Other (Custom)</option>
+            `;
+
+            // Root node architectural synthesis with new form control matrix
             const itemContainer = document.createElement('div');
             itemContainer.className = 'ledger-item-container';
             itemContainer.innerHTML = `
@@ -856,9 +1023,17 @@
                     </div>
                     
                     <div class="ledger-controls">
-                        <input type="number" id="input-${peer}" placeholder="Amount" step="0.01" min="0">
-                        <button class="btn-give" onclick="processTransaction('${peer}', 'give')">Naa kuduthen</button>
-                        <button class="btn-receive" onclick="processTransaction('${peer}', 'receive')">Avunga kuduthanga</button>
+                        <div class="ledger-inputs">
+                            <input type="number" id="input-${peer}" placeholder="₹ Amt" step="0.01" min="0">
+                            <select id="cat-${peer}" class="modern-select" onchange="toggleCustomInput('cat-${peer}', 'custom-${peer}')">
+                                ${dropdownOptions}
+                            </select>
+                        </div>
+                        <input type="text" id="custom-${peer}" placeholder="Type custom note..." style="display:none; width: 100%; margin-top: -4px;">
+                        <div class="ledger-buttons">
+                            <button class="btn-give" onclick="processTransaction('${peer}', 'give')">Naa kuduthen</button>
+                            <button class="btn-receive" onclick="processTransaction('${peer}', 'receive')">Avunga kuduthanga</button>
+                        </div>
                     </div>
                     <div style="display:flex; flex-direction:column; justify-content:center; width:100%;">
                         ${actionContainerHTML}
@@ -886,12 +1061,17 @@
 
     function processTransaction(peer, action) {
         const inputEl = document.getElementById(`input-${peer}`);
+        const selectEl = document.getElementById(`cat-${peer}`);
+        const customEl = document.getElementById(`custom-${peer}`);
+        
         const amount = parseFloat(inputEl.value);
+        const categoryDesc = resolveCategoryValue(`cat-${peer}`, `custom-${peer}`);
         
         if (!isNaN(amount) && amount > 0) {
             const newTransaction = {
                 id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
                 amount: amount,
+                category: categoryDesc,
                 action: action,
                 timestamp: new Date().toISOString()
             };
@@ -924,10 +1104,16 @@
             ledgerState[peer].transactions.unshift(newTransaction);
             
             inputEl.value = '';
+            selectEl.selectedIndex = 0;
+            customEl.value = '';
+            customEl.style.display = 'none';
+            
             localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
             
             renderLedger(); 
             document.getElementById(`history-${peer}`).style.display = 'block';
+        } else {
+            alert("Please provide a valid numeric amount to process the transaction.");
         }
     }
 
