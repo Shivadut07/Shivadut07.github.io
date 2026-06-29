@@ -4,12 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shivadut's Integrated Financial Ledger</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root {
             /* Core Application Color Palette */
@@ -54,7 +51,7 @@
 
         /* --- PAGE CONTAINERS --- */
         .app-page {
-            display: none; 
+            display: none; /* All pages hidden by default */
             padding: 20px;
             min-height: 100vh;
             flex-direction: column;
@@ -137,78 +134,39 @@
             max-width: 900px;
         }
 
-        /* BEAUTIFIED MENU BOXES */
         .menu-box {
             background: var(--panel-bg);
-            border-radius: 20px;
-            padding: 35px 20px;
+            border: 2px solid transparent;
+            border-radius: 15px;
+            padding: 40px 20px;
             text-align: center;
             cursor: pointer;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 12px;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid #f0f0f0;
-        }
-
-        .menu-box::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 6px;
+            gap: 15px;
         }
 
         .menu-box:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            transform: translateY(-5px);
+            border-color: var(--btn-neutral);
+            box-shadow: 0 12px 24px rgba(3, 169, 244, 0.2);
         }
 
-        .menu-box h3 { font-size: 1.3rem; color: var(--text-main); margin: 0; font-weight: 600;}
-        .menu-box p { color: var(--text-muted); font-size: 0.85rem; margin: 0; line-height: 1.4;}
+        .menu-box h3 { font-size: 1.4rem; color: var(--text-main); margin: 0;}
+        .menu-box p { color: var(--text-muted); font-size: 0.9rem; margin: 0;}
         
-        .icon-wrapper {
-            width: 75px;
-            height: 75px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 50%;
-            font-size: 2.2rem;
-            margin-bottom: 5px;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
-            transition: transform 0.3s ease;
+        .menu-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
         }
-        
-        .menu-box:hover .icon-wrapper {
-            transform: scale(1.1);
-        }
-
-        .box-debit::before { background: linear-gradient(90deg, #4facfe, #00f2fe); }
-        .box-debit .icon-wrapper { background: #e1f5fe; }
-        
-        .box-calendar::before { background: linear-gradient(90deg, #b224ef, #7579ff); }
-        .box-calendar .icon-wrapper { background: #ede7f6; }
-        
-        .box-cohort::before { background: linear-gradient(90deg, #11998e, #38ef7d); }
-        .box-cohort .icon-wrapper { background: #e8f5e9; }
-        
-        .box-savings::before { background: linear-gradient(90deg, #f6d365, #fda085); }
-        .box-savings .icon-wrapper { background: #fff8e1; }
-        
-        .box-calc::before { background: linear-gradient(90deg, #ff0844, #ffb199); }
-        .box-calc .icon-wrapper { background: #ffebee; }
-        
-        .box-analytics::before { background: linear-gradient(90deg, #43e97b, #38f9d7); }
-        .box-analytics .icon-wrapper { background: #e0f2f1; }
 
         /* --- TOOL PAGES COMMON STYLES --- */
         .tool-container {
             width: 100%;
-            max-width: 800px;
+            max-width: 800px; /* Centered narrow view for each tool */
             display: flex;
             flex-direction: column;
             gap: 25px;
@@ -330,11 +288,6 @@
             margin-bottom: 15px;
         }
         .header-action-row h2 { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
-        
-        .export-actions {
-            display: flex;
-            gap: 10px;
-        }
 
         .btn-export-excel {
             background-color: #107c41; 
@@ -348,27 +301,8 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            transition: opacity 0.2s;
         }
-        .btn-export-excel:hover { opacity: 0.9; }
         .btn-export-excel svg { width: 18px; height: 18px; fill: currentColor; }
-
-        .btn-export-pdf {
-            background-color: #d32f2f; 
-            color: #ffffff;
-            border: none;
-            border-radius: 6px;
-            padding: 8px 14px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: opacity 0.2s;
-        }
-        .btn-export-pdf:hover { opacity: 0.9; }
-        .btn-export-pdf svg { width: 18px; height: 18px; fill: currentColor; }
 
         .debit-history-scroll {
             background-color: #f4f6f8;
@@ -407,7 +341,7 @@
         .savings-table .grand-total {
             font-size: 1.4rem;
             font-weight: bold;
-            color: #2e7d32; 
+            color: #2e7d32; /* Green for savings */
         }
         .savings-table .row-total {
             font-weight: 600;
@@ -588,19 +522,6 @@
             margin-top: 15px;
         }
 
-        .no-data-overlay {
-            display: none;
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            justify-content: center;
-            align-items: center;
-            background-color: rgba(255,255,255,0.8);
-            color: var(--text-muted);
-            font-style: italic;
-            font-size: 0.95rem;
-            z-index: 10;
-        }
-
         /* --- CALENDAR STYLES --- */
         .calendar-header {
             display: flex;
@@ -762,38 +683,38 @@
 
     <div id="menu-page" class="app-page">
         <div class="menu-header">
-            <h1>Welcome, <span id="display-username">Shivadut</span>!</h1>
+            <h1>Welcome, <span id="display-username">User</span>!</h1>
             <button class="btn-logout" onclick="logout()">Sign Out</button>
         </div>
 
         <div class="menu-grid">
-            <div class="menu-box box-debit" onclick="openPage('debit-page')">
-                <div class="icon-wrapper">🧾</div>
+            <div class="menu-box" onclick="openPage('debit-page')">
+                <div class="menu-icon">🧾</div>
                 <h3>Daily Debit</h3>
                 <p>Track your personal daily expenses and history.</p>
             </div>
-            <div class="menu-box box-calendar" onclick="openPage('calendar-page')">
-                <div class="icon-wrapper">📅</div>
+            <div class="menu-box" onclick="openPage('calendar-page')">
+                <div class="menu-icon">📅</div>
                 <h3>Calendar</h3>
                 <p>Monthly view and daily expenditure heatmap.</p>
             </div>
-            <div class="menu-box box-cohort" onclick="openPage('cohort-page')">
-                <div class="icon-wrapper">🤝</div>
+            <div class="menu-box" onclick="openPage('cohort-page')">
+                <div class="menu-icon">🤝</div>
                 <h3>Cohort Ledger</h3>
                 <p>Manage splits and balances with your friends.</p>
             </div>
-            <div class="menu-box box-savings" onclick="openPage('savings-page')">
-                <div class="icon-wrapper">🏦</div>
+            <div class="menu-box" onclick="openPage('savings-page')">
+                <div class="menu-icon">🏦</div>
                 <h3>Cash Counter</h3>
                 <p>Calculate your physical cash savings by denomination.</p>
             </div>
-            <div class="menu-box box-calc" onclick="openPage('calculator-page')">
-                <div class="icon-wrapper">🧮</div>
+            <div class="menu-box" onclick="openPage('calculator-page')">
+                <div class="menu-icon">🧮</div>
                 <h3>Calculator</h3>
                 <p>Quick financial calculations.</p>
             </div>
-            <div class="menu-box box-analytics" onclick="openPage('analytics-page')">
-                <div class="icon-wrapper">📊</div>
+            <div class="menu-box" onclick="openPage('analytics-page')">
+                <div class="menu-icon">📊</div>
                 <h3>Analytics</h3>
                 <p>Visual data analysis of your daily debits.</p>
             </div>
@@ -898,16 +819,10 @@
             <div class="panel">
                 <div class="header-action-row">
                     <h2>Transaction History Log</h2>
-                    <div class="export-actions">
-                        <button class="btn-export-pdf" onclick="exportHistoryToPDF()">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H8v-2h3v2zm1.5-4H8V9h4.5c.83 0 1.5.67 1.5 1.5v.5c0 .83-.67 1.5-1.5 1.5zM17 11h-2v1h1v1h-1v3h-1V9h3v2z"/><path d="M9 10h2v1H9z"/></svg>
-                            PDF
-                        </button>
-                        <button class="btn-export-excel" onclick="exportHistoryToExcel()">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM5.884 6.68 8 9.219l2.116-2.54a.5.5 0 1 1 .768.641L8.651 10l2.233 2.68a.5.5 0 0 1-.768.64L8 10.781l-2.116 2.54a.5.5 0 0 1-.768-.641L7.349 10 5.116 7.32a.5.5 0 1 1 .768-.64z"/></svg>
-                            CSV
-                        </button>
-                    </div>
+                    <button class="btn-export-excel" onclick="exportHistoryToExcel()">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM5.884 6.68 8 9.219l2.116-2.54a.5.5 0 1 1 .768.641L8.651 10l2.233 2.68a.5.5 0 0 1-.768.64L8 10.781l-2.116 2.54a.5.5 0 0 1-.768-.641L7.349 10 5.116 7.32a.5.5 0 1 1 .768-.64z"/></svg>
+                        Export
+                    </button>
                 </div>
                 <div class="debit-history-scroll" id="debit-history-container">
                     <ul class="timeline" id="debit-history-list"></ul>
@@ -1001,7 +916,6 @@
                 <h2>Debit Analysis (Pie Chart)</h2>
                 <div class="chart-wrapper">
                     <canvas id="pieChart"></canvas>
-                    <div id="no-data-pie" class="no-data-overlay">No transaction data available. Add debits to view chart.</div>
                 </div>
             </div>
             
@@ -1009,7 +923,6 @@
                 <h2>Debit Analysis (Line Graph)</h2>
                 <div class="chart-wrapper">
                     <canvas id="lineChart"></canvas>
-                    <div id="no-data-line" class="no-data-overlay">No transaction data available. Add debits to view graph.</div>
                 </div>
             </div>
         </div>
@@ -1026,12 +939,8 @@
     </div>
 
 <script>
-    // --- Register the DataLabels Plugin globally safely ---
-    if (typeof ChartDataLabels !== 'undefined' && typeof Chart !== 'undefined') {
-        Chart.register(ChartDataLabels);
-    } else {
-        console.warn("Chart.js or DataLabels plugin not loaded properly.");
-    }
+    // --- Register the DataLabels Plugin globally ---
+    Chart.register(ChartDataLabels);
 
     // --- Page Navigation Logic (SPA Routing) ---
     function openPage(pageId) {
@@ -1066,9 +975,9 @@
             return;
         }
 
+        // Updated Password
         if (pass === '857447') {
-            // Hardcoded "Shivadut" to display regardless of input!
-            document.getElementById('display-username').textContent = "Shivadut";
+            document.getElementById('display-username').textContent = user;
             openPage('menu-page'); 
             
             // Re-render ledger data when logged in
@@ -1082,7 +991,7 @@
 
     function logout() {
         openPage('login-page');
-        document.getElementById('password').value = ''; 
+        document.getElementById('password').value = ''; // Resets to empty when logged out
         document.getElementById('login-error-msg').textContent = '';
     }
 
@@ -1224,79 +1133,6 @@
         }).join('');
     }
 
-    // --- PDF EXPORT FUNCTION ---
-    function exportHistoryToPDF() {
-        if (!debitHistoryState || debitHistoryState.length === 0) {
-            return alert("No history to export.");
-        }
-        
-        try {
-            // Failsafe bind to ensure autotable finds jsPDF
-            if (window.jspdf && window.jspdf.jsPDF) {
-                window.jsPDF = window.jspdf.jsPDF;
-            } else {
-                throw new Error("jsPDF not defined");
-            }
-            
-            const doc = new window.jsPDF();
-
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('en-IN');
-            const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-
-            // Add Header
-            doc.setFontSize(18);
-            doc.setTextColor(0, 14, 26);
-            doc.text("Shivadut's Transaction History Log", 14, 22);
-
-            // Add Subtitle (Downloaded Date & Time)
-            doc.setFontSize(10);
-            doc.setTextColor(108, 122, 137);
-            doc.text(`Downloaded on: ${dateStr} at ${timeStr}`, 14, 30);
-
-            // Prepare table data
-            const tableColumn = ["Date", "Time", "Category", "Amount (Rs.)"];
-            const tableRows = [];
-
-            debitHistoryState.forEach(entry => {
-                const d = new Date(entry.timestamp);
-                const entryDate = d.toLocaleDateString('en-IN');
-                const entryTime = d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-                const category = entry.category || "General";
-                const amount = parseFloat(entry.amount).toFixed(2);
-                
-                tableRows.push([entryDate, entryTime, category, amount]);
-            });
-
-            // Generate Table with AutoTable
-            doc.autoTable({
-                startY: 38,
-                head: [tableColumn],
-                body: tableRows,
-                theme: 'grid',
-                headStyles: { fillColor: [3, 169, 244], textColor: 255, fontStyle: 'bold' },
-                styles: { fontSize: 10, cellPadding: 5 },
-                alternateRowStyles: { fillColor: [248, 249, 250] },
-                didDrawPage: function (data) {
-                    // NEAT PAGE BORDER HOOK
-                    const pageWidth = doc.internal.pageSize.width;
-                    const pageHeight = doc.internal.pageSize.height;
-                    doc.setDrawColor(200, 200, 200); // Light gray border
-                    doc.setLineWidth(0.5);
-                    doc.rect(5, 5, pageWidth - 10, pageHeight - 10);
-                }
-            });
-
-            // Save PDF file
-            const isoDate = now.toISOString().slice(0, 10);
-            doc.save(`Shivadut_History_${isoDate}.pdf`);
-
-        } catch (error) {
-            console.error(error);
-            alert("PDF library is missing or blocked. Ensure you are connected to the internet, or the local 'js' scripts are in the correct folder.");
-        }
-    }
-
     function exportHistoryToExcel() {
         if (!debitHistoryState || debitHistoryState.length === 0) return alert("No history to export.");
         let csvContent = "Transaction ID,Date,Time,Category/Description,Amount (\u20B9)\n";
@@ -1380,12 +1216,12 @@
                         <div class="action-container">
                             <div class="balance-display ${balanceClass}">${balanceText}</div>
                             <a href="${whatsappUri}" target="_blank" class="btn-share-wa"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg></a>
-                            </div>
-                            <div class="progress-module"><div class="progress-container"><div class="progress-fill ${roundedProgress===100&&currentBalance===0?'settled':''}" style="transform: scaleX(${progress/100});"></div></div><div class="progress-label-text">${roundedProgress}% Settled</div></div>
                         </div>
+                        <div class="progress-module"><div class="progress-container"><div class="progress-fill ${roundedProgress===100&&currentBalance===0?'settled':''}" style="transform: scaleX(${progress/100});"></div></div><div class="progress-label-text">${roundedProgress}% Settled</div></div>
                     </div>
-                    <div class="history-panel" id="history-${peer}"><h4>Transaction Timeline</h4>${historyHTML}</div>
-                `;
+                </div>
+                <div class="history-panel" id="history-${peer}"><h4>Transaction Timeline</h4>${historyHTML}</div>
+            `;
             container.appendChild(itemContainer);
         });
     }
@@ -1476,25 +1312,6 @@
         const labels = Object.keys(categoryTotals);
         const data = Object.values(categoryTotals);
 
-        // UI handling for Empty Data states
-        const pieCanvas = document.getElementById('pieChart');
-        const lineCanvas = document.getElementById('lineChart');
-        const noDataPie = document.getElementById('no-data-pie');
-        const noDataLine = document.getElementById('no-data-line');
-
-        if (labels.length === 0) {
-            pieCanvas.style.display = 'none';
-            lineCanvas.style.display = 'none';
-            noDataPie.style.display = 'flex';
-            noDataLine.style.display = 'flex';
-            return;
-        } else {
-            pieCanvas.style.display = 'block';
-            lineCanvas.style.display = 'block';
-            noDataPie.style.display = 'none';
-            noDataLine.style.display = 'none';
-        }
-
         // Predefined nice colors for the charts
         const backgroundColors = [
             '#03a9f4', '#8bc34a', '#ff9800', '#e91e63',
@@ -1503,11 +1320,6 @@
 
         if (pieChartInstance) { pieChartInstance.destroy(); }
         if (lineChartInstance) { lineChartInstance.destroy(); }
-
-        if (typeof Chart === 'undefined') {
-            console.error("Chart.js failed to load. Ensure internet is connected or local files exist.");
-            return;
-        }
 
         pieChartInstance = new Chart(ctxPie, {
             type: 'pie',
