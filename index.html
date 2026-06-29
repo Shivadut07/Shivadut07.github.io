@@ -314,6 +314,43 @@
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
         }
 
+        /* --- SAVINGS CASH COUNTER STYLES --- */
+        .savings-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .savings-table th, .savings-table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .savings-table th {
+            background-color: #f4f6f8;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+        .savings-table input[type="number"] {
+            width: 100px;
+            padding: 8px;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            text-align: center;
+            font-size: 1rem;
+        }
+        .savings-table .grand-total {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #2e7d32; /* Green for savings */
+        }
+        .savings-table .row-total {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .savings-table tr:hover {
+            background-color: #f9fafb;
+        }
+
         /* --- COHORT LEDGER STYLES --- */
         .ledger-item-container {
             display: flex;
@@ -666,6 +703,11 @@
                 <h3>Cohort Ledger</h3>
                 <p>Manage splits and balances with your friends.</p>
             </div>
+            <div class="menu-box" onclick="openPage('savings-page')">
+                <div class="menu-icon">🏦</div>
+                <h3>Cash Counter</h3>
+                <p>Calculate your physical cash savings by denomination.</p>
+            </div>
             <div class="menu-box" onclick="openPage('calculator-page')">
                 <div class="menu-icon">🧮</div>
                 <h3>Calculator</h3>
@@ -675,6 +717,67 @@
                 <div class="menu-icon">📊</div>
                 <h3>Analytics</h3>
                 <p>Visual data analysis of your daily debits.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="savings-page" class="app-page">
+        <div class="tool-nav-bar">
+            <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
+            <button class="btn-logout" onclick="logout()">Sign Out</button>
+        </div>
+        
+        <div class="tool-container">
+            <div class="panel">
+                <h2>Savings Cash Counter</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Enter the number of notes you have for each denomination to calculate your total savings.</p>
+                <table class="savings-table">
+                    <thead>
+                        <tr>
+                            <th>Denomination (₹)</th>
+                            <th>No. of Notes</th>
+                            <th>Total Amount (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>₹500</td>
+                            <td><input type="number" min="0" step="1" class="note-input" data-denom="500" oninput="calculateSavings()"></td>
+                            <td class="row-total" id="row-total-500">0.00</td>
+                        </tr>
+                        <tr>
+                            <td>₹200</td>
+                            <td><input type="number" min="0" step="1" class="note-input" data-denom="200" oninput="calculateSavings()"></td>
+                            <td class="row-total" id="row-total-200">0.00</td>
+                        </tr>
+                        <tr>
+                            <td>₹100</td>
+                            <td><input type="number" min="0" step="1" class="note-input" data-denom="100" oninput="calculateSavings()"></td>
+                            <td class="row-total" id="row-total-100">0.00</td>
+                        </tr>
+                        <tr>
+                            <td>₹50</td>
+                            <td><input type="number" min="0" step="1" class="note-input" data-denom="50" oninput="calculateSavings()"></td>
+                            <td class="row-total" id="row-total-50">0.00</td>
+                        </tr>
+                        <tr>
+                            <td>₹20</td>
+                            <td><input type="number" min="0" step="1" class="note-input" data-denom="20" oninput="calculateSavings()"></td>
+                            <td class="row-total" id="row-total-20">0.00</td>
+                        </tr>
+                        <tr>
+                            <td>₹10</td>
+                            <td><input type="number" min="0" step="1" class="note-input" data-denom="10" oninput="calculateSavings()"></td>
+                            <td class="row-total" id="row-total-10">0.00</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="2" style="text-align: right; padding-right: 20px;">Grand Total</th>
+                            <th class="grand-total" id="savings-grand-total">₹0.00</th>
+                        </tr>
+                    </tfoot>
+                </table>
             </div>
         </div>
     </div>
@@ -894,6 +997,31 @@
     document.getElementById('password').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') attemptLogin();
     });
+
+    // --- Savings Calculation Logic ---
+    function calculateSavings() {
+        let grandTotal = 0;
+        // Select all note inputs
+        const inputs = document.querySelectorAll('.note-input');
+        
+        inputs.forEach(input => {
+            // Get denomination and count
+            const denom = parseInt(input.getAttribute('data-denom'));
+            const count = parseInt(input.value) || 0; // Default to 0 if empty
+            
+            // Calculate row total
+            const rowTotal = denom * count;
+            
+            // Update row display
+            document.getElementById(`row-total-${denom}`).textContent = rowTotal.toFixed(2);
+            
+            // Add to grand total
+            grandTotal += rowTotal;
+        });
+        
+        // Update grand total display
+        document.getElementById('savings-grand-total').textContent = `₹${grandTotal.toFixed(2)}`;
+    }
 
     // --- Core Ledger Logic ---
     const rawFriendsArray = ["thiwakar", "gojo", "mowlish", "goww", "aravindh", "mohan", "gowtham", "parithi", "soukar"];
@@ -1167,11 +1295,11 @@
 
     // --- Chart/Analytics Logic ---
     let pieChartInstance = null;
-    let lineChartInstance = null; // Replaced barChartInstance
+    let lineChartInstance = null;
 
     function renderCharts() {
         const ctxPie = document.getElementById('pieChart').getContext('2d');
-        const ctxLine = document.getElementById('lineChart').getContext('2d'); // Using line chart context
+        const ctxLine = document.getElementById('lineChart').getContext('2d'); 
 
         // Aggregate amounts by category from the daily debit history
         const categoryTotals = {};
@@ -1190,7 +1318,7 @@
         ];
 
         if (pieChartInstance) { pieChartInstance.destroy(); }
-        if (lineChartInstance) { lineChartInstance.destroy(); } // Destroy old instance
+        if (lineChartInstance) { lineChartInstance.destroy(); }
 
         pieChartInstance = new Chart(ctxPie, {
             type: 'pie',
@@ -1210,21 +1338,21 @@
 
         // Initialize Line Chart
         lineChartInstance = new Chart(ctxLine, {
-            type: 'line', // Switched to line type
+            type: 'line',
             data: { 
                 labels: labels, 
                 datasets: [{ 
                     label: 'Total Amount (₹)', 
                     data: data, 
-                    backgroundColor: 'rgba(3, 169, 244, 0.2)', // Slightly transparent fill
+                    backgroundColor: 'rgba(3, 169, 244, 0.2)', 
                     borderColor: '#0288d1', 
                     borderWidth: 2,
                     pointBackgroundColor: '#03a9f4',
                     pointBorderColor: '#fff',
                     pointRadius: 5,
                     pointHoverRadius: 7,
-                    fill: true, // Fill the area under the line
-                    tension: 0.3 // Smooth curves
+                    fill: true, 
+                    tension: 0.3 
                 }] 
             },
             options: {
@@ -1254,7 +1382,7 @@
     }
 
     // --- Calendar Module Logic ---
-    let currentCalDate = new Date(); // Initialize to current month
+    let currentCalDate = new Date(); 
 
     function renderCalendar() {
         const grid = document.getElementById('calendar-grid');
@@ -1273,7 +1401,6 @@
         const dailyTotals = {};
         debitHistoryState.forEach(entry => {
             const d = new Date(entry.timestamp);
-            // Format strictly as YYYY-MM-DD
             const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
             if(!dailyTotals[key]) dailyTotals[key] = { amount: 0, items: [] };
             dailyTotals[key].amount += entry.amount;
@@ -1328,7 +1455,6 @@
                 amountSpan.textContent = `₹${dayData.amount.toFixed(2)}`;
                 cell.appendChild(amountSpan);
 
-                // Add drill-down click event
                 cell.onclick = () => openCalendarModal(dateStr, monthNames[month], i, year);
             }
 
@@ -1347,7 +1473,6 @@
         const listEl = document.getElementById('modal-transaction-list');
         listEl.innerHTML = '';
 
-        // Filter and display logic
         const dayTransactions = debitHistoryState.filter(entry => {
             const d = new Date(entry.timestamp);
             const entryKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -1379,7 +1504,6 @@
         document.getElementById('calendar-modal').style.display = 'none';
     }
 
-    // Close modal if clicking outside the content box
     window.onclick = function(event) {
         const modal = document.getElementById('calendar-modal');
         if (event.target == modal) {
