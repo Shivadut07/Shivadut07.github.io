@@ -485,6 +485,128 @@
             margin-top: 15px;
         }
 
+        /* --- CALENDAR STYLES --- */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .calendar-header h2 {
+            border-bottom: none;
+            margin: 0;
+            padding: 0;
+        }
+        .calendar-header button {
+            background: var(--btn-neutral);
+            padding: 8px 16px;
+            font-size: 1.2rem;
+        }
+        
+        .budget-control {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .budget-control input {
+            width: 90px;
+            padding: 6px 10px;
+            font-size: 0.9rem;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+        .calendar-day-header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            padding-bottom: 5px;
+        }
+        .calendar-cell {
+            background: #f8f9fa;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            min-height: 80px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .calendar-cell.has-data {
+            cursor: pointer;
+        }
+        .calendar-cell.has-data:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .calendar-cell.empty-cell {
+            background: transparent;
+            border: none;
+        }
+        .cell-date {
+            font-size: 0.9rem;
+            font-weight: bold;
+            align-self: flex-start;
+        }
+        .cell-amount {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--btn-give);
+            align-self: flex-end;
+            margin-top: 10px;
+        }
+
+        /* Heatmap colors */
+        .bg-low { background-color: #e8f5e9; border-color: #a5d6a7; } /* Green */
+        .bg-high { background-color: #ffebee; border-color: #ef9a9a; } /* Red */
+
+        /* --- MODAL STYLES --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(3px);
+        }
+        .modal-box {
+            background: var(--panel-bg);
+            width: 90%;
+            max-width: 500px;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-close {
+            position: absolute;
+            top: 15px; right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            line-height: 1;
+        }
+        .modal-close:hover { color: var(--text-main); }
+        .modal-content-scroll {
+            overflow-y: auto;
+            margin-top: 15px;
+            padding-right: 5px;
+        }
+
         @media (max-width: 850px) {
             .ledger-row { grid-template-columns: 1fr; gap: 14px; }
             .peer-info { align-items: center; border-bottom: 1px dashed var(--border-light); padding-bottom: 10px; }
@@ -495,6 +617,11 @@
             .action-container { flex-direction: row; }
             .balance-display { text-align: center; }
             .input-row { flex-direction: column; }
+            
+            .calendar-cell { min-height: 60px; padding: 4px; }
+            .cell-date { font-size: 0.8rem; }
+            .cell-amount { font-size: 0.75rem; }
+            .calendar-header h2 { font-size: 1.1rem; }
         }
     </style>
 </head>
@@ -528,6 +655,11 @@
                 <div class="menu-icon">🧾</div>
                 <h3>Daily Debit</h3>
                 <p>Track your personal daily expenses and history.</p>
+            </div>
+            <div class="menu-box" onclick="openPage('calendar-page')">
+                <div class="menu-icon">📅</div>
+                <h3>Calendar</h3>
+                <p>Monthly view and daily expenditure heatmap.</p>
             </div>
             <div class="menu-box" onclick="openPage('cohort-page')">
                 <div class="menu-icon">🤝</div>
@@ -592,6 +724,31 @@
                 <div class="debit-history-scroll" id="debit-history-container">
                     <ul class="timeline" id="debit-history-list"></ul>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="calendar-page" class="app-page">
+        <div class="tool-nav-bar">
+            <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
+            <button class="btn-logout" onclick="logout()">Sign Out</button>
+        </div>
+        
+        <div class="tool-container">
+            <div class="panel">
+                <div class="calendar-header">
+                    <button onclick="changeMonth(-1)">&#10094;</button>
+                    <h2 id="calendar-month-year">Month Year</h2>
+                    <button onclick="changeMonth(1)">&#10095;</button>
+                </div>
+                
+                <div class="budget-control">
+                    <label for="calendar-budget-input">Daily Budget Threshold: ₹</label>
+                    <input type="number" id="calendar-budget-input" value="200" step="10" min="0" onchange="renderCalendar()">
+                </div>
+
+                <div class="calendar-grid" id="calendar-grid">
+                    </div>
             </div>
         </div>
     </div>
@@ -668,6 +825,16 @@
         </div>
     </div>
 
+    <div id="calendar-modal" class="modal-overlay">
+        <div class="modal-box">
+            <span class="modal-close" onclick="closeCalendarModal()">&times;</span>
+            <h2 id="modal-date-title" style="margin-bottom: 0;">Date</h2>
+            <div class="modal-content-scroll">
+                <ul class="timeline" id="modal-transaction-list"></ul>
+            </div>
+        </div>
+    </div>
+
 <script>
     // --- Register the DataLabels Plugin globally ---
     Chart.register(ChartDataLabels);
@@ -683,9 +850,11 @@
         const target = document.getElementById(pageId);
         target.style.display = (pageId === 'login-page') ? 'flex' : 'flex';
         
-        // If navigating to analytics, render the charts with fresh data
+        // Specific page renders
         if (pageId === 'analytics-page') {
             renderCharts();
+        } else if (pageId === 'calendar-page') {
+            renderCalendar();
         }
 
         // Quick visual reset on scroll
@@ -1020,83 +1189,168 @@
             '#9c27b0', '#ffeb3b', '#00bcd4', '#4caf50', '#ff5722'
         ];
 
-        // Destroy existing charts to prevent rendering overlapping canvases
         if (pieChartInstance) { pieChartInstance.destroy(); }
         if (barChartInstance) { barChartInstance.destroy(); }
 
-        // Create Pie Chart
         pieChartInstance = new Chart(ctxPie, {
             type: 'pie',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: data,
-                    backgroundColor: backgroundColors,
-                    borderWidth: 1
-                }]
-            },
+            data: { labels: labels, datasets: [{ data: data, backgroundColor: backgroundColors, borderWidth: 1 }] },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
                 plugins: {
                     legend: { position: 'bottom' },
-                    // Configuration for the DataLabels plugin (Pie Chart)
                     datalabels: {
-                        color: '#fff',
-                        font: { weight: 'bold', size: 14 },
-                        formatter: function(value, context) {
-                            return '₹' + value.toFixed(2);
-                        },
-                        // Add a subtle text shadow/stroke to ensure it is readable over any color
-                        textStrokeColor: 'rgba(0, 0, 0, 0.4)',
-                        textStrokeWidth: 3
+                        color: '#fff', font: { weight: 'bold', size: 14 },
+                        formatter: function(value, context) { return '₹' + value.toFixed(2); },
+                        textStrokeColor: 'rgba(0, 0, 0, 0.4)', textStrokeWidth: 3
                     }
                 }
             }
         });
 
-        // Create Bar Graph
         barChartInstance = new Chart(ctxBar, {
             type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Total Amount (₹)',
-                    data: data,
-                    backgroundColor: '#03a9f4', 
-                    borderColor: '#0288d1',
-                    borderWidth: 1
-                }]
-            },
+            data: { labels: labels, datasets: [{ label: 'Total Amount (₹)', data: data, backgroundColor: '#03a9f4', borderColor: '#0288d1', borderWidth: 1 }] },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: { display: true, text: 'Amount (₹)' },
-                        // grace adds a little padding at the top so labels don't get cut off
-                        grace: '10%'
-                    },
-                    x: {
-                        title: { display: true, text: 'Description' }
-                    }
-                },
-                plugins: {
-                    legend: { display: false },
-                    // Configuration for the DataLabels plugin (Bar Chart)
-                    datalabels: {
-                        color: '#000',
-                        anchor: 'end',
-                        align: 'top',
-                        font: { weight: 'bold', size: 12 },
-                        formatter: function(value, context) {
-                            return '₹' + value.toFixed(2);
-                        }
-                    }
-                }
+                responsive: true, maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true, title: { display: true, text: 'Amount (₹)' }, grace: '10%' }, x: { title: { display: true, text: 'Description' } } },
+                plugins: { legend: { display: false }, datalabels: { color: '#000', anchor: 'end', align: 'top', font: { weight: 'bold', size: 12 }, formatter: function(value, context) { return '₹' + value.toFixed(2); } } }
             }
         });
+    }
+
+    // --- Calendar Module Logic ---
+    let currentCalDate = new Date(); // Initialize to current month
+
+    function renderCalendar() {
+        const grid = document.getElementById('calendar-grid');
+        const monthYearText = document.getElementById('calendar-month-year');
+        const budgetThreshold = parseFloat(document.getElementById('calendar-budget-input').value) || 200;
+        
+        grid.innerHTML = '';
+        
+        const year = currentCalDate.getFullYear();
+        const month = currentCalDate.getMonth();
+        
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        monthYearText.textContent = `${monthNames[month]} ${year}`;
+
+        // 1. Data Mapping: Aggregate debits by YYYY-MM-DD
+        const dailyTotals = {};
+        debitHistoryState.forEach(entry => {
+            const d = new Date(entry.timestamp);
+            // Format strictly as YYYY-MM-DD
+            const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            if(!dailyTotals[key]) dailyTotals[key] = { amount: 0, items: [] };
+            dailyTotals[key].amount += entry.amount;
+            dailyTotals[key].items.push(entry);
+        });
+
+        // 2. Generate Grid Headers
+        const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        daysOfWeek.forEach(day => {
+            const el = document.createElement('div');
+            el.className = 'calendar-day-header';
+            el.textContent = day;
+            grid.appendChild(el);
+        });
+
+        // Calculate days for the grid
+        const firstDayOfMonth = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        // Empty cells for the start of the month
+        for (let i = 0; i < firstDayOfMonth; i++) {
+            const emptyCell = document.createElement('div');
+            emptyCell.className = 'calendar-cell empty-cell';
+            grid.appendChild(emptyCell);
+        }
+
+        // 3. Render populated and empty days
+        for (let i = 1; i <= daysInMonth; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'calendar-cell';
+            
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+            const dayData = dailyTotals[dateStr];
+
+            const dateSpan = document.createElement('span');
+            dateSpan.className = 'cell-date';
+            dateSpan.textContent = i;
+            cell.appendChild(dateSpan);
+
+            // 4. Heatmap & Interaction Logic
+            if (dayData && dayData.amount > 0) {
+                cell.classList.add('has-data');
+                
+                if (dayData.amount > budgetThreshold) {
+                    cell.classList.add('bg-high');
+                } else {
+                    cell.classList.add('bg-low');
+                }
+
+                const amountSpan = document.createElement('span');
+                amountSpan.className = 'cell-amount';
+                amountSpan.textContent = `₹${dayData.amount.toFixed(2)}`;
+                cell.appendChild(amountSpan);
+
+                // Add drill-down click event
+                cell.onclick = () => openCalendarModal(dateStr, monthNames[month], i, year);
+            }
+
+            grid.appendChild(cell);
+        }
+    }
+
+    function changeMonth(offset) {
+        currentCalDate.setMonth(currentCalDate.getMonth() + offset);
+        renderCalendar();
+    }
+
+    // --- Modal Drill-Down Logic ---
+    function openCalendarModal(dateKey, monthName, dayNum, year) {
+        document.getElementById('modal-date-title').textContent = `${monthName} ${dayNum}, ${year}`;
+        const listEl = document.getElementById('modal-transaction-list');
+        listEl.innerHTML = '';
+
+        // Filter and display logic
+        const dayTransactions = debitHistoryState.filter(entry => {
+            const d = new Date(entry.timestamp);
+            const entryKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            return entryKey === dateKey;
+        });
+
+        if (dayTransactions.length === 0) {
+            listEl.innerHTML = `<li class="no-history-msg">No transactions found for this date.</li>`;
+        } else {
+            listEl.innerHTML = dayTransactions.map(entry => {
+                const formattedTime = new Intl.DateTimeFormat('en-IN', { timeStyle: 'short' }).format(new Date(entry.timestamp));
+                const displayCat = entry.category || "General Expense";
+                return `
+                    <li class="timeline-item give">
+                        <div class="timeline-meta">
+                            <span class="timeline-desc">${displayCat}</span>
+                            <span class="timeline-date">${formattedTime}</span>
+                        </div>
+                        <div class="timeline-amount">₹${entry.amount.toFixed(2)}</div>
+                    </li>
+                `;
+            }).join('');
+        }
+
+        document.getElementById('calendar-modal').style.display = 'flex';
+    }
+
+    function closeCalendarModal() {
+        document.getElementById('calendar-modal').style.display = 'none';
+    }
+
+    // Close modal if clicking outside the content box
+    window.onclick = function(event) {
+        const modal = document.getElementById('calendar-modal');
+        if (event.target == modal) {
+            closeCalendarModal();
+        }
     }
 </script>
 </body>
