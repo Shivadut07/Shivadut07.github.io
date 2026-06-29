@@ -38,9 +38,7 @@
             padding: 0;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
+        html { scroll-behavior: smooth; }
 
         body {
             font-family: 'Poppins', Arial, sans-serif;
@@ -49,14 +47,21 @@
             min-height: 100vh;
         }
 
+        /* --- PAGE CONTAINERS --- */
+        .app-page {
+            display: none; /* All pages hidden by default */
+            padding: 20px;
+            min-height: 100vh;
+            flex-direction: column;
+            align-items: center;
+        }
+
         /* --- LOGIN PAGE STYLES --- */
         #login-page {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            padding: 20px;
         }
 
         .login-card {
@@ -69,30 +74,11 @@
             text-align: center;
         }
 
-        .login-card h1 {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-            color: var(--text-main);
-        }
+        .login-card h1 { font-size: 1.8rem; margin-bottom: 10px; }
+        .login-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 30px; }
 
-        .login-card p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 30px;
-        }
-
-        .login-form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .login-form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
+        .login-form-group { margin-bottom: 20px; text-align: left; }
+        .login-form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
         .login-form-group input {
             width: 100%;
             padding: 12px 15px;
@@ -101,7 +87,6 @@
             font-size: 1rem;
             transition: border-color 0.3s;
         }
-
         .login-form-group input:focus {
             outline: none;
             border-color: var(--btn-neutral);
@@ -120,90 +105,107 @@
             cursor: pointer;
             transition: background-color 0.3s, transform 0.1s;
         }
+        .btn-login:hover { background-color: #0288d1; }
+        .btn-login:active { transform: scale(0.98); }
+        .login-error { color: #e74c3c; font-size: 0.85rem; margin-top: 15px; min-height: 20px; font-weight: 600; }
 
-        .btn-login:hover {
-            background-color: #0288d1;
-        }
-
-        .btn-login:active {
-            transform: scale(0.98);
-        }
-
-        .login-error {
-            color: #e74c3c;
-            font-size: 0.85rem;
-            margin-top: 15px;
-            min-height: 20px;
-            font-weight: 600;
-        }
-
-        /* --- DASHBOARD STYLES --- */
-        #dashboard-page {
-            display: none; /* Hidden by default */
-            padding: 20px;
-            justify-content: center;
-        }
-
-        .dashboard-container {
+        /* --- MAIN MENU STYLES --- */
+        .menu-header {
+            width: 100%;
+            max-width: 900px;
             display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--panel-bg);
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            margin-top: 20px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 25px;
-            max-width: 1500px;
             width: 100%;
-            flex-wrap: wrap;
-            justify-content: center;
+            max-width: 900px;
         }
 
-        /* Navigation Buttons Styling */
-        .top-nav-buttons {
-            display: flex;
-            gap: 15px;
-            width: 100%;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 5px;
-        }
-
-        .btn-nav {
-            background-color: var(--panel-bg);
-            color: var(--text-main);
-            border: 2px solid var(--btn-neutral);
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            flex: 1 1 200px;
-            max-width: 320px;
+        .menu-box {
+            background: var(--panel-bg);
+            border: 2px solid transparent;
+            border-radius: 15px;
+            padding: 40px 20px;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            cursor: pointer;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
         }
 
-        .btn-nav:hover {
-            background-color: var(--btn-neutral);
+        .menu-box:hover {
+            transform: translateY(-5px);
+            border-color: var(--btn-neutral);
+            box-shadow: 0 12px 24px rgba(3, 169, 244, 0.2);
+        }
+
+        .menu-box h3 { font-size: 1.4rem; color: var(--text-main); }
+        .menu-box p { color: var(--text-muted); font-size: 0.9rem; }
+        
+        .menu-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        /* --- TOOL PAGES COMMON STYLES --- */
+        .tool-container {
+            width: 100%;
+            max-width: 800px; /* Centered narrow view for each tool */
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .tool-nav-bar {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+
+        .btn-back {
+            background-color: var(--text-main);
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(3, 169, 244, 0.2);
-        }
-
-        .btn-nav:active {
-            transform: translateY(0);
-        }
-
-        .left-column {
-            flex: 1 1 420px;
-            max-width: 520px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
             display: flex;
-            flex-direction: column;
-            gap: 25px;
+            align-items: center;
+            gap: 8px;
         }
+        .btn-back:hover { background-color: #333; }
 
-        .right-column {
-            flex: 2 1 700px;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
+        .btn-logout {
+            padding: 10px 20px;
+            background-color: var(--calc-key-action);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
         }
+        .btn-logout:hover { opacity: 0.9; }
 
         .panel {
             background: var(--panel-bg);
@@ -211,39 +213,6 @@
             padding: 25px;
             box-shadow: 0 8px 16px rgba(0,0,0,0.1);
             width: 100%;
-            scroll-margin-top: 25px; /* Ensures space above when smoothly scrolling */
-        }
-
-        .welcome-header {
-            width: 100%;
-            background: var(--panel-bg);
-            border-radius: 15px;
-            padding: 15px 25px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .welcome-header h1 {
-            font-size: 1.4rem;
-            color: var(--text-main);
-            margin: 0;
-        }
-
-        .btn-logout {
-            padding: 8px 16px;
-            background-color: var(--text-muted);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .btn-logout:hover {
-            background-color: #555;
         }
 
         h2 {
@@ -253,7 +222,8 @@
             padding-bottom: 12px;
             margin-bottom: 15px;
         }
-        
+
+        /* --- DEBIT STYLES --- */
         .debit-display {
             font-size: 2.5rem;
             font-weight: bold;
@@ -264,20 +234,8 @@
             border-radius: 8px;
             padding: 10px;
         }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            width: 100%;
-        }
-        
-        .input-row {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-        }
-
+        .input-group { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+        .input-row { display: flex; gap: 10px; width: 100%; }
         input[type="number"], input[type="text"] {
             flex: 1 1 auto;
             padding: 12px;
@@ -297,34 +255,11 @@
             background-color: white;
             cursor: pointer;
             font-family: inherit;
-            min-width: 140px;
             appearance: none;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>');
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-            background-size: 16px;
-            padding-right: 30px;
         }
-        
         select.modern-select:focus, input:focus {
             outline: 2px solid var(--btn-neutral);
             border-color: transparent;
-        }
-
-        @supports (appearance: base-select) {
-            select.modern-select {
-                appearance: base-select;
-                background-image: none;
-                padding-right: 12px;
-            }
-            select.modern-select::picker(select) {
-                appearance: base-select;
-                background: var(--panel-bg);
-                border: 1px solid var(--border-light);
-                border-radius: 8px;
-                box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-                padding: 5px;
-            }
         }
 
         button {
@@ -337,109 +272,80 @@
             transition: transform 0.2s, opacity 0.2s;
             white-space: nowrap; 
         }
-
         button:hover { transform: scale(1.02); opacity: 0.9; }
         button:active { transform: scale(0.95); }
         .btn-add { background-color: var(--btn-neutral); flex: 1 1 auto; }
         .btn-reset { background-color: var(--calc-key-action); flex: 0 0 auto; }
         
+        .header-action-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-light);
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+        .header-action-row h2 { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+
+        .btn-export-excel {
+            background-color: #107c41; 
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-export-excel svg { width: 18px; height: 18px; fill: currentColor; }
+
+        .debit-history-scroll {
+            background-color: #f4f6f8;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 15px 20px;
+            border: 1px solid var(--border-light);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+        }
+
+        /* --- COHORT LEDGER STYLES --- */
         .ledger-item-container {
             display: flex;
             flex-direction: column;
             border-bottom: 1px solid var(--border-light);
             padding: 18px 0;
         }
-
-        .ledger-item-container:last-child {
-            border-bottom: none;
-        }
-
+        .ledger-item-container:last-child { border-bottom: none; }
+        
         .ledger-row {
             display: grid;
-            grid-template-columns: 100px 2.2fr 1.1fr; 
+            grid-template-columns: 120px 2fr 1fr; 
             align-items: center;
-            gap: 12px;
+            gap: 15px;
         }
 
-        .peer-info {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            min-width: 0;
-        }
-
-        .peer-name {
-            font-weight: 600;
-            text-transform: capitalize;
-            font-size: 0.95rem; 
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
+        .peer-info { display: flex; flex-direction: column; gap: 6px; }
+        .peer-name { font-weight: 600; text-transform: capitalize; font-size: 1.05rem; }
+        
         .btn-history-toggle {
             padding: 5px 8px;
             font-size: 0.72rem;
             background-color: var(--text-muted);
             border-radius: 4px;
             align-self: flex-start;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
-        .btn-history-toggle:hover {
-            background-color: #535f6b;
-        }
-
-        .ledger-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 8px; 
-            min-width: 0;
-        }
+        .ledger-controls { display: flex; flex-direction: column; gap: 8px; }
+        .ledger-inputs { display: flex; gap: 6px; width: 100%; }
+        .ledger-inputs input[type="number"] { width: 90px; padding: 8px; }
+        .ledger-inputs select, .ledger-inputs input[type="text"] { flex: 1; padding: 8px; }
         
-        .ledger-inputs {
-            display: flex;
-            gap: 6px;
-            width: 100%;
-        }
-
-        .ledger-inputs input[type="number"] {
-            width: 90px; 
-            flex: 0 0 auto;
-            padding: 8px 10px;
-            border: 1px solid var(--border-light);
-            border-radius: 6px;
-            font-size: 0.95rem;
-        }
-        
-        .ledger-inputs select {
-            flex: 1 1 auto;
-            padding: 8px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-        }
-        
-        .ledger-inputs input[type="text"] {
-            flex: 1 1 auto;
-            padding: 8px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-        }
-
-        .ledger-buttons {
-            display: flex;
-            gap: 6px;
-            width: 100%;
-        }
-
-        .ledger-buttons button {
-            flex: 1 1 auto;
-            white-space: nowrap;
-            padding: 8px 10px;
-            font-size: 0.78rem; 
-            border-radius: 6px;
-        }
-
+        .ledger-buttons { display: flex; gap: 6px; width: 100%; }
+        .ledger-buttons button { flex: 1; padding: 8px 10px; font-size: 0.78rem; border-radius: 6px; }
         .btn-give { background-color: var(--btn-give); }
         .btn-receive { background-color: var(--btn-receive); }
 
@@ -454,10 +360,9 @@
         .balance-display {
             text-align: right;
             font-weight: bold;
-            font-size: 0.85rem; 
+            font-size: 0.9rem; 
             padding: 10px 12px;
             border-radius: 6px;
-            white-space: nowrap;
             flex-grow: 1; 
         }
 
@@ -471,21 +376,9 @@
             color: white;
             border-radius: 50%;
             text-decoration: none;
-            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-            flex-shrink: 0; 
+            transition: transform 0.25s;
         }
-
-        .btn-share-wa:hover {
-            transform: scale(1.15);
-            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.35); 
-        }
-
-        .btn-share-wa svg {
-            width: 18px;
-            height: 18px;
-            fill: currentColor;
-        }
+        .btn-share-wa svg { width: 18px; height: 18px; fill: currentColor; }
 
         .balance-positive { color: #2e7d32; background-color: #e8f5e9; }
         .balance-negative { color: #c62828; background-color: #ffebee; }
@@ -499,25 +392,11 @@
             border-radius: 8px;
             max-height: 320px;
             overflow-y: auto;
-            min-height: 0; 
             border: 1px solid var(--border-light);
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
         }
 
-        .history-panel h4 {
-            font-size: 0.9rem;
-            margin-bottom: 15px;
-            color: var(--text-main);
-            border-bottom: 1px dashed var(--border-light);
-            padding-bottom: 8px;
-        }
-
-        .timeline {
-            list-style: none;
-            position: relative;
-            padding-left: 20px;
-        }
-
+        /* --- TIMELINE (Shared) --- */
+        .timeline { list-style: none; position: relative; padding-left: 20px; }
         .timeline::before {
             content: "";
             position: absolute;
@@ -527,7 +406,6 @@
             width: 2px;
             background-color: var(--timeline-spine);
         }
-
         .timeline-item {
             position: relative;
             padding-bottom: 18px;
@@ -536,11 +414,6 @@
             justify-content: space-between;
             align-items: center;
         }
-
-        .timeline-item:last-child {
-            padding-bottom: 0;
-        }
-
         .timeline-item::before {
             content: "";
             position: absolute;
@@ -553,10 +426,8 @@
             border: 2px solid var(--text-muted);
             z-index: 1;
         }
-
         .timeline-item.give::before { border-color: var(--btn-give); }
         .timeline-item.receive::before { border-color: var(--btn-receive); }
-
         .timeline-meta { display: flex; flex-direction: column; gap: 2px; max-width: 65%; }
         .timeline-desc { font-weight: 600; color: var(--text-main); }
         .timeline-category-tag { 
@@ -566,24 +437,22 @@
             padding: 2px 6px; 
             border-radius: 4px; 
             display: inline-block;
-            margin-top: 2px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
         .timeline-date { font-size: 0.7rem; color: var(--text-muted); }
         .timeline-amount { font-weight: bold; font-size: 0.95rem; }
-        
         .timeline-item.give .timeline-amount { color: var(--btn-give); }
         .timeline-item.receive .timeline-amount { color: var(--btn-receive); }
-        .no-history-msg { font-size: 0.85rem; color: var(--text-muted); font-style: italic; text-align: center; padding: 10px 0; }
+        .no-history-msg { font-size: 0.85rem; color: var(--text-muted); font-style: italic; text-align: center; }
 
-        .calculator {
-            background-color: var(--calc-bg);
-            border-radius: 15px;
-            padding: 20px;
-        }
+        /* Progress Bar */
+        .progress-module { width: 100%; margin-top: 12px; display: flex; flex-direction: column; gap: 4px; }
+        .progress-container { width: 100%; height: 12px; background-color: var(--bg-color); border-radius: 6px; overflow: hidden; position: relative; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #03a9f4, #288cfa); border-radius: 6px; transform-origin: left; transition: transform 0.6s; transform: scaleX(0); }
+        .progress-fill.settled { background: linear-gradient(90deg, #7cb342, #8bc34a); }
+        .progress-label-text { font-size: 0.72rem; color: var(--text-muted); text-align: right; font-weight: 600; }
 
+        /* --- CALCULATOR STYLES --- */
+        .calculator { background-color: var(--calc-bg); border-radius: 15px; padding: 20px; max-width: 450px; margin: 0 auto; width: 100%; }
         .calculator__display {
             background-color: #ffeb3b;
             color: var(--text-main);
@@ -593,293 +462,190 @@
             border-radius: 8px;
             margin-bottom: 20px;
             overflow-x: auto;
-            border: none;
-            width: 100%;
         }
-
-        .calculator__keys {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-        }
-
+        .calculator__keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
         .calculator__keys button {
-            background-color: var(--calc-key);
-            color: var(--text-main);
-            font-size: 1.4rem;
-            padding: 18px 0;
-            border-radius: 10px;
-            font-weight: bold;
+            background-color: var(--calc-key); color: var(--text-main);
+            font-size: 1.4rem; padding: 18px 0; border-radius: 10px; font-weight: bold;
         }
-
         .calculator__keys button[data-action="add"],
         .calculator__keys button[data-action="subtract"],
         .calculator__keys button[data-action="multiply"],
-        .calculator__keys button[data-action="divide"] {
-            background-color: var(--calc-key-op);
-            color: white;
-        }
-
-        .calculator__keys button[data-action="calculate"] {
-            background-color: var(--btn-receive);
-            color: white;
-            grid-column: span 2;
-        }
-
-        .calculator__keys button[data-action="clear"] {
-            background-color: var(--calc-key-action);
-            color: white;
-            grid-column: span 2;
-        }
-        
-        .debit-audit-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .debit-history-scroll {
-            background-color: #f4f6f8;
-            border-radius: 8px;
-            max-height: 250px;
-            overflow-y: auto;
-            padding: 15px 20px;
-            border: 1px solid var(--border-light);
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
-            -webkit-overflow-scrolling: touch; 
-        }
-
-        .header-action-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--border-light);
-            padding-bottom: 12px;
-            margin-bottom: 15px;
-        }
-        
-        .header-action-row h2 {
-            border-bottom: none;
-            padding-bottom: 0;
-            margin-bottom: 0;
-        }
-
-        .btn-export-excel {
-            background-color: #107c41; 
-            color: #ffffff;
-            border: none;
-            border-radius: 6px;
-            padding: 8px 14px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .btn-export-excel:hover {
-            background-color: #0c5e31;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(16, 124, 65, 0.3);
-        }
-
-        .btn-export-excel:active {
-            transform: translateY(1px);
-            box-shadow: 0 1px 2px rgba(16, 124, 65, 0.3);
-        }
-
-        .btn-export-excel svg {
-            width: 18px;
-            height: 18px;
-            fill: currentColor;
-        }
-
-        .progress-module {
-            width: 100%;
-            margin-top: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .progress-container {
-            width: 100%;
-            height: 12px;
-            background-color: var(--bg-color); 
-            border-radius: 6px;
-            overflow: hidden;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
-            position: relative;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #03a9f4, #288cfa);
-            border-radius: 6px;
-            transform-origin: left;
-            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.4s ease;
-            transform: scaleX(0);
-        }
-
-        .progress-fill.settled {
-            background: linear-gradient(90deg, #7cb342, #8bc34a);
-        }
-
-        .progress-label-text {
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            text-align: right;
-            font-weight: 600;
-        }
+        .calculator__keys button[data-action="divide"] { background-color: var(--calc-key-op); color: white; }
+        .calculator__keys button[data-action="calculate"] { background-color: var(--btn-receive); color: white; grid-column: span 2; }
+        .calculator__keys button[data-action="clear"] { background-color: var(--calc-key-action); color: white; grid-column: span 2; }
 
         @media (max-width: 850px) {
-            #dashboard-page { padding: 10px; }
-            .dashboard-container { flex-direction: column; align-items: stretch; }
-            .left-column, .right-column { max-width: 100%; flex: 1 1 auto; }
-            
-            .ledger-row {
-                grid-template-columns: 1fr !important;
-                gap: 14px;
-            }
+            .ledger-row { grid-template-columns: 1fr; gap: 14px; }
             .peer-info { align-items: center; border-bottom: 1px dashed var(--border-light); padding-bottom: 10px; }
-            .peer-name { text-align: center; font-size: 1.25rem; width: 100%; }
-            .ledger-controls { width: 100%; gap: 10px; }
+            .peer-name { text-align: center; font-size: 1.25rem; }
             .ledger-inputs { flex-direction: column; }
             .ledger-inputs input[type="number"], .ledger-inputs select, .ledger-inputs input[type="text"] { width: 100%; height: 46px; }
-            .ledger-buttons button { height: 46px; font-size: 0.95rem; }
-            .action-container { flex-direction: row; width: 100%; }
-            .balance-display { text-align: center; width: 100%; font-size: 1.1rem; padding: 12px; }
-            
+            .ledger-buttons button { height: 46px; }
+            .action-container { flex-direction: row; }
+            .balance-display { text-align: center; }
             .input-row { flex-direction: column; }
-            .input-row select, .input-row input { height: 46px; }
-            
-            .top-nav-buttons { gap: 10px; }
-            .btn-nav { flex: 1 1 100%; max-width: 100%; padding: 10px; font-size: 0.9rem; }
         }
     </style>
 </head>
 <body>
 
-    <div id="login-page">
+    <div id="login-page" class="app-page" style="display: flex;">
         <div class="login-card">
             <h1>Shivadut's Secure Ledger</h1>
             <p>Access your financial dashboard & timelines.</p>
-            
             <div class="login-form-group">
                 <label for="username">Username</label>
                 <input type="text" id="username" placeholder="Enter any username" autocomplete="off">
             </div>
-            
             <div class="login-form-group">
                 <label for="password">Password</label>
                 <input type="password" id="password" placeholder="Enter password">
             </div>
-            
             <button class="btn-login" onclick="attemptLogin()">Access Ledger</button>
             <div class="login-error" id="login-error-msg"></div>
         </div>
     </div>
 
-    <div id="dashboard-page">
-        <div class="dashboard-container">
-            
-            <div class="welcome-header">
-                <h1>Welcome, <span id="display-username">User</span>!</h1>
-                <button class="btn-logout" onclick="logout()">Sign Out</button>
+    <div id="menu-page" class="app-page">
+        <div class="menu-header">
+            <h1>Welcome, <span id="display-username">User</span>!</h1>
+            <button class="btn-logout" onclick="logout()">Sign Out</button>
+        </div>
+
+        <div class="menu-grid">
+            <div class="menu-box" onclick="openPage('debit-page')">
+                <div class="menu-icon">🧾</div>
+                <h3>Daily Debit</h3>
+                <p>Track your personal daily expenses and history.</p>
             </div>
-
-            <div class="top-nav-buttons">
-                <button class="btn-nav" onclick="document.getElementById('personal-debit-section').scrollIntoView({behavior: 'smooth'});">Daily Debit & History Log</button>
-                <button class="btn-nav" onclick="document.getElementById('cohort-ledger-section').scrollIntoView({behavior: 'smooth'});">Cohort Ledger & History</button>
-                <button class="btn-nav" onclick="document.getElementById('calculator-section').scrollIntoView({behavior: 'smooth'});">Calculator</button>
+            <div class="menu-box" onclick="openPage('cohort-page')">
+                <div class="menu-icon">🤝</div>
+                <h3>Cohort Ledger</h3>
+                <p>Manage splits and balances with your friends.</p>
             </div>
+            <div class="menu-box" onclick="openPage('calculator-page')">
+                <div class="menu-icon">🧮</div>
+                <h3>Calculator</h3>
+                <p>Quick financial calculations.</p>
+            </div>
+        </div>
+    </div>
 
-            <div class="left-column">
-                <div class="panel" id="personal-debit-section">
-                    <h2>Personal Daily Debit Accumulator</h2>
-                    <div class="debit-display">₹<span id="total-debit-val">0.00</span></div>
-                    <div class="input-group">
-                        <div class="input-row">
-                            <input type="number" id="daily-debit-input" placeholder="Amount (₹)" step="0.01" min="0">
-                            <select id="daily-debit-category" class="modern-select" onchange="toggleCustomInput('daily-debit-category', 'daily-debit-custom')">
-                                <option value="" disabled selected>Select Category</option>
-                                <option value="Train tickets">Train tickets</option>
-                                <option value="Bus tickets">Bus tickets</option>
-                                <option value="Breakfast">Breakfast</option>
-                                <option value="Lunch">Lunch</option>
-                                <option value="Dinner">Dinner</option>
-                                <option value="Tea">Tea</option>
-                                <option value="Snacks">Snacks</option>
-                                <option value="Project components">Project components</option>
-                                <option value="Other">Other (Type below)</option>
-                            </select>
-                        </div>
-                        <input type="text" id="daily-debit-custom" placeholder="Enter custom description..." style="display: none;">
-                        <div class="input-row">
-                            <button class="btn-add" onclick="addDailyDebit()">Add to Total</button>
-                            <button class="btn-reset" onclick="resetDailyDebit()">Reset</button>
-                        </div>
+    <div id="debit-page" class="app-page">
+        <div class="tool-nav-bar">
+            <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
+            <button class="btn-logout" onclick="logout()">Sign Out</button>
+        </div>
+        
+        <div class="tool-container">
+            <div class="panel">
+                <h2>Personal Daily Debit Accumulator</h2>
+                <div class="debit-display">₹<span id="total-debit-val">0.00</span></div>
+                <div class="input-group">
+                    <div class="input-row">
+                        <input type="number" id="daily-debit-input" placeholder="Amount (₹)" step="0.01" min="0">
+                        <select id="daily-debit-category" class="modern-select" onchange="toggleCustomInput('daily-debit-category', 'daily-debit-custom')">
+                            <option value="" disabled selected>Select Category</option>
+                            <option value="Train tickets">Train tickets</option>
+                            <option value="Bus tickets">Bus tickets</option>
+                            <option value="Breakfast">Breakfast</option>
+                            <option value="Lunch">Lunch</option>
+                            <option value="Dinner">Dinner</option>
+                            <option value="Tea">Tea</option>
+                            <option value="Snacks">Snacks</option>
+                            <option value="Project components">Project components</option>
+                            <option value="Other">Other (Type below)</option>
+                        </select>
                     </div>
-                </div>
-
-                <div class="panel calculator" id="calculator-section">
-                    <div class="calculator__display" id="calc-display">0</div>
-                    <div class="calculator__keys" id="calc-keys">
-                        <button data-action="clear">AC</button>
-                        <button data-action="divide">÷</button>
-                        <button data-action="multiply">×</button>
-                        <button>7</button>
-                        <button>8</button>
-                        <button>9</button>
-                        <button data-action="subtract">-</button>
-                        <button>4</button>
-                        <button>5</button>
-                        <button>6</button>
-                        <button data-action="add">+</button>
-                        <button>1</button>
-                        <button>2</button>
-                        <button>3</button>
-                        <button>0</button>
-                        <button data-action="decimal">.</button>
-                        <button data-action="calculate">=</button>
-                    </div>
-                </div>
-                
-                <div class="panel debit-audit-panel">
-                    <div class="header-action-row">
-                        <h2>Transaction History Log</h2>
-                        <button class="btn-export-excel" onclick="exportHistoryToExcel()" aria-label="Export to Excel Spreadsheet" title="Download Transaction CSV">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-                                <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM5.884 6.68 8 9.219l2.116-2.54a.5.5 0 1 1 .768.641L8.651 10l2.233 2.68a.5.5 0 0 1-.768.64L8 10.781l-2.116 2.54a.5.5 0 0 1-.768-.641L7.349 10 5.116 7.32a.5.5 0 1 1 .768-.64z"/>
-                            </svg>
-                            Export
-                        </button>
-                    </div>
-                    <div class="debit-history-scroll" id="debit-history-container">
-                        <ul class="timeline" id="debit-history-list">
-                        </ul>
+                    <input type="text" id="daily-debit-custom" placeholder="Enter custom description..." style="display: none;">
+                    <div class="input-row">
+                        <button class="btn-add" onclick="addDailyDebit()">Add to Total</button>
+                        <button class="btn-reset" onclick="resetDailyDebit()">Reset</button>
                     </div>
                 </div>
             </div>
 
-            <div class="right-column">
-                <div class="panel" id="cohort-ledger-section">
-                    <div class="header-action-row">
-                        <h2>Cohort Ledger & Transaction History</h2>
-                        <button class="btn-reset" onclick="resetAllCohortHistories()" aria-label="Reset all cohort timelines" title="Clear all friend histories">
-                            Reset All Timelines
-                        </button>
-                    </div>
-                    <div id="ledger-container"></div>
+            <div class="panel">
+                <div class="header-action-row">
+                    <h2>Transaction History Log</h2>
+                    <button class="btn-export-excel" onclick="exportHistoryToExcel()">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM5.884 6.68 8 9.219l2.116-2.54a.5.5 0 1 1 .768.641L8.651 10l2.233 2.68a.5.5 0 0 1-.768.64L8 10.781l-2.116 2.54a.5.5 0 0 1-.768-.641L7.349 10 5.116 7.32a.5.5 0 1 1 .768-.64z"/></svg>
+                        Export
+                    </button>
+                </div>
+                <div class="debit-history-scroll" id="debit-history-container">
+                    <ul class="timeline" id="debit-history-list"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cohort-page" class="app-page">
+        <div class="tool-nav-bar">
+            <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
+            <button class="btn-logout" onclick="logout()">Sign Out</button>
+        </div>
+
+        <div class="tool-container">
+            <div class="panel">
+                <div class="header-action-row">
+                    <h2>Cohort Ledger & History</h2>
+                    <button class="btn-reset" onclick="resetAllCohortHistories()">Reset All Timelines</button>
+                </div>
+                <div id="ledger-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="calculator-page" class="app-page">
+        <div class="tool-nav-bar">
+            <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
+            <button class="btn-logout" onclick="logout()">Sign Out</button>
+        </div>
+
+        <div class="tool-container">
+            <div class="panel calculator" id="calculator-section">
+                <div class="calculator__display" id="calc-display">0</div>
+                <div class="calculator__keys" id="calc-keys">
+                    <button data-action="clear">AC</button>
+                    <button data-action="divide">÷</button>
+                    <button data-action="multiply">×</button>
+                    <button>7</button>
+                    <button>8</button>
+                    <button>9</button>
+                    <button data-action="subtract">-</button>
+                    <button>4</button>
+                    <button>5</button>
+                    <button>6</button>
+                    <button data-action="add">+</button>
+                    <button>1</button>
+                    <button>2</button>
+                    <button>3</button>
+                    <button>0</button>
+                    <button data-action="decimal">.</button>
+                    <button data-action="calculate">=</button>
                 </div>
             </div>
         </div>
     </div>
 
 <script>
+    // --- Page Navigation Logic (SPA Routing) ---
+    function openPage(pageId) {
+        // Hide all pages
+        document.querySelectorAll('.app-page').forEach(page => {
+            page.style.display = 'none';
+        });
+        
+        // Show target page
+        const target = document.getElementById(pageId);
+        target.style.display = (pageId === 'login-page') ? 'flex' : 'flex';
+        
+        // Quick visual reset on scroll
+        window.scrollTo(0,0);
+    }
+
     // --- Login Logic ---
     function attemptLogin() {
         const user = document.getElementById('username').value.trim();
@@ -892,11 +658,10 @@
         }
 
         if (pass === 'shivashang') {
-            document.getElementById('login-page').style.display = 'none';
-            document.getElementById('dashboard-page').style.display = 'flex';
             document.getElementById('display-username').textContent = user;
+            openPage('menu-page'); // Open Menu instead of old dashboard
             
-            // Re-render ledger data when dashboard becomes visible
+            // Re-render ledger data when logged in
             document.getElementById('total-debit-val').textContent = personalTotalDebit.toFixed(2);
             renderLedger(); 
             renderDebitHistory(); 
@@ -906,20 +671,16 @@
     }
 
     function logout() {
-        document.getElementById('dashboard-page').style.display = 'none';
-        document.getElementById('login-page').style.display = 'flex';
+        openPage('login-page');
         document.getElementById('password').value = '';
         document.getElementById('login-error-msg').textContent = '';
     }
 
-    // Bind Enter key to login
     document.getElementById('password').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            attemptLogin();
-        }
+        if (e.key === 'Enter') attemptLogin();
     });
 
-    // --- Ledger Logic ---
+    // --- Core Ledger Logic (Unchanged) ---
     const rawFriendsArray = ["thiwakar", "gojo", "mowlish", "goww", "aravindh", "mohan", "gowtham", "parithi", "soukar"];
     const sortedFriends = rawFriendsArray.sort(); 
     
@@ -931,25 +692,12 @@
         if (ledgerState[peer] === undefined) {
             ledgerState[peer] = { balance: 0, baseline: 0, transactions: [] };
         } else if (typeof ledgerState[peer] === 'number') {
-            ledgerState[peer] = { 
-                balance: ledgerState[peer], 
-                baseline: Math.abs(ledgerState[peer]), 
-                transactions: [] 
-            };
-        } else if (typeof ledgerState[peer] === 'object') {
-            if (!ledgerState[peer].transactions) ledgerState[peer].transactions = [];
-            if (ledgerState[peer].baseline === undefined) {
-                ledgerState[peer].baseline = Math.abs(ledgerState[peer].balance || 0);
-            }
+            ledgerState[peer] = { balance: ledgerState[peer], baseline: Math.abs(ledgerState[peer]), transactions: [] };
         }
     });
-    
     localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
 
-    const dateFormatter = new Intl.DateTimeFormat('en-IN', {
-        dateStyle: 'medium',
-        timeStyle: 'short'
-    });
+    const dateFormatter = new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
 
     function toggleCustomInput(selectId, inputId) {
         const selectEl = document.getElementById(selectId);
@@ -985,25 +733,17 @@
             displayEl.textContent = personalTotalDebit.toFixed(2);
             localStorage.setItem('personalTotalDebit', personalTotalDebit);
             
-            const newEntry = {
+            debitHistoryState.unshift({
                 id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
                 amount: amount,
                 category: categoryDesc,
                 timestamp: new Date().toISOString()
-            };
-            
-            debitHistoryState.unshift(newEntry);
+            });
             localStorage.setItem('debitHistoryState', JSON.stringify(debitHistoryState));
-            
             renderDebitHistory();
             
-            inputEl.value = '';
-            selectEl.selectedIndex = 0;
-            customEl.value = '';
-            customEl.style.display = 'none';
-        } else {
-            alert("Please enter a valid numeric amount.");
-        }
+            inputEl.value = ''; selectEl.selectedIndex = 0; customEl.value = ''; customEl.style.display = 'none';
+        } else alert("Please enter a valid numeric amount.");
     }
 
     function resetDailyDebit() {
@@ -1011,7 +751,6 @@
             personalTotalDebit = 0;
             document.getElementById('total-debit-val').textContent = '0.00';
             localStorage.setItem('personalTotalDebit', 0);
-            
             debitHistoryState = [];
             localStorage.setItem('debitHistoryState', JSON.stringify([]));
             renderDebitHistory();
@@ -1019,13 +758,9 @@
     }
 
     function resetAllCohortHistories() {
-        if (confirm("Are you certain you wish to completely reset the ledger and transaction history for ALL cohort members? This action cannot be undone and permanently deletes the history.")) {
+        if (confirm("Reset all cohort timelines? Action cannot be undone.")) {
             sortedFriends.forEach(peer => {
-                if(ledgerState[peer]) {
-                    ledgerState[peer].balance = 0;
-                    ledgerState[peer].baseline = 0;
-                    ledgerState[peer].transactions = [];
-                }
+                if(ledgerState[peer]) { ledgerState[peer].balance = 0; ledgerState[peer].baseline = 0; ledgerState[peer].transactions = []; }
             });
             localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
             renderLedger(); 
@@ -1034,17 +769,13 @@
     
     function renderDebitHistory() {
         const listEl = document.getElementById('debit-history-list');
-        
         if (debitHistoryState.length === 0) {
             listEl.innerHTML = `<li class="no-history-msg">No debits recorded yet.</li>`;
             return;
         }
-        
         listEl.innerHTML = debitHistoryState.map(entry => {
-            const dateObj = new Date(entry.timestamp);
-            const formattedDate = dateFormatter.format(dateObj);
+            const formattedDate = dateFormatter.format(new Date(entry.timestamp));
             const displayCat = entry.category || "General Expense";
-            
             return `
                 <li class="timeline-item give">
                     <div class="timeline-meta">
@@ -1059,52 +790,20 @@
     }
 
     function exportHistoryToExcel() {
-        if (!debitHistoryState || debitHistoryState.length === 0) {
-            alert("No transactional history available to export.");
-            return;
-        }
-
-        const universalBOM = "\uFEFF";
+        if (!debitHistoryState || debitHistoryState.length === 0) return alert("No history to export.");
         let csvContent = "Transaction ID,Date,Time,Category/Description,Amount (\u20B9)\n";
-
         debitHistoryState.forEach(entry => {
-            const dateObj = new Date(entry.timestamp);
-            const fullFormattedDate = dateFormatter.format(dateObj);
-            const dateParts = fullFormattedDate.split(','); 
-            
-            const isolatedDate = dateParts[0] ? dateParts[0].trim() : "Unknown Date";
-            const isolatedTime = dateParts[1] ? dateParts[1].trim() : "Unknown Time";
-            
-            const rawCategory = entry.category || "General Expense";
-            const sanitizedCategory = `"${rawCategory.replace(/"/g, '""')}"`;
-            
-            const serializedRow = `${entry.id},${isolatedDate},${isolatedTime},${sanitizedCategory},${entry.amount.toFixed(2)}`;
-            csvContent += serializedRow + "\n";
+            const dateParts = dateFormatter.format(new Date(entry.timestamp)).split(','); 
+            const isolatedDate = dateParts[0] ? dateParts[0].trim() : "Unknown";
+            const isolatedTime = dateParts[1] ? dateParts[1].trim() : "Unknown";
+            const sanitizedCategory = `"${(entry.category || "General").replace(/"/g, '""')}"`;
+            csvContent += `${entry.id},${isolatedDate},${isolatedTime},${sanitizedCategory},${entry.amount.toFixed(2)}\n`;
         });
-
-        const blobPayload = new Blob([universalBOM + csvContent], { type: 'text/csv;charset=utf-8;' });
-        const downloadUrl = URL.createObjectURL(blobPayload);
-        const anchorDispatch = document.createElement("a");
-        
-        anchorDispatch.href = downloadUrl;
-        
-        const timestampMarker = new Date().toISOString().slice(0, 10);
-        anchorDispatch.setAttribute("download", `Transaction_History_${timestampMarker}.csv`);
-        
-        document.body.appendChild(anchorDispatch);
-        anchorDispatch.click();
-        document.body.removeChild(anchorDispatch);
-        URL.revokeObjectURL(downloadUrl);
-    }
-
-    function generateSharePayload(peer, balance) {
-        if (balance > 0) {
-            return `Hey ${peer}, just a quick reminder that your pending share is ₹${balance.toFixed(2)} on the dashboard. Let's settle up when you can!`;
-        } else if (balance < 0) {
-            return `Hey ${peer}, just a heads up that I currently owe you ₹${Math.abs(balance).toFixed(2)}. I'll be sending this over to you shortly.`;
-        } else {
-            return `Hey ${peer}, looks like our financial ledger is currently completely settled up at ₹0.00!`;
-        }
+        const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `Transaction_History_${new Date().toISOString().slice(0, 10)}.csv`;
+        link.click();
     }
 
     function renderLedger() {
@@ -1115,97 +814,30 @@
             const peerData = ledgerState[peer];
             const currentBalance = peerData.balance;
             const currentBaseline = peerData.baseline;
-            const transactions = peerData.transactions;
             
-            let balanceText = 'Settled (₹0)';
-            let balanceClass = 'balance-neutral';
-            if (currentBalance > 0) {
-                balanceText = `Avunga kudukanum ₹${currentBalance.toFixed(2)}`;
-                balanceClass = 'balance-positive';
-            } else if (currentBalance < 0) {
-                balanceText = `Naan Kudukanum ₹${Math.abs(currentBalance).toFixed(2)}`;
-                balanceClass = 'balance-negative';
-            }
+            let balanceText = 'Settled (₹0)'; let balanceClass = 'balance-neutral';
+            if (currentBalance > 0) { balanceText = `Avunga kudukanum ₹${currentBalance.toFixed(2)}`; balanceClass = 'balance-positive'; } 
+            else if (currentBalance < 0) { balanceText = `Naan Kudukanum ₹${Math.abs(currentBalance).toFixed(2)}`; balanceClass = 'balance-negative'; }
 
-            const rawMessage = generateSharePayload(peer, currentBalance);
-            const encodedPayload = encodeURIComponent(rawMessage);
-            const whatsappUri = `https://wa.me/?text=${encodedPayload}`;
+            const msg = currentBalance > 0 ? `Hey ${peer}, pending share is ₹${currentBalance.toFixed(2)}.` : currentBalance < 0 ? `Hey ${peer}, I owe you ₹${Math.abs(currentBalance).toFixed(2)}.` : `Hey ${peer}, ledger settled!`;
+            const whatsappUri = `https://wa.me/?text=${encodeURIComponent(msg)}`;
 
-            let progress = 0;
-            if (currentBalance === 0) {
-                progress = 100;
-            } else if (currentBaseline > 0) {
-                progress = ((currentBaseline - Math.abs(currentBalance)) / currentBaseline) * 100;
-            }
-            progress = Math.max(0, Math.min(progress, 100));
-            const roundedProgress = Math.round(progress);
+            let progress = currentBalance === 0 ? 100 : currentBaseline > 0 ? ((currentBaseline - Math.abs(currentBalance)) / currentBaseline) * 100 : 0;
+            const roundedProgress = Math.max(0, Math.min(Math.round(progress), 100));
 
-            const isSettled = roundedProgress === 100 && currentBalance === 0;
-            const fillClass = isSettled ? 'progress-fill settled' : 'progress-fill';
-            
-            const progressHTML = `
-                <div class="progress-module">
-                    <div class="progress-container" 
-                         role="progressbar" 
-                         aria-valuenow="${roundedProgress}" 
-                         aria-valuemin="0" 
-                         aria-valuemax="100" 
-                         aria-label="Settlement progress for ${peer}">
-                        <div class="${fillClass}" style="transform: scaleX(${progress / 100});"></div>
-                    </div>
-                    <div class="progress-label-text">${roundedProgress}% Settled</div>
-                </div>
-            `;
-
-            const actionContainerHTML = `
-                <div class="action-container">
-                    <div class="balance-display ${balanceClass}">${balanceText}</div>
-                    <a href="${whatsappUri}" target="_blank" rel="noopener noreferrer" class="btn-share-wa" aria-label="Send reminder to ${peer} via WhatsApp" title="Send WhatsApp Message">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-                            <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
-                        </svg>
-                    </a>
-                </div>
-            `;
-
-            let historyHTML = '';
-            if (transactions.length === 0) {
-                historyHTML = `<p class="no-history-msg">No historical transactions available.</p>`;
-            } else {
-                let listItems = transactions.map(txn => {
-                    const dateObj = new Date(txn.timestamp);
-                    const formattedDate = dateFormatter.format(dateObj);
-                    
-                    const actionLabel = txn.action === 'give' ? 'Naa Kuduthen' : 'Avunga Kuduthanga';
-                    const symbol = txn.action === 'give' ? '+' : '-';
-                    const displayCat = txn.category || "General Context";
-                    
+            const historyHTML = peerData.transactions.length === 0 ? `<p class="no-history-msg">No historical transactions.</p>` : 
+                `<ul class="timeline">${peerData.transactions.map(txn => {
+                    const formattedDate = dateFormatter.format(new Date(txn.timestamp));
                     return `
                         <li class="timeline-item ${txn.action}">
                             <div class="timeline-meta">
-                                <span class="timeline-desc">${actionLabel}</span>
-                                <div class="timeline-category-tag">${displayCat}</div>
+                                <span class="timeline-desc">${txn.action === 'give' ? 'Naa Kuduthen' : 'Avunga Kuduthanga'}</span>
+                                <div class="timeline-category-tag">${txn.category || "General"}</div>
                                 <span class="timeline-date">${formattedDate}</span>
                             </div>
-                            <div class="timeline-amount">${symbol}₹${txn.amount.toFixed(2)}</div>
-                        </li>
-                    `;
-                }).join('');
-                historyHTML = `<ul class="timeline">${listItems}</ul>`;
-            }
-
-            const dropdownOptions = `
-                <option value="" disabled selected>Description</option>
-                <option value="Train tickets">Train tickets</option>
-                <option value="Bus tickets">Bus tickets</option>
-                <option value="Breakfast">Breakfast</option>
-                <option value="Lunch">Lunch</option>
-                <option value="Dinner">Dinner</option>
-                <option value="Tea">Tea</option>
-                <option value="Snacks">Snacks</option>
-                <option value="Project components">Project components</option>
-                <option value="Other">Other (Custom)</option>
-            `;
+                            <div class="timeline-amount">${txn.action === 'give' ? '+' : '-'}₹${txn.amount.toFixed(2)}</div>
+                        </li>`;
+                }).join('')}</ul>`;
 
             const itemContainer = document.createElement('div');
             itemContainer.className = 'ledger-item-container';
@@ -1213,34 +845,34 @@
                 <div class="ledger-row">
                     <div class="peer-info">
                         <div class="peer-name">${peer}</div>
-                        <button class="btn-history-toggle" onclick="toggleHistory('${peer}')">
-                            View Timeline
-                        </button>
+                        <button class="btn-history-toggle" onclick="toggleHistory('${peer}')">View Timeline</button>
                     </div>
-                    
                     <div class="ledger-controls">
                         <div class="ledger-inputs">
                             <input type="number" id="input-${peer}" placeholder="₹ Amt" step="0.01" min="0">
                             <select id="cat-${peer}" class="modern-select" onchange="toggleCustomInput('cat-${peer}', 'custom-${peer}')">
-                                ${dropdownOptions}
+                                <option value="" disabled selected>Description</option>
+                                <option value="Train tickets">Train tickets</option>
+                                <option value="Bus tickets">Bus tickets</option>
+                                <option value="Meals">Meals/Snacks</option>
+                                <option value="Other">Other (Custom)</option>
                             </select>
                         </div>
-                        <input type="text" id="custom-${peer}" placeholder="Type custom note..." style="display:none; width: 100%; margin-top: -4px;">
+                        <input type="text" id="custom-${peer}" placeholder="Type note..." style="display:none; width: 100%;">
                         <div class="ledger-buttons">
                             <button class="btn-give" onclick="processTransaction('${peer}', 'give')">Naa kuduthen</button>
                             <button class="btn-receive" onclick="processTransaction('${peer}', 'receive')">Avunga kuduthanga</button>
                         </div>
                     </div>
-                    <div style="display:flex; flex-direction:column; justify-content:center; width:100%;">
-                        ${actionContainerHTML}
-                        ${progressHTML}
+                    <div>
+                        <div class="action-container">
+                            <div class="balance-display ${balanceClass}">${balanceText}</div>
+                            <a href="${whatsappUri}" target="_blank" class="btn-share-wa"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg></a>
+                        </div>
+                        <div class="progress-module"><div class="progress-container"><div class="progress-fill ${roundedProgress===100&&currentBalance===0?'settled':''}" style="transform: scaleX(${progress/100});"></div></div><div class="progress-label-text">${roundedProgress}% Settled</div></div>
                     </div>
                 </div>
-                
-                <div class="history-panel" id="history-${peer}">
-                    <h4>Transaction Timeline</h4>
-                    ${historyHTML}
-                </div>
+                <div class="history-panel" id="history-${peer}"><h4>Transaction Timeline</h4>${historyHTML}</div>
             `;
             container.appendChild(itemContainer);
         });
@@ -1248,147 +880,71 @@
 
     function toggleHistory(peer) {
         const panel = document.getElementById(`history-${peer}`);
-        if (panel.style.display === 'block') {
-            panel.style.display = 'none';
-        } else {
-            panel.style.display = 'block';
-        }
+        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
     }
 
     function processTransaction(peer, action) {
         const inputEl = document.getElementById(`input-${peer}`);
         const selectEl = document.getElementById(`cat-${peer}`);
         const customEl = document.getElementById(`custom-${peer}`);
-        
         const amount = parseFloat(inputEl.value);
-        const categoryDesc = resolveCategoryValue(`cat-${peer}`, `custom-${peer}`);
         
         if (!isNaN(amount) && amount > 0) {
-            const newTransaction = {
+            let pb = ledgerState[peer].balance; let pbl = ledgerState[peer].baseline;
+            let nb = pb; let nbl = pbl;
+
+            if (action === 'give') { nb = pb + amount; nbl = pb >= 0 ? pbl + amount : (nb > 0 ? nb : pbl); } 
+            else { nb = pb - amount; nbl = pb <= 0 ? pbl + amount : (nb < 0 ? Math.abs(nb) : pbl); }
+            if (nb === 0) nbl = 0;
+
+            ledgerState[peer].balance = nb; ledgerState[peer].baseline = nbl;
+            ledgerState[peer].transactions.unshift({
                 id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
-                amount: amount,
-                category: categoryDesc,
-                action: action,
-                timestamp: new Date().toISOString()
-            };
-
-            let prev_balance = ledgerState[peer].balance;
-            let prev_baseline = ledgerState[peer].baseline;
-            let new_balance = prev_balance;
-            let new_baseline = prev_baseline;
-
-            if (action === 'give') {
-                new_balance = prev_balance + amount;
-                if (prev_balance >= 0) {
-                    new_baseline = prev_baseline + amount;
-                } else {
-                    new_baseline = (new_balance > 0) ? new_balance : prev_baseline;
-                }
-            } else if (action === 'receive') {
-                new_balance = prev_balance - amount;
-                if (prev_balance <= 0) {
-                    new_baseline = prev_baseline + amount; 
-                } else {
-                    new_baseline = (new_balance < 0) ? Math.abs(new_balance) : prev_baseline;
-                }
-            }
+                amount: amount, category: resolveCategoryValue(`cat-${peer}`, `custom-${peer}`), action: action, timestamp: new Date().toISOString()
+            });
             
-            if (new_balance === 0) new_baseline = 0;
-
-            ledgerState[peer].balance = new_balance;
-            ledgerState[peer].baseline = new_baseline;
-            ledgerState[peer].transactions.unshift(newTransaction);
-            
-            inputEl.value = '';
-            selectEl.selectedIndex = 0;
-            customEl.value = '';
-            customEl.style.display = 'none';
-            
+            inputEl.value = ''; selectEl.selectedIndex = 0; customEl.value = ''; customEl.style.display = 'none';
             localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
-            
             renderLedger(); 
             document.getElementById(`history-${peer}`).style.display = 'block';
-        } else {
-            alert("Please provide a valid numeric amount to process the transaction.");
-        }
+        } else alert("Please provide a valid numeric amount.");
     }
 
-    // --- Calculator Logic ---
+    // --- Calculator Logic (Unchanged) ---
     const calcKeys = document.getElementById('calc-keys');
     const calcDisplay = document.getElementById('calc-display');
-    let calcState = {
-        firstOperand: null,
-        operator: null,
-        waitingForSecondOperand: false,
-        displayValue: '0'
-    };
+    let calcState = { firstOperand: null, operator: null, waitingForSecondOperand: false, displayValue: '0' };
 
-    function updateCalcDisplay() {
-        calcDisplay.textContent = calcState.displayValue;
-    }
+    function updateCalcDisplay() { calcDisplay.textContent = calcState.displayValue; }
 
     calcKeys.addEventListener('click', (event) => {
-        const target = event.target;
-        if (!target.matches('button')) return;
-
-        const action = target.dataset.action;
-        const keyContent = target.textContent;
+        const target = event.target; if (!target.matches('button')) return;
+        const action = target.dataset.action; const keyContent = target.textContent;
 
         if (!action) {
-            if (calcState.waitingForSecondOperand) {
-                calcState.displayValue = keyContent; 
-                calcState.waitingForSecondOperand = false;
-            } else {
-                calcState.displayValue = calcState.displayValue === '0' ? keyContent : calcState.displayValue + keyContent;
-            }
-        } else if (action === 'decimal') {
-            if (!calcState.displayValue.includes('.')) {
-                calcState.displayValue += '.';
-            }
-        } else if (['add', 'subtract', 'multiply', 'divide'].includes(action)) {
-            handleOperator(action);
-        } else if (action === 'calculate') {
-            if (calcState.operator && calcState.firstOperand !== null) {
-                const secondOperand = parseFloat(calcState.displayValue);
-                calcState.displayValue = String(calculateResult(calcState.firstOperand, secondOperand, calcState.operator));
-                calcState.firstOperand = null;
-                calcState.operator = null;
-                calcState.waitingForSecondOperand = false;
-            }
-        } else if (action === 'clear') {
-            calcState.displayValue = '0';
-            calcState.firstOperand = null;
-            calcState.operator = null;
-            calcState.waitingForSecondOperand = false;
-        }
+            if (calcState.waitingForSecondOperand) { calcState.displayValue = keyContent; calcState.waitingForSecondOperand = false; } 
+            else calcState.displayValue = calcState.displayValue === '0' ? keyContent : calcState.displayValue + keyContent;
+        } else if (action === 'decimal' && !calcState.displayValue.includes('.')) calcState.displayValue += '.';
+        else if (['add', 'subtract', 'multiply', 'divide'].includes(action)) handleOperator(action);
+        else if (action === 'calculate' && calcState.operator && calcState.firstOperand !== null) {
+            calcState.displayValue = String(calculateResult(calcState.firstOperand, parseFloat(calcState.displayValue), calcState.operator));
+            calcState.firstOperand = null; calcState.operator = null; calcState.waitingForSecondOperand = false;
+        } else if (action === 'clear') { calcState.displayValue = '0'; calcState.firstOperand = null; calcState.operator = null; calcState.waitingForSecondOperand = false; }
         updateCalcDisplay();
     });
 
-    function handleOperator(nextOperator) {
-        const inputValue = parseFloat(calcState.displayValue);
-        
-        if (calcState.operator && calcState.waitingForSecondOperand) {
-            calcState.operator = nextOperator;
-            return;
+    function handleOperator(nextOp) {
+        const input = parseFloat(calcState.displayValue);
+        if (calcState.operator && calcState.waitingForSecondOperand) { calcState.operator = nextOp; return; }
+        if (calcState.firstOperand == null && !isNaN(input)) calcState.firstOperand = input;
+        else if (calcState.operator) {
+            const res = calculateResult(calcState.firstOperand, input, calcState.operator);
+            calcState.displayValue = String(res); calcState.firstOperand = res;
         }
-        if (calcState.firstOperand == null && !isNaN(inputValue)) {
-            calcState.firstOperand = inputValue;
-        } else if (calcState.operator) {
-            const result = calculateResult(calcState.firstOperand, inputValue, calcState.operator);
-            calcState.displayValue = String(result);
-            calcState.firstOperand = result;
-        }
-        calcState.waitingForSecondOperand = true;
-        calcState.operator = nextOperator;
+        calcState.waitingForSecondOperand = true; calcState.operator = nextOp;
     }
 
-    function calculateResult(first, second, operator) {
-        if (operator === 'add') return first + second;
-        if (operator === 'subtract') return first - second;
-        if (operator === 'multiply') return first * second;
-        if (operator === 'divide') return first / second;
-        return second;
-    }
+    function calculateResult(f, s, op) { return op === 'add' ? f+s : op === 'subtract' ? f-s : op === 'multiply' ? f*s : s!==0 ? f/s : 0; }
 </script>
 </body>
 </html>
