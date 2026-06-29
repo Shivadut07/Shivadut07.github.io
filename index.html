@@ -5,729 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shivadut's Integrated Financial Ledger</title>
     
-    <link rel="stylesheet" href="css/fonts.css">
-    
-    <script src="js/chart.umd.js"></script>
-    <script src="js/chartjs-plugin-datalabels.min.js"></script>
-
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root {
-            /* Core Application Color Palette */
             --bg-color: #e0e3eb;
             --panel-bg: #ffffff;
             --text-main: #000e1a;
             --text-muted: #6c7a89;
             --border-light: #cccccc;
-            
-            /* Semantic Financial Action Colors */
             --btn-give: #ff5722;
             --btn-receive: #8bc34a;
             --btn-neutral: #03a9f4;
             --btn-whatsapp: #25D366; 
-            
-            /* Calculator Module Colors */
             --calc-bg: #2c3e50;
             --calc-key: #eee;
             --calc-key-op: #ff9800;
             --calc-key-action: #e74c3c;
-            
-            /* Timeline Specific Variables */
             --timeline-spine: #d2d7d3;
             --timeline-node-bg: #ffffff;
         }
         
-        /* Global Reset */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
+        body { font-family: 'Poppins', Arial, sans-serif; background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; }
 
-        body {
-            font-family: 'Poppins', Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            min-height: 100vh;
-        }
+        .app-page { display: none; padding: 20px; min-height: 100vh; flex-direction: column; align-items: center; }
+        #login-page { display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
 
-        /* --- PAGE CONTAINERS --- */
-        .app-page {
-            display: none; 
-            padding: 20px;
-            min-height: 100vh;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* --- LOGIN PAGE STYLES --- */
-        #login-page {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-        }
-
-        .login-card {
-            background: var(--panel-bg);
-            padding: 40px 30px;
-            border-radius: 15px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .login-card h1 { font-size: 1.8rem; margin-bottom: 10px; }
-        .login-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 30px; }
-
+        .login-card { background: var(--panel-bg); padding: 40px 30px; border-radius: 15px; box-shadow: 0 15px 30px rgba(0,0,0,0.2); width: 100%; max-width: 400px; text-align: center; }
         .login-form-group { margin-bottom: 20px; text-align: left; }
         .login-form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
-        .login-form-group input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-        .login-form-group input:focus {
-            outline: none;
-            border-color: var(--btn-neutral);
-            box-shadow: 0 0 0 3px rgba(3, 169, 244, 0.1);
-        }
+        .login-form-group input { width: 100%; padding: 12px 15px; border: 1px solid var(--border-light); border-radius: 8px; font-size: 1rem; }
+        .btn-login { width: 100%; padding: 14px; background-color: var(--btn-neutral); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+        .login-error { color: #e74c3c; font-size: 0.85rem; margin-top: 15px; font-weight: 600; }
 
-        .btn-login {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--btn-neutral);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s;
-        }
-        .btn-login:hover { background-color: #0288d1; }
-        .btn-login:active { transform: scale(0.98); }
-        .login-error { color: #e74c3c; font-size: 0.85rem; margin-top: 15px; min-height: 20px; font-weight: 600; }
-
-        /* --- MAIN MENU STYLES --- */
-        .menu-header {
-            width: 100%;
-            max-width: 900px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--panel-bg);
-            padding: 20px 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-            margin-bottom: 30px;
-            margin-top: 20px;
-        }
-
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            width: 100%;
-            max-width: 900px;
-        }
-
-        /* BEAUTIFIED MENU BOXES */
-        .menu-box {
-            background: var(--panel-bg);
-            border-radius: 20px;
-            padding: 35px 20px;
-            text-align: center;
-            cursor: pointer;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid #f0f0f0;
-        }
-
-        .menu-box::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 6px;
-        }
-
-        .menu-box:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-        }
-
-        .menu-box h3 { font-size: 1.3rem; color: var(--text-main); margin: 0; font-weight: 600;}
-        .menu-box p { color: var(--text-muted); font-size: 0.85rem; margin: 0; line-height: 1.4;}
+        .menu-header { width: 100%; max-width: 900px; display: flex; justify-content: space-between; align-items: center; background: var(--panel-bg); padding: 20px 30px; border-radius: 15px; margin-bottom: 30px; margin-top: 20px; }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; width: 100%; max-width: 900px; }
+        .menu-box { background: var(--panel-bg); border-radius: 20px; padding: 35px 20px; text-align: center; cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.04); transition: all 0.4s; display: flex; flex-direction: column; align-items: center; gap: 12px; position: relative; border: 1px solid #f0f0f0; }
+        .menu-box:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .icon-wrapper { width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; border-radius: 50%; font-size: 2.2rem; margin-bottom: 5px; box-shadow: 0 6px 12px rgba(0,0,0,0.08); }
         
-        .icon-wrapper {
-            width: 75px;
-            height: 75px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 50%;
-            font-size: 2.2rem;
-            margin-bottom: 5px;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
-            transition: transform 0.3s ease;
-        }
-        
-        .menu-box:hover .icon-wrapper {
-            transform: scale(1.1);
-        }
+        .box-debit::before { background: linear-gradient(90deg, #4facfe, #00f2fe); content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; }
+        .box-calendar::before { background: linear-gradient(90deg, #b224ef, #7579ff); content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; }
+        .box-cohort::before { background: linear-gradient(90deg, #11998e, #38ef7d); content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; }
+        .box-savings::before { background: linear-gradient(90deg, #f6d365, #fda085); content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; }
+        .box-calc::before { background: linear-gradient(90deg, #ff0844, #ffb199); content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; }
 
-        .box-debit::before { background: linear-gradient(90deg, #4facfe, #00f2fe); }
-        .box-debit .icon-wrapper { background: #e1f5fe; }
-        
-        .box-calendar::before { background: linear-gradient(90deg, #b224ef, #7579ff); }
-        .box-calendar .icon-wrapper { background: #ede7f6; }
-        
-        .box-cohort::before { background: linear-gradient(90deg, #11998e, #38ef7d); }
-        .box-cohort .icon-wrapper { background: #e8f5e9; }
-        
-        .box-savings::before { background: linear-gradient(90deg, #f6d365, #fda085); }
-        .box-savings .icon-wrapper { background: #fff8e1; }
-        
-        .box-calc::before { background: linear-gradient(90deg, #ff0844, #ffb199); }
-        .box-calc .icon-wrapper { background: #ffebee; }
-        
-        .box-analytics::before { background: linear-gradient(90deg, #43e97b, #38f9d7); }
-        .box-analytics .icon-wrapper { background: #e0f2f1; }
+        .tool-container { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 25px; }
+        .tool-nav-bar { width: 100%; max-width: 800px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .btn-back, .btn-logout { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; color: white; }
+        .btn-back { background-color: var(--text-main); }
+        .btn-logout { background-color: var(--calc-key-action); }
 
-        /* --- TOOL PAGES COMMON STYLES --- */
-        .tool-container {
-            width: 100%;
-            max-width: 800px;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-
-        .tool-nav-bar {
-            width: 100%;
-            max-width: 800px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            margin-top: 10px;
-        }
-
-        .btn-back {
-            background-color: var(--text-main);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: background 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-back:hover { background-color: #333; }
-
-        .btn-logout {
-            padding: 10px 20px;
-            background-color: var(--calc-key-action);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        .btn-logout:hover { opacity: 0.9; }
-
-        .panel {
-            background: var(--panel-bg);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-            width: 100%;
-        }
-
-        h2 {
-            margin-top: 0;
-            font-size: 1.4rem;
-            border-bottom: 2px solid var(--border-light);
-            padding-bottom: 12px;
-            margin-bottom: 15px;
-        }
-
-        /* --- DEBIT STYLES --- */
-        .debit-display {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--btn-give);
-            margin: 20px 0;
-            text-align: center;
-            background-color: #fff3e0;
-            border-radius: 8px;
-            padding: 10px;
-        }
+        .panel { background: var(--panel-bg); border-radius: 15px; padding: 25px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); width: 100%; }
+        .debit-display { font-size: 2.5rem; font-weight: bold; color: var(--btn-give); margin: 20px 0; text-align: center; background-color: #fff3e0; border-radius: 8px; padding: 10px; }
         .input-group { display: flex; flex-direction: column; gap: 10px; width: 100%; }
         .input-row { display: flex; gap: 10px; width: 100%; }
-        input[type="number"], input[type="text"], input[type="password"] {
-            flex: 1 1 auto;
-            padding: 12px;
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            font-size: 1.05rem;
-            min-width: 0; 
-        }
-
-        select.modern-select {
-            flex: 1 1 auto;
-            padding: 12px;
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            font-size: 1rem;
-            color: var(--text-main);
-            background-color: white;
-            cursor: pointer;
-            font-family: inherit;
-            appearance: none;
-        }
-        select.modern-select:focus, input:focus {
-            outline: 2px solid var(--btn-neutral);
-            border-color: transparent;
-        }
-
-        button {
-            padding: 12px 18px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            color: white;
-            transition: transform 0.2s, opacity 0.2s;
-            white-space: nowrap; 
-        }
-        button:hover { transform: scale(1.02); opacity: 0.9; }
-        button:active { transform: scale(0.95); }
-        .btn-add { background-color: var(--btn-neutral); flex: 1 1 auto; }
-        .btn-reset { background-color: var(--calc-key-action); flex: 0 0 auto; }
+        input[type="number"], input[type="text"], input[type="password"], select { padding: 12px; border: 1px solid var(--border-light); border-radius: 8px; font-size: 1rem; }
+        .btn-add { background-color: var(--btn-neutral); flex: 1 1 auto; padding: 12px; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-reset { background-color: var(--calc-key-action); color: white; border: none; border-radius: 8px; padding: 12px; cursor: pointer; }
+        .debit-history-scroll { background-color: #f4f6f8; border-radius: 8px; max-height: 400px; overflow-y: auto; padding: 15px 20px; }
         
-        .header-action-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--border-light);
-            padding-bottom: 12px;
-            margin-bottom: 15px;
-        }
-        .header-action-row h2 { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
-        
-        .export-actions {
-            display: flex;
-            gap: 10px;
-        }
+        .savings-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .savings-table th, .savings-table td { padding: 15px; text-align: center; border-bottom: 1px solid var(--border-light); }
+        .grand-total { font-size: 1.4rem; font-weight: bold; color: #2e7d32; }
 
-        .btn-export-excel {
-            background-color: #107c41; 
-            color: #ffffff;
-            border: none;
-            border-radius: 6px;
-            padding: 8px 14px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: opacity 0.2s;
-        }
-        .btn-export-excel:hover { opacity: 0.9; }
-        .btn-export-excel svg { width: 18px; height: 18px; fill: currentColor; }
+        .ledger-item-container { display: flex; flex-direction: column; border-bottom: 1px solid var(--border-light); padding: 18px 0; }
+        .ledger-row { display: grid; grid-template-columns: 120px 2fr 1fr; align-items: center; gap: 15px; }
+        .btn-give { background-color: var(--btn-give); padding: 8px; color: white; border: none; border-radius: 6px; cursor: pointer; }
+        .btn-receive { background-color: var(--btn-receive); padding: 8px; color: white; border: none; border-radius: 6px; cursor: pointer; }
 
-        .btn-export-pdf {
-            background-color: #d32f2f; 
-            color: #ffffff;
-            border: none;
-            border-radius: 6px;
-            padding: 8px 14px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: opacity 0.2s;
-        }
-        .btn-export-pdf:hover { opacity: 0.9; }
-        .btn-export-pdf svg { width: 18px; height: 18px; fill: currentColor; }
-
-        .debit-history-scroll {
-            background-color: #f4f6f8;
-            border-radius: 8px;
-            max-height: 400px;
-            overflow-y: auto;
-            padding: 15px 20px;
-            border: 1px solid var(--border-light);
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
-        }
-
-        /* --- SAVINGS CASH COUNTER STYLES --- */
-        .savings-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        .savings-table th, .savings-table td {
-            padding: 15px;
-            text-align: center;
-            border-bottom: 1px solid var(--border-light);
-        }
-        .savings-table th {
-            background-color: #f4f6f8;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
-        .savings-table input[type="number"] {
-            width: 100px;
-            padding: 8px;
-            border: 1px solid var(--border-light);
-            border-radius: 6px;
-            text-align: center;
-            font-size: 1rem;
-        }
-        .savings-table .grand-total {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #2e7d32;
-        }
-        .savings-table .row-total {
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-        .savings-table tr:hover {
-            background-color: #f9fafb;
-        }
-
-        /* --- COHORT LEDGER STYLES --- */
-        .ledger-item-container {
-            display: flex;
-            flex-direction: column;
-            border-bottom: 1px solid var(--border-light);
-            padding: 18px 0;
-        }
-        .ledger-item-container:last-child { border-bottom: none; }
-        
-        .ledger-row {
-            display: grid;
-            grid-template-columns: 120px 2fr 1fr; 
-            align-items: center;
-            gap: 15px;
-        }
-
-        .peer-info { display: flex; flex-direction: column; gap: 6px; }
-        .peer-name { font-weight: 600; text-transform: capitalize; font-size: 1.05rem; }
-        
-        .btn-history-toggle {
-            padding: 5px 8px;
-            font-size: 0.72rem;
-            background-color: var(--text-muted);
-            border-radius: 4px;
-            align-self: flex-start;
-        }
-        
-        .ledger-controls { display: flex; flex-direction: column; gap: 8px; }
-        .ledger-inputs { display: flex; gap: 6px; width: 100%; }
-        .ledger-inputs input[type="number"] { width: 90px; padding: 8px; }
-        .ledger-inputs select, .ledger-inputs input[type="text"] { flex: 1; padding: 8px; }
-        
-        .ledger-buttons { display: flex; gap: 6px; width: 100%; }
-        .ledger-buttons button { flex: 1; padding: 8px 10px; font-size: 0.78rem; border-radius: 6px; }
-        .btn-give { background-color: var(--btn-give); }
-        .btn-receive { background-color: var(--btn-receive); }
-
-        .action-container {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 8px;
-            width: 100%;
-        }
-
-        .balance-display {
-            text-align: right;
-            font-weight: bold;
-            font-size: 0.9rem; 
-            padding: 10px 12px;
-            border-radius: 6px;
-            flex-grow: 1; 
-        }
-
-        .btn-share-wa {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            background-color: var(--btn-whatsapp);
-            color: white;
-            border-radius: 50%;
-            text-decoration: none;
-            transition: transform 0.25s;
-        }
-        .btn-share-wa svg { width: 18px; height: 18px; fill: currentColor; }
-
-        .balance-positive { color: #2e7d32; background-color: #e8f5e9; }
-        .balance-negative { color: #c62828; background-color: #ffebee; }
-        .balance-neutral { color: var(--text-main); background-color: #f5f5f5; }
-
-        .history-panel {
-            display: none;
-            margin-top: 15px;
-            padding: 15px 20px;
-            background-color: #f4f6f8;
-            border-radius: 8px;
-            max-height: 320px;
-            overflow-y: auto;
-            border: 1px solid var(--border-light);
-        }
-
-        /* --- TIMELINE (Shared) --- */
-        .timeline { list-style: none; position: relative; padding-left: 20px; }
-        .timeline::before {
-            content: "";
-            position: absolute;
-            left: 5px;
-            top: 5px;
-            bottom: 0;
-            width: 2px;
-            background-color: var(--timeline-spine);
-        }
-        .timeline-item {
-            position: relative;
-            padding-bottom: 18px;
-            font-size: 0.85rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .timeline-item::before {
-            content: "";
-            position: absolute;
-            left: -21px; 
-            top: 4px;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: var(--timeline-node-bg);
-            border: 2px solid var(--text-muted);
-            z-index: 1;
-        }
-        .timeline-item.give::before { border-color: var(--btn-give); }
-        .timeline-item.receive::before { border-color: var(--btn-receive); }
-        .timeline-meta { display: flex; flex-direction: column; gap: 2px; max-width: 65%; }
-        .timeline-desc { font-weight: 600; color: var(--text-main); }
-        .timeline-category-tag { 
-            font-size: 0.7rem; 
-            background-color: #e2e8f0; 
-            color: #475569; 
-            padding: 2px 6px; 
-            border-radius: 4px; 
-            display: inline-block;
-        }
-        .timeline-date { font-size: 0.7rem; color: var(--text-muted); }
-        .timeline-amount { font-weight: bold; font-size: 0.95rem; }
-        .timeline-item.give .timeline-amount { color: var(--btn-give); }
-        .timeline-item.receive .timeline-amount { color: var(--btn-receive); }
-        .no-history-msg { font-size: 0.85rem; color: var(--text-muted); font-style: italic; text-align: center; }
-
-        /* Progress Bar */
-        .progress-module { width: 100%; margin-top: 12px; display: flex; flex-direction: column; gap: 4px; }
-        .progress-container { width: 100%; height: 12px; background-color: var(--bg-color); border-radius: 6px; overflow: hidden; position: relative; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #03a9f4, #288cfa); border-radius: 6px; transform-origin: left; transition: transform 0.6s; transform: scaleX(0); }
-        .progress-fill.settled { background: linear-gradient(90deg, #7cb342, #8bc34a); }
-        .progress-label-text { font-size: 0.72rem; color: var(--text-muted); text-align: right; font-weight: 600; }
-
-        /* --- CALCULATOR STYLES --- */
         .calculator { background-color: var(--calc-bg); border-radius: 15px; padding: 20px; max-width: 450px; margin: 0 auto; width: 100%; }
-        .calculator__display {
-            background-color: #ffeb3b;
-            color: var(--text-main);
-            font-size: 2.2rem;
-            text-align: right;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-        }
+        .calculator__display { background-color: #ffeb3b; color: var(--text-main); font-size: 2.2rem; text-align: right; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
         .calculator__keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-        .calculator__keys button {
-            background-color: var(--calc-key); color: var(--text-main);
-            font-size: 1.4rem; padding: 18px 0; border-radius: 10px; font-weight: bold;
-        }
-        .calculator__keys button[data-action="add"],
-        .calculator__keys button[data-action="subtract"],
-        .calculator__keys button[data-action="multiply"],
-        .calculator__keys button[data-action="divide"] { background-color: var(--calc-key-op); color: white; }
-        .calculator__keys button[data-action="calculate"] { background-color: var(--btn-receive); color: white; grid-column: span 2; }
-        .calculator__keys button[data-action="clear"] { background-color: var(--calc-key-action); color: white; grid-column: span 2; }
+        .calculator__keys button { background-color: var(--calc-key); padding: 18px 0; border-radius: 10px; font-weight: bold; border: none; cursor: pointer; }
 
-        /* --- CHART STYLES --- */
-        .chart-wrapper {
-            position: relative;
-            height: 350px;
-            width: 100%;
-            margin-top: 15px;
-        }
-
-        /* --- CALENDAR STYLES --- */
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .calendar-header h2 {
-            border-bottom: none;
-            margin: 0;
-            padding: 0;
-        }
-        .calendar-header button {
-            background: var(--btn-neutral);
-            padding: 8px 16px;
-            font-size: 1.2rem;
-        }
-        
-        .budget-control {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-        .budget-control input {
-            width: 90px;
-            padding: 6px 10px;
-            font-size: 0.9rem;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-        }
-        .calendar-day-header {
-            text-align: center;
-            font-weight: bold;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            padding-bottom: 5px;
-        }
-        .calendar-cell {
-            background: #f8f9fa;
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            min-height: 80px;
-            padding: 8px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .calendar-cell.has-data {
-            cursor: pointer;
-        }
-        .calendar-cell.has-data:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .calendar-cell.empty-cell {
-            background: transparent;
-            border: none;
-        }
-        .cell-date {
-            font-size: 0.9rem;
-            font-weight: bold;
-            align-self: flex-start;
-        }
-        .cell-amount {
-            font-size: 0.85rem;
-            font-weight: bold;
-            color: var(--btn-give);
-            align-self: flex-end;
-            margin-top: 10px;
-        }
-
-        /* Heatmap colors */
-        .bg-low { background-color: #e8f5e9; border-color: #a5d6a7; } /* Green */
-        .bg-high { background-color: #ffebee; border-color: #ef9a9a; } /* Red */
-
-        /* --- MODAL STYLES --- */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(3px);
-        }
-        .modal-box {
-            background: var(--panel-bg);
-            width: 90%;
-            max-width: 500px;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            position: relative;
-            max-height: 80vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .modal-close {
-            position: absolute;
-            top: 15px; right: 20px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-muted);
-            line-height: 1;
-        }
-        .modal-close:hover { color: var(--text-main); }
-        .modal-content-scroll {
-            overflow-y: auto;
-            margin-top: 15px;
-            padding-right: 5px;
-        }
-
-        @media (max-width: 850px) {
-            .ledger-row { grid-template-columns: 1fr; gap: 14px; }
-            .peer-info { align-items: center; border-bottom: 1px dashed var(--border-light); padding-bottom: 10px; }
-            .peer-name { text-align: center; font-size: 1.25rem; }
-            .ledger-inputs { flex-direction: column; }
-            .ledger-inputs input[type="number"], .ledger-inputs select, .ledger-inputs input[type="text"] { width: 100%; height: 46px; }
-            .ledger-buttons button { height: 46px; }
-            .action-container { flex-direction: row; }
-            .balance-display { text-align: center; }
-            .input-row { flex-direction: column; }
-            
-            .calendar-cell { min-height: 60px; padding: 4px; }
-            .cell-date { font-size: 0.8rem; }
-            .cell-amount { font-size: 0.75rem; }
-            .calendar-header h2 { font-size: 1.1rem; }
-        }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+        .calendar-cell { background: #f8f9fa; border: 1px solid var(--border-light); border-radius: 8px; min-height: 80px; padding: 8px; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-box { background: var(--panel-bg); width: 90%; max-width: 500px; border-radius: 15px; padding: 25px; }
     </style>
 </head>
 <body>
@@ -735,14 +95,14 @@
     <div id="login-page" class="app-page" style="display: flex;">
         <div class="login-card">
             <h1>Shivadut's Secure Ledger</h1>
-            <p>Access your financial dashboard & timelines.</p>
+            <p>Access your financial dashboard.</p>
             <div class="login-form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" placeholder="Enter numeric username" autocomplete="off" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <input type="text" id="username" placeholder="Numeric username">
             </div>
             <div class="login-form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" placeholder="Enter numeric password" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <input type="password" id="password" placeholder="Numeric password">
             </div>
             <button class="btn-login" onclick="attemptLogin()">Access Ledger</button>
             <div class="login-error" id="login-error-msg"></div>
@@ -751,824 +111,95 @@
 
     <div id="menu-page" class="app-page">
         <div class="menu-header">
-            <h1>Welcome, <span id="display-username">Shivadut</span>!</h1>
+            <h1>Welcome, Shivadut!</h1>
             <button class="btn-logout" onclick="logout()">Sign Out</button>
         </div>
-
         <div class="menu-grid">
             <div class="menu-box box-debit" onclick="openPage('debit-page')">
                 <div class="icon-wrapper">🧾</div>
                 <h3>Daily Debit</h3>
-                <p>Track your personal daily expenses and history.</p>
             </div>
             <div class="menu-box box-calendar" onclick="openPage('calendar-page')">
                 <div class="icon-wrapper">📅</div>
                 <h3>Calendar</h3>
-                <p>Monthly view and daily expenditure heatmap.</p>
             </div>
             <div class="menu-box box-cohort" onclick="openPage('cohort-page')">
                 <div class="icon-wrapper">🤝</div>
                 <h3>Cohort Ledger</h3>
-                <p>Manage splits and balances with your friends.</p>
             </div>
             <div class="menu-box box-savings" onclick="openPage('savings-page')">
                 <div class="icon-wrapper">🏦</div>
                 <h3>Cash Counter</h3>
-                <p>Calculate your physical cash savings by denomination.</p>
             </div>
             <div class="menu-box box-calc" onclick="openPage('calculator-page')">
                 <div class="icon-wrapper">🧮</div>
                 <h3>Calculator</h3>
-                <p>Quick financial calculations.</p>
-            </div>
-            <div class="menu-box box-analytics" onclick="openPage('analytics-page')">
-                <div class="icon-wrapper">📊</div>
-                <h3>Analytics</h3>
-                <p>Visual data analysis of your daily debits.</p>
             </div>
         </div>
     </div>
 
     <div id="savings-page" class="app-page">
-        <div class="tool-nav-bar">
-            <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
-            <button class="btn-logout" onclick="logout()">Sign Out</button>
-        </div>
-        
+        <div class="tool-nav-bar"><button class="btn-back" onclick="openPage('menu-page')">⬅ Back</button></div>
         <div class="tool-container">
             <div class="panel">
                 <h2>Savings Cash Counter</h2>
-                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Enter the number of notes you have for each denomination to calculate your total savings.</p>
                 <table class="savings-table">
-                    <thead>
-                        <tr>
-                            <th>Denomination (₹)</th>
-                            <th>No. of Notes</th>
-                            <th>Total Amount (₹)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>₹500</td>
-                            <td><input type="number" min="0" step="1" class="note-input" data-denom="500" oninput="calculateSavings()"></td>
-                            <td class="row-total" id="row-total-500">0.00</td>
-                        </tr>
-                        <tr>
-                            <td>₹200</td>
-                            <td><input type="number" min="0" step="1" class="note-input" data-denom="200" oninput="calculateSavings()"></td>
-                            <td class="row-total" id="row-total-200">0.00</td>
-                        </tr>
-                        <tr>
-                            <td>₹100</td>
-                            <td><input type="number" min="0" step="1" class="note-input" data-denom="100" oninput="calculateSavings()"></td>
-                            <td class="row-total" id="row-total-100">0.00</td>
-                        </tr>
-                        <tr>
-                            <td>₹50</td>
-                            <td><input type="number" min="0" step="1" class="note-input" data-denom="50" oninput="calculateSavings()"></td>
-                            <td class="row-total" id="row-total-50">0.00</td>
-                        </tr>
-                        <tr>
-                            <td>₹20</td>
-                            <td><input type="number" min="0" step="1" class="note-input" data-denom="20" oninput="calculateSavings()"></td>
-                            <td class="row-total" id="row-total-20">0.00</td>
-                        </tr>
-                        <tr>
-                            <td>₹10</td>
-                            <td><input type="number" min="0" step="1" class="note-input" data-denom="10" oninput="calculateSavings()"></td>
-                            <td class="row-total" id="row-total-10">0.00</td>
-                        </tr>
+                    <thead><tr><th>Denom</th><th>Count</th><th>Total</th></tr></thead>
+                    <tbody id="savings-body">
+                        <tr><td>500</td><td><input type="number" class="note-input" data-denom="500" oninput="calculateSavings()"></td><td id="row-total-500">0</td></tr>
+                        <tr><td>100</td><td><input type="number" class="note-input" data-denom="100" oninput="calculateSavings()"></td><td id="row-total-100">0</td></tr>
                     </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="2" style="text-align: right; padding-right: 20px;">Grand Total</th>
-                            <th class="grand-total" id="savings-grand-total">₹0.00</th>
-                        </tr>
-                    </tfoot>
+                    <tfoot><tr><th colspan="2">Total</th><th class="grand-total" id="savings-grand-total">₹0</th></tr></tfoot>
                 </table>
             </div>
         </div>
     </div>
 
     <div id="debit-page" class="app-page">
-        <div class="tool-nav-bar">
-            <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
-            <button class="btn-logout" onclick="logout()">Sign Out</button>
-        </div>
-        
+        <div class="tool-nav-bar"><button class="btn-back" onclick="openPage('menu-page')">⬅ Back</button></div>
         <div class="tool-container">
             <div class="panel">
-                <h2>Personal Daily Debit Accumulator</h2>
+                <h2>Daily Debit</h2>
                 <div class="debit-display">₹<span id="total-debit-val">0.00</span></div>
-                <div class="input-group">
-                    <div class="input-row">
-                        <input type="number" id="daily-debit-input" placeholder="Amount (₹)" step="0.01" min="0">
-                        <select id="daily-debit-category" class="modern-select" onchange="toggleCustomInput('daily-debit-category', 'daily-debit-custom')">
-                            <option value="" disabled selected>Select Category</option>
-                            <option value="Train tickets">Train tickets</option>
-                            <option value="Bus tickets">Bus tickets</option>
-                            <option value="Breakfast">Breakfast</option>
-                            <option value="Lunch">Lunch</option>
-                            <option value="Dinner">Dinner</option>
-                            <option value="Tea">Tea</option>
-                            <option value="Snacks">Snacks</option>
-                            <option value="Project components">Project components</option>
-                            <option value="Other">Other (Type below)</option>
-                        </select>
-                    </div>
-                    <input type="text" id="daily-debit-custom" placeholder="Enter custom description..." style="display: none;">
-                    <div class="input-row">
-                        <button class="btn-add" onclick="addDailyDebit()">Add to Total</button>
-                        <button class="btn-reset" onclick="resetDailyDebit()">Reset</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="panel">
-                <div class="header-action-row">
-                    <h2>Transaction History Log</h2>
-                    <div class="export-actions">
-                        <button class="btn-export-pdf" onclick="exportHistoryToPDF()">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H8v-2h3v2zm1.5-4H8V9h4.5c.83 0 1.5.67 1.5 1.5v.5c0 .83-.67 1.5-1.5 1.5zM17 11h-2v1h1v1h-1v3h-1V9h3v2z"/><path d="M9 10h2v1H9z"/></svg>
-                            PDF
-                        </button>
-                        <button class="btn-export-excel" onclick="exportHistoryToExcel()">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM5.884 6.68 8 9.219l2.116-2.54a.5.5 0 1 1 .768.641L8.651 10l2.233 2.68a.5.5 0 0 1-.768.64L8 10.781l-2.116 2.54a.5.5 0 0 1-.768-.641L7.349 10 5.116 7.32a.5.5 0 1 1 .768-.64z"/></svg>
-                            CSV
-                        </button>
-                    </div>
-                </div>
-                <div class="debit-history-scroll" id="debit-history-container">
-                    <ul class="timeline" id="debit-history-list"></ul>
-                </div>
+                <input type="number" id="daily-debit-input" placeholder="Amount">
+                <button class="btn-add" onclick="addDailyDebit()">Add</button>
+                <div class="debit-history-scroll" id="debit-history-list"></div>
             </div>
         </div>
     </div>
 
-    <div id="calendar-page" class="app-page">
-        <div class="tool-nav-bar">
-            <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
-            <button class="btn-logout" onclick="logout()">Sign Out</button>
-        </div>
-        
-        <div class="tool-container">
-            <div class="panel">
-                <div class="calendar-header">
-                    <button onclick="changeMonth(-1)">&#10094;</button>
-                    <h2 id="calendar-month-year">Month Year</h2>
-                    <button onclick="changeMonth(1)">&#10095;</button>
-                </div>
-                
-                <div class="budget-control">
-                    <label for="calendar-budget-input">Daily Budget Threshold: ₹</label>
-                    <input type="number" id="calendar-budget-input" value="200" step="10" min="0" onchange="renderCalendar()">
-                </div>
+    <div id="calendar-page" class="app-page">...</div>
+    <div id="cohort-page" class="app-page">...</div>
+    <div id="calculator-page" class="app-page">...</div>
 
-                <div class="calendar-grid" id="calendar-grid">
-                    </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="cohort-page" class="app-page">
-        <div class="tool-nav-bar">
-            <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
-            <button class="btn-logout" onclick="logout()">Sign Out</button>
-        </div>
-
-        <div class="tool-container">
-            <div class="panel">
-                <div class="header-action-row">
-                    <h2>Cohort Ledger & History</h2>
-                    <button class="btn-reset" onclick="resetAllCohortHistories()">Reset All Timelines</button>
-                </div>
-                <div id="ledger-container"></div>
-            </div>
-        </div>
-    </div>
-
-    <div id="calculator-page" class="app-page">
-        <div class="tool-nav-bar">
-            <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
-            <button class="btn-logout" onclick="logout()">Sign Out</button>
-        </div>
-
-        <div class="tool-container">
-            <div class="panel calculator" id="calculator-section">
-                <div class="calculator__display" id="calc-display">0</div>
-                <div class="calculator__keys" id="calc-keys">
-                    <button data-action="clear">AC</button>
-                    <button data-action="divide">÷</button>
-                    <button data-action="multiply">×</button>
-                    <button>7</button>
-                    <button>8</button>
-                    <button>9</button>
-                    <button data-action="subtract">-</button>
-                    <button>4</button>
-                    <button>5</button>
-                    <button>6</button>
-                    <button data-action="add">+</button>
-                    <button>1</button>
-                    <button>2</button>
-                    <button>3</button>
-                    <button>0</button>
-                    <button data-action="decimal">.</button>
-                    <button data-action="calculate">=</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="analytics-page" class="app-page">
-        <div class="tool-nav-bar">
-            <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
-            <button class="btn-logout" onclick="logout()">Sign Out</button>
-        </div>
-
-        <div class="tool-container">
-            <div class="panel">
-                <h2>Debit Analysis (Pie Chart)</h2>
-                <div class="chart-wrapper">
-                    <canvas id="pieChart"></canvas>
-                </div>
-            </div>
-            
-            <div class="panel">
-                <h2>Debit Analysis (Line Graph)</h2>
-                <div class="chart-wrapper">
-                    <canvas id="lineChart"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="calendar-modal" class="modal-overlay">
-        <div class="modal-box">
-            <span class="modal-close" onclick="closeCalendarModal()">&times;</span>
-            <h2 id="modal-date-title" style="margin-bottom: 0;">Date</h2>
-            <div class="modal-content-scroll">
-                <ul class="timeline" id="modal-transaction-list"></ul>
-            </div>
-        </div>
-    </div>
-
-<script>
-    // --- Register the DataLabels Plugin globally ---
-    if (typeof ChartDataLabels !== 'undefined') {
-        Chart.register(ChartDataLabels);
-    } else {
-        console.warn("ChartDataLabels plugin missing. Ensure offline files are loaded.");
-    }
-
-    // --- Page Navigation Logic (SPA Routing) ---
-    function openPage(pageId) {
-        // Hide all pages
-        document.querySelectorAll('.app-page').forEach(page => {
-            page.style.display = 'none';
-        });
-        
-        // Show target page
-        const target = document.getElementById(pageId);
-        target.style.display = (pageId === 'login-page') ? 'flex' : 'flex';
-        
-        // Specific page renders
-        if (pageId === 'analytics-page') {
-            renderCharts();
-        } else if (pageId === 'calendar-page') {
-            renderCalendar();
+    <script>
+        function openPage(pageId) {
+            document.querySelectorAll('.app-page').forEach(page => page.style.display = 'none');
+            document.getElementById(pageId).style.display = 'flex';
         }
 
-        // Quick visual reset on scroll
-        window.scrollTo(0,0);
-    }
-
-    // --- Login Logic ---
-    function attemptLogin() {
-        const user = document.getElementById('username').value.trim();
-        const pass = document.getElementById('password').value;
-        const errorMsg = document.getElementById('login-error-msg');
-
-        if (user === '') {
-            errorMsg.textContent = 'Please enter a numeric username.';
-            return;
+        function attemptLogin() {
+            if (document.getElementById('password').value === '857447') openPage('menu-page');
+            else document.getElementById('login-error-msg').textContent = 'Invalid Password';
         }
 
-        if (pass === '857447') {
-            // Hardcoded "Shivadut" to display regardless of input!
-            document.getElementById('display-username').textContent = "Shivadut";
-            openPage('menu-page'); 
-            
-            // Re-render ledger data when logged in
-            document.getElementById('total-debit-val').textContent = personalTotalDebit.toFixed(2);
-            renderLedger(); 
-            renderDebitHistory(); 
-        } else {
-            errorMsg.textContent = 'Incorrect password. Access denied.';
-        }
-    }
+        function logout() { openPage('login-page'); }
 
-    function logout() {
-        openPage('login-page');
-        document.getElementById('password').value = ''; 
-        document.getElementById('login-error-msg').textContent = '';
-    }
-
-    document.getElementById('password').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') attemptLogin();
-    });
-
-    // --- Savings Calculation Logic ---
-    function calculateSavings() {
-        let grandTotal = 0;
-        // Select all note inputs
-        const inputs = document.querySelectorAll('.note-input');
-        
-        inputs.forEach(input => {
-            // Get denomination and count
-            const denom = parseInt(input.getAttribute('data-denom'));
-            const count = parseInt(input.value) || 0; // Default to 0 if empty
-            
-            // Calculate row total
-            const rowTotal = denom * count;
-            
-            // Update row display
-            document.getElementById(`row-total-${denom}`).textContent = rowTotal.toFixed(2);
-            
-            // Add to grand total
-            grandTotal += rowTotal;
-        });
-        
-        // Update grand total display
-        document.getElementById('savings-grand-total').textContent = `₹${grandTotal.toFixed(2)}`;
-    }
-
-    // --- Core Ledger Logic ---
-    const rawFriendsArray = ["thiwakar", "gojo", "mowlish", "goww", "aravindh", "mohan", "gowtham", "parithi", "soukar"];
-    const sortedFriends = rawFriendsArray.sort(); 
-    
-    let personalTotalDebit = parseFloat(localStorage.getItem('personalTotalDebit')) || 0;
-    let ledgerState = JSON.parse(localStorage.getItem('ledgerState')) || {};
-    let debitHistoryState = JSON.parse(localStorage.getItem('debitHistoryState')) || [];
-    
-    sortedFriends.forEach(peer => {
-        if (ledgerState[peer] === undefined) {
-            ledgerState[peer] = { balance: 0, baseline: 0, transactions: [] };
-        } else if (typeof ledgerState[peer] === 'number') {
-            ledgerState[peer] = { balance: ledgerState[peer], baseline: Math.abs(ledgerState[peer]), transactions: [] };
-        }
-    });
-    localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
-
-    const dateFormatter = new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
-
-    function toggleCustomInput(selectId, inputId) {
-        const selectEl = document.getElementById(selectId);
-        const inputEl = document.getElementById(inputId);
-        if (selectEl.value === 'Other') {
-            inputEl.style.display = 'block';
-            inputEl.focus();
-        } else {
-            inputEl.style.display = 'none';
-        }
-    }
-
-    function resolveCategoryValue(selectId, inputId) {
-        const selectVal = document.getElementById(selectId).value;
-        if (selectVal === 'Other') {
-            const customVal = document.getElementById(inputId).value.trim();
-            return customVal !== "" ? customVal : "Uncategorized Transaction";
-        }
-        return selectVal !== "" ? selectVal : "Uncategorized Transaction";
-    }
-
-    function addDailyDebit() {
-        const inputEl = document.getElementById('daily-debit-input');
-        const selectEl = document.getElementById('daily-debit-category');
-        const customEl = document.getElementById('daily-debit-custom');
-        const displayEl = document.getElementById('total-debit-val');
-        
-        const amount = parseFloat(inputEl.value);
-        const categoryDesc = resolveCategoryValue('daily-debit-category', 'daily-debit-custom');
-        
-        if (!isNaN(amount) && amount > 0) {
-            personalTotalDebit += amount;
-            displayEl.textContent = personalTotalDebit.toFixed(2);
-            localStorage.setItem('personalTotalDebit', personalTotalDebit);
-            
-            debitHistoryState.unshift({
-                id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
-                amount: amount,
-                category: categoryDesc,
-                timestamp: new Date().toISOString()
+        function calculateSavings() {
+            let total = 0;
+            document.querySelectorAll('.note-input').forEach(i => {
+                let val = parseInt(i.value) || 0;
+                let denom = parseInt(i.getAttribute('data-denom'));
+                total += val * denom;
             });
-            localStorage.setItem('debitHistoryState', JSON.stringify(debitHistoryState));
-            renderDebitHistory();
-            
-            inputEl.value = ''; selectEl.selectedIndex = 0; customEl.value = ''; customEl.style.display = 'none';
-        } else alert("Please enter a valid numeric amount.");
-    }
-
-    function resetDailyDebit() {
-        if (confirm("Reset accumulator to ₹0.00? This will permanently purge the audit log as well.")) {
-            personalTotalDebit = 0;
-            document.getElementById('total-debit-val').textContent = '0.00';
-            localStorage.setItem('personalTotalDebit', 0);
-            debitHistoryState = [];
-            localStorage.setItem('debitHistoryState', JSON.stringify([]));
-            renderDebitHistory();
-        }
-    }
-
-    function resetAllCohortHistories() {
-        if (confirm("Reset all cohort timelines? Action cannot be undone.")) {
-            sortedFriends.forEach(peer => {
-                if(ledgerState[peer]) { ledgerState[peer].balance = 0; ledgerState[peer].baseline = 0; ledgerState[peer].transactions = []; }
-            });
-            localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
-            renderLedger(); 
-        }
-    }
-    
-    function renderDebitHistory() {
-        const listEl = document.getElementById('debit-history-list');
-        if (debitHistoryState.length === 0) {
-            listEl.innerHTML = `<li class="no-history-msg">No debits recorded yet.</li>`;
-            return;
-        }
-        listEl.innerHTML = debitHistoryState.map(entry => {
-            const formattedDate = dateFormatter.format(new Date(entry.timestamp));
-            const displayCat = entry.category || "General Expense";
-            return `
-                <li class="timeline-item give">
-                    <div class="timeline-meta">
-                        <span class="timeline-desc">Debit Added</span>
-                        <div class="timeline-category-tag">${displayCat}</div>
-                        <span class="timeline-date">${formattedDate}</span>
-                    </div>
-                    <div class="timeline-amount">+₹${entry.amount.toFixed(2)}</div>
-                </li>
-            `;
-        }).join('');
-    }
-
-    // --- PDF EXPORT FUNCTION ---
-    function exportHistoryToPDF() {
-        if (!debitHistoryState || debitHistoryState.length === 0) {
-            return alert("No history to export.");
-        }
-        
-        try {
-            // Failsafe bind to ensure autotable finds jsPDF in local environments
-            window.jsPDF = window.jspdf.jsPDF;
-            const doc = new window.jsPDF();
-
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('en-IN');
-            const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-
-            // Add Header
-            doc.setFontSize(18);
-            doc.setTextColor(0, 14, 26);
-            doc.text("Shivadut's Transaction History Log", 14, 22);
-
-            // Add Subtitle (Downloaded Date & Time)
-            doc.setFontSize(10);
-            doc.setTextColor(108, 122, 137);
-            doc.text(`Downloaded on: ${dateStr} at ${timeStr}`, 14, 30);
-
-            // Prepare table data
-            const tableColumn = ["Date", "Time", "Category", "Amount (Rs.)"];
-            const tableRows = [];
-
-            debitHistoryState.forEach(entry => {
-                const d = new Date(entry.timestamp);
-                const entryDate = d.toLocaleDateString('en-IN');
-                const entryTime = d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-                const category = entry.category || "General";
-                const amount = parseFloat(entry.amount).toFixed(2);
-                
-                tableRows.push([entryDate, entryTime, category, amount]);
-            });
-
-            // Generate Table with AutoTable
-            doc.autoTable({
-                startY: 38,
-                head: [tableColumn],
-                body: tableRows,
-                theme: 'grid',
-                headStyles: { fillColor: [3, 169, 244], textColor: 255, fontStyle: 'bold' },
-                styles: { fontSize: 10, cellPadding: 5 },
-                alternateRowStyles: { fillColor: [248, 249, 250] },
-                didDrawPage: function (data) {
-                    // NEAT PAGE BORDER HOOK
-                    const pageWidth = doc.internal.pageSize.width;
-                    const pageHeight = doc.internal.pageSize.height;
-                    doc.setDrawColor(200, 200, 200); // Light gray border
-                    doc.setLineWidth(0.5);
-                    doc.rect(5, 5, pageWidth - 10, pageHeight - 10);
-                }
-            });
-
-            // Save PDF file
-            const isoDate = now.toISOString().slice(0, 10);
-            doc.save(`Shivadut_History_${isoDate}.pdf`);
-
-        } catch (error) {
-            console.error(error);
-            alert("PDF library is missing or blocked. The internet links have been enabled in the HTML <head> to fix this issue.");
-        }
-    }
-
-    function exportHistoryToExcel() {
-        if (!debitHistoryState || debitHistoryState.length === 0) return alert("No history to export.");
-        let csvContent = "Transaction ID,Date,Time,Category/Description,Amount (\u20B9)\n";
-        debitHistoryState.forEach(entry => {
-            const dateParts = dateFormatter.format(new Date(entry.timestamp)).split(','); 
-            const isolatedDate = dateParts[0] ? dateParts[0].trim() : "Unknown";
-            const isolatedTime = dateParts[1] ? dateParts[1].trim() : "Unknown";
-            const sanitizedCategory = `"${(entry.category || "General").replace(/"/g, '""')}"`;
-            csvContent += `${entry.id},${isolatedDate},${isolatedTime},${sanitizedCategory},${entry.amount.toFixed(2)}\n`;
-        });
-        const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = `Transaction_History_${new Date().toISOString().slice(0, 10)}.csv`;
-        link.click();
-    }
-
-    function renderLedger() {
-        const container = document.getElementById('ledger-container');
-        container.innerHTML = ''; 
-
-        sortedFriends.forEach(peer => {
-            const peerData = ledgerState[peer];
-            const currentBalance = peerData.balance;
-            const currentBaseline = peerData.baseline;
-            
-            let balanceText = 'Settled (₹0)'; let balanceClass = 'balance-neutral';
-            if (currentBalance > 0) { balanceText = `Avunga kudukanum ₹${currentBalance.toFixed(2)}`; balanceClass = 'balance-positive'; } 
-            else if (currentBalance < 0) { balanceText = `Naan Kudukanum ₹${Math.abs(currentBalance).toFixed(2)}`; balanceClass = 'balance-negative'; }
-
-            const msg = currentBalance > 0 ? `Hey ${peer}, pending share is ₹${currentBalance.toFixed(2)}.` : currentBalance < 0 ? `Hey ${peer}, I owe you ₹${Math.abs(currentBalance).toFixed(2)}.` : `Hey ${peer}, ledger settled!`;
-            const whatsappUri = `https://wa.me/?text=${encodeURIComponent(msg)}`;
-
-            let progress = currentBalance === 0 ? 100 : currentBaseline > 0 ? ((currentBaseline - Math.abs(currentBalance)) / currentBaseline) * 100 : 0;
-            const roundedProgress = Math.max(0, Math.min(Math.round(progress), 100));
-
-            const historyHTML = peerData.transactions.length === 0 ? `<p class="no-history-msg">No historical transactions.</p>` : 
-                `<ul class="timeline">${peerData.transactions.map(txn => {
-                    const formattedDate = dateFormatter.format(new Date(txn.timestamp));
-                    return `
-                        <li class="timeline-item ${txn.action}">
-                            <div class="timeline-meta">
-                                <span class="timeline-desc">${txn.action === 'give' ? 'Naa Kuduthen' : 'Avunga Kuduthanga'}</span>
-                                <div class="timeline-category-tag">${txn.category || "General"}</div>
-                                <span class="timeline-date">${formattedDate}</span>
-                            </div>
-                            <div class="timeline-amount">${txn.action === 'give' ? '+' : '-'}₹${txn.amount.toFixed(2)}</div>
-                        </li>`;
-                }).join('')}</ul>`;
-
-            const itemContainer = document.createElement('div');
-            itemContainer.className = 'ledger-item-container';
-            itemContainer.innerHTML = `
-                <div class="ledger-row">
-                    <div class="peer-info">
-                        <div class="peer-name">${peer}</div>
-                        <button class="btn-history-toggle" onclick="toggleHistory('${peer}')">View Timeline</button>
-                    </div>
-                    <div class="ledger-controls">
-                        <div class="ledger-inputs">
-                            <input type="number" id="input-${peer}" placeholder="₹ Amt" step="0.01" min="0">
-                            <select id="cat-${peer}" class="modern-select" onchange="toggleCustomInput('cat-${peer}', 'custom-${peer}')">
-                                <option value="" disabled selected>Description</option>
-                                <option value="Train tickets">Train tickets</option>
-                                <option value="Bus tickets">Bus tickets</option>
-                                <option value="Tea">Tea</option>
-                                <option value="Breakfast">Breakfast</option>
-                                <option value="Lunch">Lunch</option>
-                                <option value="Dinner">Dinner</option>
-                                <option value="Meals/Snacks">Meals/Snacks</option>
-                                <option value="Other">Other (Custom)</option>
-                            </select>
-                        </div>
-                        <input type="text" id="custom-${peer}" placeholder="Type note..." style="display:none; width: 100%;">
-                        <div class="ledger-buttons">
-                            <button class="btn-give" onclick="processTransaction('${peer}', 'give')">Naa kuduthen</button>
-                            <button class="btn-receive" onclick="processTransaction('${peer}', 'receive')">Avunga kuduthanga</button>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="action-container">
-                            <div class="balance-display ${balanceClass}">${balanceText}</div>
-                            <a href="${whatsappUri}" target="_blank" class="btn-share-wa"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg></a>
-                            </div>
-                            <div class="progress-module"><div class="progress-container"><div class="progress-fill ${roundedProgress===100&&currentBalance===0?'settled':''}" style="transform: scaleX(${progress/100});"></div></div><div class="progress-label-text">${roundedProgress}% Settled</div></div>
-                        </div>
-                    </div>
-                    <div class="history-panel" id="history-${peer}"><h4>Transaction Timeline</h4>${historyHTML}</div>
-                `;
-            container.appendChild(itemContainer);
-        });
-    }
-
-    function toggleHistory(peer) {
-        const panel = document.getElementById(`history-${peer}`);
-        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function processTransaction(peer, action) {
-        const inputEl = document.getElementById(`input-${peer}`);
-        const selectEl = document.getElementById(`cat-${peer}`);
-        const customEl = document.getElementById(`custom-${peer}`);
-        const amount = parseFloat(inputEl.value);
-        
-        if (!isNaN(amount) && amount > 0) {
-            let pb = ledgerState[peer].balance; let pbl = ledgerState[peer].baseline;
-            let nb = pb; let nbl = pbl;
-
-            if (action === 'give') { nb = pb + amount; nbl = pb >= 0 ? pbl + amount : (nb > 0 ? nb : pbl); } 
-            else { nb = pb - amount; nbl = pb <= 0 ? pbl + amount : (nb < 0 ? Math.abs(nb) : pbl); }
-            if (nb === 0) nbl = 0;
-
-            ledgerState[peer].balance = nb; ledgerState[peer].baseline = nbl;
-            ledgerState[peer].transactions.unshift({
-                id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
-                amount: amount, category: resolveCategoryValue(`cat-${peer}`, `custom-${peer}`), action: action, timestamp: new Date().toISOString()
-            });
-            
-            inputEl.value = ''; selectEl.selectedIndex = 0; customEl.value = ''; customEl.style.display = 'none';
-            localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
-            renderLedger(); 
-            document.getElementById(`history-${peer}`).style.display = 'block';
-        } else alert("Please provide a valid numeric amount.");
-    }
-
-    // --- Calculator Logic ---
-    const calcKeys = document.getElementById('calc-keys');
-    const calcDisplay = document.getElementById('calc-display');
-    let calcState = { firstOperand: null, operator: null, waitingForSecondOperand: false, displayValue: '0' };
-
-    function updateCalcDisplay() { calcDisplay.textContent = calcState.displayValue; }
-
-    calcKeys.addEventListener('click', (event) => {
-        const target = event.target; if (!target.matches('button')) return;
-        const action = target.dataset.action; const keyContent = target.textContent;
-
-        if (!action) {
-            if (calcState.waitingForSecondOperand) { calcState.displayValue = keyContent; calcState.waitingForSecondOperand = false; } 
-            else calcState.displayValue = calcState.displayValue === '0' ? keyContent : calcState.displayValue + keyContent;
-        } else if (action === 'decimal' && !calcState.displayValue.includes('.')) calcState.displayValue += '.';
-        else if (['add', 'subtract', 'multiply', 'divide'].includes(action)) handleOperator(action);
-        else if (action === 'calculate' && calcState.operator && calcState.firstOperand !== null) {
-            calcState.displayValue = String(calculateResult(calcState.firstOperand, parseFloat(calcState.displayValue), calcState.operator));
-            calcState.firstOperand = null; calcState.operator = null; calcState.waitingForSecondOperand = false;
-        } else if (action === 'clear') { calcState.displayValue = '0'; calcState.firstOperand = null; calcState.operator = null; calcState.waitingForSecondOperand = false; }
-        updateCalcDisplay();
-    });
-
-    function handleOperator(nextOp) {
-        const input = parseFloat(calcState.displayValue);
-        if (calcState.operator && calcState.waitingForSecondOperand) { calcState.operator = nextOp; return; }
-        if (calcState.firstOperand == null && !isNaN(input)) calcState.firstOperand = input;
-        else if (calcState.operator) {
-            const res = calculateResult(calcState.firstOperand, input, calcState.operator);
-            calcState.displayValue = String(res); calcState.firstOperand = res;
-        }
-        calcState.waitingForSecondOperand = true; calcState.operator = nextOp;
-    }
-
-    function calculateResult(f, s, op) { return op === 'add' ? f+s : op === 'subtract' ? f-s : op === 'multiply' ? f*s : s!==0 ? f/s : 0; }
-
-    // --- Calendar Module Logic ---
-    let currentCalDate = new Date(); 
-
-    function renderCalendar() {
-        const grid = document.getElementById('calendar-grid');
-        const monthYearText = document.getElementById('calendar-month-year');
-        const budgetThreshold = parseFloat(document.getElementById('calendar-budget-input').value) || 200;
-        
-        grid.innerHTML = '';
-        
-        const year = currentCalDate.getFullYear();
-        const month = currentCalDate.getMonth();
-        
-        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        monthYearText.textContent = `${monthNames[month]} ${year}`;
-
-        // 1. Data Mapping: Aggregate debits by YYYY-MM-DD
-        const dailyTotals = {};
-        debitHistoryState.forEach(entry => {
-            const d = new Date(entry.timestamp);
-            const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-            if(!dailyTotals[key]) dailyTotals[key] = { amount: 0, items: [] };
-            dailyTotals[key].amount += entry.amount;
-            dailyTotals[key].items.push(entry);
-        });
-
-        // 2. Generate Grid Headers
-        const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        daysOfWeek.forEach(day => {
-            const el = document.createElement('div');
-            el.className = 'calendar-day-header';
-            el.textContent = day;
-            grid.appendChild(el);
-        });
-
-        // Calculate days for the grid
-        const firstDayOfMonth = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-        // Empty cells for the start of the month
-        for (let i = 0; i < firstDayOfMonth; i++) {
-            const emptyCell = document.createElement('div');
-            emptyCell.className = 'calendar-cell empty-cell';
-            grid.appendChild(emptyCell);
+            document.getElementById('savings-grand-total').textContent = '₹' + total;
         }
 
-        // 3. Render populated and empty days
-        for (let i = 1; i <= daysInMonth; i++) {
-            const cell = document.createElement('div');
-            cell.className = 'calendar-cell';
-            
-            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-            const dayData = dailyTotals[dateStr];
-
-            const dateSpan = document.createElement('span');
-            dateSpan.className = 'cell-date';
-            dateSpan.textContent = i;
-            cell.appendChild(dateSpan);
-
-            // 4. Heatmap & Interaction Logic
-            if (dayData && dayData.amount > 0) {
-                cell.classList.add('has-data');
-                
-                if (dayData.amount > budgetThreshold) {
-                    cell.classList.add('bg-high');
-                } else {
-                    cell.classList.add('bg-low');
-                }
-
-                const amountSpan = document.createElement('span');
-                amountSpan.className = 'cell-amount';
-                amountSpan.textContent = `₹${dayData.amount.toFixed(2)}`;
-                cell.appendChild(amountSpan);
-
-                cell.onclick = () => openCalendarModal(dateStr, monthNames[month], i, year);
-            }
-
-            grid.appendChild(cell);
+        function addDailyDebit() {
+            let val = parseFloat(document.getElementById('daily-debit-input').value) || 0;
+            let current = parseFloat(document.getElementById('total-debit-val').textContent);
+            document.getElementById('total-debit-val').textContent = (current + val).toFixed(2);
         }
-    }
-
-    function changeMonth(offset) {
-        currentCalDate.setMonth(currentCalDate.getMonth() + offset);
-        renderCalendar();
-    }
-
-    // --- Modal Drill-Down Logic ---
-    function openCalendarModal(dateKey, monthName, dayNum, year) {
-        document.getElementById('modal-date-title').textContent = `${monthName} ${dayNum}, ${year}`;
-        const listEl = document.getElementById('modal-transaction-list');
-        listEl.innerHTML = '';
-
-        const dayTransactions = debitHistoryState.filter(entry => {
-            const d = new Date(entry.timestamp);
-            const entryKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-            return entryKey === dateKey;
-        });
-
-        if (dayTransactions.length === 0) {
-            listEl.innerHTML = `<li class="no-history-msg">No transactions found for this date.</li>`;
-        } else {
-            listEl.innerHTML = dayTransactions.map(entry => {
-                const formattedTime = new Intl.DateTimeFormat('en-IN', { timeStyle: 'short' }).format(new Date(entry.timestamp));
-                const displayCat = entry.category || "General Expense";
-                return `
-                    <li class="timeline-item give">
-                        <div class="timeline-meta">
-                            <span class="timeline-desc">${displayCat}</span>
-                            <span class="timeline-date">${formattedTime}</span>
-                        </div>
-                        <div class="timeline-amount">₹${entry.amount.toFixed(2)}</div>
-                    </li>
-                `;
-            }).join('');
-        }
-
-        document.getElementById('calendar-modal').style.display = 'flex';
-    }
-
-    function closeCalendarModal() {
-        document.getElementById('calendar-modal').style.display = 'none';
-    }
-
-    window.onclick = function(event) {
-        const modal = document.getElementById('calendar-modal');
-        if (event.target == modal) {
-            closeCalendarModal();
-        }
-    }
-</script>
+    </script>
 </body>
 </html>
