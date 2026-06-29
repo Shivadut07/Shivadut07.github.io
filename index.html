@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shivadut's Integrated Financial Ledger</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             /* Core Application Color Palette */
@@ -153,8 +154,8 @@
             box-shadow: 0 12px 24px rgba(3, 169, 244, 0.2);
         }
 
-        .menu-box h3 { font-size: 1.4rem; color: var(--text-main); }
-        .menu-box p { color: var(--text-muted); font-size: 0.9rem; }
+        .menu-box h3 { font-size: 1.4rem; color: var(--text-main); margin: 0;}
+        .menu-box p { color: var(--text-muted); font-size: 0.9rem; margin: 0;}
         
         .menu-icon {
             font-size: 3rem;
@@ -164,7 +165,7 @@
         /* --- TOOL PAGES COMMON STYLES --- */
         .tool-container {
             width: 100%;
-            max-width: 800px; /* Centered narrow view for each tool */
+            max-width: 800px;
             display: flex;
             flex-direction: column;
             gap: 25px;
@@ -475,6 +476,14 @@
         .calculator__keys button[data-action="calculate"] { background-color: var(--btn-receive); color: white; grid-column: span 2; }
         .calculator__keys button[data-action="clear"] { background-color: var(--calc-key-action); color: white; grid-column: span 2; }
 
+        /* --- CHART STYLES --- */
+        .chart-wrapper {
+            position: relative;
+            height: 350px;
+            width: 100%;
+            margin-top: 15px;
+        }
+
         @media (max-width: 850px) {
             .ledger-row { grid-template-columns: 1fr; gap: 14px; }
             .peer-info { align-items: center; border-bottom: 1px dashed var(--border-light); padding-bottom: 10px; }
@@ -528,6 +537,11 @@
                 <div class="menu-icon">🧮</div>
                 <h3>Calculator</h3>
                 <p>Quick financial calculations.</p>
+            </div>
+            <div class="menu-box" onclick="openPage('analytics-page')">
+                <div class="menu-icon">📊</div>
+                <h3>Analytics</h3>
+                <p>Visual data analysis of your daily debits.</p>
             </div>
         </div>
     </div>
@@ -630,6 +644,29 @@
         </div>
     </div>
 
+    <div id="analytics-page" class="app-page">
+        <div class="tool-nav-bar">
+            <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
+            <button class="btn-logout" onclick="logout()">Sign Out</button>
+        </div>
+
+        <div class="tool-container">
+            <div class="panel">
+                <h2>Debit Analysis (Pie Chart)</h2>
+                <div class="chart-wrapper">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Debit Analysis (Bar Graph)</h2>
+                <div class="chart-wrapper">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <script>
     // --- Page Navigation Logic (SPA Routing) ---
     function openPage(pageId) {
@@ -642,6 +679,11 @@
         const target = document.getElementById(pageId);
         target.style.display = (pageId === 'login-page') ? 'flex' : 'flex';
         
+        // If navigating to analytics, render the charts with fresh data
+        if (pageId === 'analytics-page') {
+            renderCharts();
+        }
+
         // Quick visual reset on scroll
         window.scrollTo(0,0);
     }
@@ -659,7 +701,7 @@
 
         if (pass === 'shivashang') {
             document.getElementById('display-username').textContent = user;
-            openPage('menu-page'); // Open Menu instead of old dashboard
+            openPage('menu-page'); 
             
             // Re-render ledger data when logged in
             document.getElementById('total-debit-val').textContent = personalTotalDebit.toFixed(2);
@@ -680,7 +722,7 @@
         if (e.key === 'Enter') attemptLogin();
     });
 
-    // --- Core Ledger Logic (Unchanged) ---
+    // --- Core Ledger Logic ---
     const rawFriendsArray = ["thiwakar", "gojo", "mowlish", "goww", "aravindh", "mohan", "gowtham", "parithi", "soukar"];
     const sortedFriends = rawFriendsArray.sort(); 
     
@@ -914,7 +956,7 @@
         } else alert("Please provide a valid numeric amount.");
     }
 
-    // --- Calculator Logic (Unchanged) ---
+    // --- Calculator Logic ---
     const calcKeys = document.getElementById('calc-keys');
     const calcDisplay = document.getElementById('calc-display');
     let calcState = { firstOperand: null, operator: null, waitingForSecondOperand: false, displayValue: '0' };
@@ -949,6 +991,86 @@
     }
 
     function calculateResult(f, s, op) { return op === 'add' ? f+s : op === 'subtract' ? f-s : op === 'multiply' ? f*s : s!==0 ? f/s : 0; }
+
+    // --- Chart/Analytics Logic ---
+    let pieChartInstance = null;
+    let barChartInstance = null;
+
+    function renderCharts() {
+        const ctxPie = document.getElementById('pieChart').getContext('2d');
+        const ctxBar = document.getElementById('barChart').getContext('2d');
+
+        // Aggregate amounts by category from the daily debit history
+        const categoryTotals = {};
+        debitHistoryState.forEach(entry => {
+            const cat = entry.category || "Uncategorized";
+            categoryTotals[cat] = (categoryTotals[cat] || 0) + entry.amount;
+        });
+
+        const labels = Object.keys(categoryTotals);
+        const data = Object.values(categoryTotals);
+
+        // Predefined nice colors for the charts
+        const backgroundColors = [
+            '#03a9f4', '#8bc34a', '#ff9800', '#e91e63',
+            '#9c27b0', '#ffeb3b', '#00bcd4', '#4caf50', '#ff5722'
+        ];
+
+        // Destroy existing charts to prevent rendering overlapping canvases
+        if (pieChartInstance) { pieChartInstance.destroy(); }
+        if (barChartInstance) { barChartInstance.destroy(); }
+
+        // Create Pie Chart
+        pieChartInstance = new Chart(ctxPie, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: backgroundColors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        // Create Bar Graph
+        barChartInstance = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Total Amount (₹)',
+                    data: data,
+                    backgroundColor: '#03a9f4', // Default blue from theme
+                    borderColor: '#0288d1',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Amount (₹)' }
+                    },
+                    x: {
+                        title: { display: true, text: 'Description' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
 </script>
 </body>
 </html>
