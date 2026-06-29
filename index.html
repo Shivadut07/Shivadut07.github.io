@@ -7,8 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root {
             /* Core Application Color Palette */
@@ -17,24 +15,24 @@
             --text-main: #000e1a;
             --text-muted: #6c7a89;
             --border-light: #cccccc;
-            
+           
             /* Semantic Financial Action Colors */
             --btn-give: #ff5722;
             --btn-receive: #8bc34a;
             --btn-neutral: #03a9f4;
-            --btn-whatsapp: #25D366; 
-            
+            --btn-whatsapp: #25D366;
+           
             /* Calculator Module Colors */
             --calc-bg: #2c3e50;
             --calc-key: #eee;
             --calc-key-op: #ff9800;
             --calc-key-action: #e74c3c;
-            
+           
             /* Timeline Specific Variables */
             --timeline-spine: #d2d7d3;
             --timeline-node-bg: #ffffff;
         }
-        
+       
         /* Global Reset */
         * {
             box-sizing: border-box;
@@ -96,18 +94,7 @@
             border-color: var(--btn-neutral);
             box-shadow: 0 0 0 3px rgba(3, 169, 244, 0.1);
         }
-        .btn-export-pdf {
-            background-color: #d32f2f;
-            color: #ffffff;
-            border: none;
-            border-radius: 5px;
-            padding: 8px 14px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-right: 10px;
-        }
-        .btn-export-pdf:hover { background-color: #b71c1c; }
+
         .btn-login {
             width: 100%;
             padding: 14px;
@@ -170,7 +157,7 @@
 
         .menu-box h3 { font-size: 1.4rem; color: var(--text-main); margin: 0;}
         .menu-box p { color: var(--text-muted); font-size: 0.9rem; margin: 0;}
-        
+       
         .menu-icon {
             font-size: 3rem;
             margin-bottom: 10px;
@@ -257,7 +244,7 @@
             border: 1px solid var(--border-light);
             border-radius: 8px;
             font-size: 1.05rem;
-            min-width: 0; 
+            min-width: 0;
         }
 
         select.modern-select {
@@ -285,13 +272,13 @@
             cursor: pointer;
             color: white;
             transition: transform 0.2s, opacity 0.2s;
-            white-space: nowrap; 
+            white-space: nowrap;
         }
         button:hover { transform: scale(1.02); opacity: 0.9; }
         button:active { transform: scale(0.95); }
         .btn-add { background-color: var(--btn-neutral); flex: 1 1 auto; }
         .btn-reset { background-color: var(--calc-key-action); flex: 0 0 auto; }
-        
+       
         .header-action-row {
             display: flex;
             justify-content: space-between;
@@ -303,7 +290,7 @@
         .header-action-row h2 { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
 
         .btn-export-excel {
-            background-color: #107c41; 
+            background-color: #107c41;
             color: #ffffff;
             border: none;
             border-radius: 6px;
@@ -372,17 +359,17 @@
             padding: 18px 0;
         }
         .ledger-item-container:last-child { border-bottom: none; }
-        
+       
         .ledger-row {
             display: grid;
-            grid-template-columns: 120px 2fr 1fr; 
+            grid-template-columns: 120px 2fr 1fr;
             align-items: center;
             gap: 15px;
         }
 
         .peer-info { display: flex; flex-direction: column; gap: 6px; }
         .peer-name { font-weight: 600; text-transform: capitalize; font-size: 1.05rem; }
-        
+       
         .btn-history-toggle {
             padding: 5px 8px;
             font-size: 0.72rem;
@@ -390,12 +377,12 @@
             border-radius: 4px;
             align-self: flex-start;
         }
-        
+       
         .ledger-controls { display: flex; flex-direction: column; gap: 8px; }
         .ledger-inputs { display: flex; gap: 6px; width: 100%; }
         .ledger-inputs input[type="number"] { width: 90px; padding: 8px; }
         .ledger-inputs select, .ledger-inputs input[type="text"] { flex: 1; padding: 8px; }
-        
+       
         .ledger-buttons { display: flex; gap: 6px; width: 100%; }
         .ledger-buttons button { flex: 1; padding: 8px 10px; font-size: 0.78rem; border-radius: 6px; }
         .btn-give { background-color: var(--btn-give); }
@@ -412,10 +399,10 @@
         .balance-display {
             text-align: right;
             font-weight: bold;
-            font-size: 0.9rem; 
+            font-size: 0.9rem;
             padding: 10px 12px;
             border-radius: 6px;
-            flex-grow: 1; 
+            flex-grow: 1;
         }
 
         .btn-share-wa {
@@ -469,7 +456,7 @@
         .timeline-item::before {
             content: "";
             position: absolute;
-            left: -21px; 
+            left: -21px;
             top: 4px;
             width: 12px;
             height: 12px;
@@ -482,12 +469,12 @@
         .timeline-item.receive::before { border-color: var(--btn-receive); }
         .timeline-meta { display: flex; flex-direction: column; gap: 2px; max-width: 65%; }
         .timeline-desc { font-weight: 600; color: var(--text-main); }
-        .timeline-category-tag { 
-            font-size: 0.7rem; 
-            background-color: #e2e8f0; 
-            color: #475569; 
-            padding: 2px 6px; 
-            border-radius: 4px; 
+        .timeline-category-tag {
+            font-size: 0.7rem;
+            background-color: #e2e8f0;
+            color: #475569;
+            padding: 2px 6px;
+            border-radius: 4px;
             display: inline-block;
         }
         .timeline-date { font-size: 0.7rem; color: var(--text-muted); }
@@ -552,7 +539,7 @@
             padding: 8px 16px;
             font-size: 1.2rem;
         }
-        
+       
         .budget-control {
             display: flex;
             justify-content: flex-end;
@@ -667,7 +654,7 @@
             .action-container { flex-direction: row; }
             .balance-display { text-align: center; }
             .input-row { flex-direction: column; }
-            
+           
             .calendar-cell { min-height: 60px; padding: 4px; }
             .cell-date { font-size: 0.8rem; }
             .cell-amount { font-size: 0.75rem; }
@@ -739,7 +726,7 @@
             <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
             <button class="btn-logout" onclick="logout()">Sign Out</button>
         </div>
-        
+       
         <div class="tool-container">
             <div class="panel">
                 <h2>Savings Cash Counter</h2>
@@ -800,7 +787,7 @@
             <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
             <button class="btn-logout" onclick="logout()">Sign Out</button>
         </div>
-        
+       
         <div class="tool-container">
             <div class="panel">
                 <h2>Personal Daily Debit Accumulator</h2>
@@ -849,7 +836,7 @@
             <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
             <button class="btn-logout" onclick="logout()">Sign Out</button>
         </div>
-        
+       
         <div class="tool-container">
             <div class="panel">
                 <div class="calendar-header">
@@ -857,7 +844,7 @@
                     <h2 id="calendar-month-year">Month Year</h2>
                     <button onclick="changeMonth(1)">&#10095;</button>
                 </div>
-                
+               
                 <div class="budget-control">
                     <label for="calendar-budget-input">Daily Budget Threshold: ₹</label>
                     <input type="number" id="calendar-budget-input" value="200" step="10" min="0" onchange="renderCalendar()">
@@ -931,7 +918,7 @@
                     <canvas id="pieChart"></canvas>
                 </div>
             </div>
-            
+           
             <div class="panel">
                 <h2>Debit Analysis (Line Graph)</h2>
                 <div class="chart-wrapper">
@@ -950,64 +937,7 @@
             </div>
         </div>
     </div>
-<div class="panel">
-        <div class="header-action-row">
-            <h2>Transaction History Log</h2>
-            <div>
-                <button class="btn-export-pdf" onclick="exportHistoryToPdf()">PDF</button>
-                <button class="btn-export-excel" onclick="exportHistoryToExcel()">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM5.884 6.68 8 9.219l2.116-2.54a.5.5 0 1 1 .768.641L8.651 10l2.233 2.68a.5.5 0 0 1-.768.64L8 10.781l-2.116 2.54a.5.5 0 0 1-.768-.641L7.349 10 5.116 7.32a.5.5 0 1 1 .768-.64z"/></svg>
-                    Export
-                </button>
-            </div>
-        </div>
-        <div class="debit-history-scroll" id="debit-history-container">
-            <ul class="timeline" id="debit-history-list"></ul>
-        </div>
-    </div>
 
-    <script>
-    // ... (Keep your existing JavaScript functions) ...
-
-    // New PDF Export Function
-    function exportHistoryToPdf() {
-        if (!debitHistoryState || debitHistoryState.length === 0) return alert("No history to export.");
-
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-
-        doc.setFontSize(16);
-        doc.text("Transaction History Report", 14, 20);
-        doc.setFontSize(10);
-        doc.text("Generated on: " + new Date().toLocaleString(), 14, 28);
-
-        const tableColumn = ["Date", "Time", "Category", "Amount (₹)"];
-        const tableRows = [];
-
-        debitHistoryState.forEach(entry => {
-            const d = new Date(entry.timestamp);
-            const dateStr = d.toLocaleDateString('en-IN');
-            const timeStr = d.toLocaleTimeString('en-IN');
-            
-            const rowData = [
-                dateStr,
-                timeStr,
-                entry.category,
-                entry.amount.toFixed(2)
-            ];
-            tableRows.push(rowData);
-        });
-
-        doc.autoTable({
-            head: [tableColumn],
-            body: tableRows,
-            startY: 35,
-            theme: 'grid', // This adds the border
-            headStyles: { fillColor: [41, 128, 185] },
-        });
-
-        doc.save(`Transaction_History_${new Date().toISOString().slice(0, 10)}.pdf`);
-    }
 <script>
     // --- Register the DataLabels Plugin globally ---
     Chart.register(ChartDataLabels);
@@ -1018,11 +948,11 @@
         document.querySelectorAll('.app-page').forEach(page => {
             page.style.display = 'none';
         });
-        
+       
         // Show target page
         const target = document.getElementById(pageId);
         target.style.display = (pageId === 'login-page') ? 'flex' : 'flex';
-        
+       
         // Specific page renders
         if (pageId === 'analytics-page') {
             renderCharts();
@@ -1048,12 +978,12 @@
         // Updated Password
         if (pass === '857447') {
             document.getElementById('display-username').textContent = user;
-            openPage('menu-page'); 
-            
+            openPage('menu-page');
+           
             // Re-render ledger data when logged in
             document.getElementById('total-debit-val').textContent = personalTotalDebit.toFixed(2);
-            renderLedger(); 
-            renderDebitHistory(); 
+            renderLedger();
+            renderDebitHistory();
         } else {
             errorMsg.textContent = 'Incorrect password. Access denied.';
         }
@@ -1074,34 +1004,34 @@
         let grandTotal = 0;
         // Select all note inputs
         const inputs = document.querySelectorAll('.note-input');
-        
+       
         inputs.forEach(input => {
             // Get denomination and count
             const denom = parseInt(input.getAttribute('data-denom'));
             const count = parseInt(input.value) || 0; // Default to 0 if empty
-            
+           
             // Calculate row total
             const rowTotal = denom * count;
-            
+           
             // Update row display
             document.getElementById(`row-total-${denom}`).textContent = rowTotal.toFixed(2);
-            
+           
             // Add to grand total
             grandTotal += rowTotal;
         });
-        
+       
         // Update grand total display
         document.getElementById('savings-grand-total').textContent = `₹${grandTotal.toFixed(2)}`;
     }
 
     // --- Core Ledger Logic ---
     const rawFriendsArray = ["thiwakar", "gojo", "mowlish", "goww", "aravindh", "mohan", "gowtham", "parithi", "soukar"];
-    const sortedFriends = rawFriendsArray.sort(); 
-    
+    const sortedFriends = rawFriendsArray.sort();
+   
     let personalTotalDebit = parseFloat(localStorage.getItem('personalTotalDebit')) || 0;
     let ledgerState = JSON.parse(localStorage.getItem('ledgerState')) || {};
     let debitHistoryState = JSON.parse(localStorage.getItem('debitHistoryState')) || [];
-    
+   
     sortedFriends.forEach(peer => {
         if (ledgerState[peer] === undefined) {
             ledgerState[peer] = { balance: 0, baseline: 0, transactions: [] };
@@ -1138,15 +1068,15 @@
         const selectEl = document.getElementById('daily-debit-category');
         const customEl = document.getElementById('daily-debit-custom');
         const displayEl = document.getElementById('total-debit-val');
-        
+       
         const amount = parseFloat(inputEl.value);
         const categoryDesc = resolveCategoryValue('daily-debit-category', 'daily-debit-custom');
-        
+       
         if (!isNaN(amount) && amount > 0) {
             personalTotalDebit += amount;
             displayEl.textContent = personalTotalDebit.toFixed(2);
             localStorage.setItem('personalTotalDebit', personalTotalDebit);
-            
+           
             debitHistoryState.unshift({
                 id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
                 amount: amount,
@@ -1155,7 +1085,7 @@
             });
             localStorage.setItem('debitHistoryState', JSON.stringify(debitHistoryState));
             renderDebitHistory();
-            
+           
             inputEl.value = ''; selectEl.selectedIndex = 0; customEl.value = ''; customEl.style.display = 'none';
         } else alert("Please enter a valid numeric amount.");
     }
@@ -1177,10 +1107,10 @@
                 if(ledgerState[peer]) { ledgerState[peer].balance = 0; ledgerState[peer].baseline = 0; ledgerState[peer].transactions = []; }
             });
             localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
-            renderLedger(); 
+            renderLedger();
         }
     }
-    
+   
     function renderDebitHistory() {
         const listEl = document.getElementById('debit-history-list');
         if (debitHistoryState.length === 0) {
@@ -1207,7 +1137,7 @@
         if (!debitHistoryState || debitHistoryState.length === 0) return alert("No history to export.");
         let csvContent = "Transaction ID,Date,Time,Category/Description,Amount (\u20B9)\n";
         debitHistoryState.forEach(entry => {
-            const dateParts = dateFormatter.format(new Date(entry.timestamp)).split(','); 
+            const dateParts = dateFormatter.format(new Date(entry.timestamp)).split(',');
             const isolatedDate = dateParts[0] ? dateParts[0].trim() : "Unknown";
             const isolatedTime = dateParts[1] ? dateParts[1].trim() : "Unknown";
             const sanitizedCategory = `"${(entry.category || "General").replace(/"/g, '""')}"`;
@@ -1222,15 +1152,15 @@
 
     function renderLedger() {
         const container = document.getElementById('ledger-container');
-        container.innerHTML = ''; 
+        container.innerHTML = '';
 
         sortedFriends.forEach(peer => {
             const peerData = ledgerState[peer];
             const currentBalance = peerData.balance;
             const currentBaseline = peerData.baseline;
-            
+           
             let balanceText = 'Settled (₹0)'; let balanceClass = 'balance-neutral';
-            if (currentBalance > 0) { balanceText = `Avunga kudukanum ₹${currentBalance.toFixed(2)}`; balanceClass = 'balance-positive'; } 
+            if (currentBalance > 0) { balanceText = `Avunga kudukanum ₹${currentBalance.toFixed(2)}`; balanceClass = 'balance-positive'; }
             else if (currentBalance < 0) { balanceText = `Naan Kudukanum ₹${Math.abs(currentBalance).toFixed(2)}`; balanceClass = 'balance-negative'; }
 
             const msg = currentBalance > 0 ? `Hey ${peer}, pending share is ₹${currentBalance.toFixed(2)}.` : currentBalance < 0 ? `Hey ${peer}, I owe you ₹${Math.abs(currentBalance).toFixed(2)}.` : `Hey ${peer}, ledger settled!`;
@@ -1239,7 +1169,7 @@
             let progress = currentBalance === 0 ? 100 : currentBaseline > 0 ? ((currentBaseline - Math.abs(currentBalance)) / currentBaseline) * 100 : 0;
             const roundedProgress = Math.max(0, Math.min(Math.round(progress), 100));
 
-            const historyHTML = peerData.transactions.length === 0 ? `<p class="no-history-msg">No historical transactions.</p>` : 
+            const historyHTML = peerData.transactions.length === 0 ? `<p class="no-history-msg">No historical transactions.</p>` :
                 `<ul class="timeline">${peerData.transactions.map(txn => {
                     const formattedDate = dateFormatter.format(new Date(txn.timestamp));
                     return `
@@ -1306,12 +1236,12 @@
         const selectEl = document.getElementById(`cat-${peer}`);
         const customEl = document.getElementById(`custom-${peer}`);
         const amount = parseFloat(inputEl.value);
-        
+       
         if (!isNaN(amount) && amount > 0) {
             let pb = ledgerState[peer].balance; let pbl = ledgerState[peer].baseline;
             let nb = pb; let nbl = pbl;
 
-            if (action === 'give') { nb = pb + amount; nbl = pb >= 0 ? pbl + amount : (nb > 0 ? nb : pbl); } 
+            if (action === 'give') { nb = pb + amount; nbl = pb >= 0 ? pbl + amount : (nb > 0 ? nb : pbl); }
             else { nb = pb - amount; nbl = pb <= 0 ? pbl + amount : (nb < 0 ? Math.abs(nb) : pbl); }
             if (nb === 0) nbl = 0;
 
@@ -1320,10 +1250,10 @@
                 id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
                 amount: amount, category: resolveCategoryValue(`cat-${peer}`, `custom-${peer}`), action: action, timestamp: new Date().toISOString()
             });
-            
+           
             inputEl.value = ''; selectEl.selectedIndex = 0; customEl.value = ''; customEl.style.display = 'none';
             localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
-            renderLedger(); 
+            renderLedger();
             document.getElementById(`history-${peer}`).style.display = 'block';
         } else alert("Please provide a valid numeric amount.");
     }
@@ -1340,7 +1270,7 @@
         const action = target.dataset.action; const keyContent = target.textContent;
 
         if (!action) {
-            if (calcState.waitingForSecondOperand) { calcState.displayValue = keyContent; calcState.waitingForSecondOperand = false; } 
+            if (calcState.waitingForSecondOperand) { calcState.displayValue = keyContent; calcState.waitingForSecondOperand = false; }
             else calcState.displayValue = calcState.displayValue === '0' ? keyContent : calcState.displayValue + keyContent;
         } else if (action === 'decimal' && !calcState.displayValue.includes('.')) calcState.displayValue += '.';
         else if (['add', 'subtract', 'multiply', 'divide'].includes(action)) handleOperator(action);
@@ -1370,7 +1300,7 @@
 
     function renderCharts() {
         const ctxPie = document.getElementById('pieChart').getContext('2d');
-        const ctxLine = document.getElementById('lineChart').getContext('2d'); 
+        const ctxLine = document.getElementById('lineChart').getContext('2d');
 
         // Aggregate amounts by category from the daily debit history
         const categoryTotals = {};
@@ -1410,61 +1340,61 @@
         // Initialize Line Chart
         lineChartInstance = new Chart(ctxLine, {
             type: 'line',
-            data: { 
-                labels: labels, 
-                datasets: [{ 
-                    label: 'Total Amount (₹)', 
-                    data: data, 
-                    backgroundColor: 'rgba(3, 169, 244, 0.2)', 
-                    borderColor: '#0288d1', 
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Total Amount (₹)',
+                    data: data,
+                    backgroundColor: 'rgba(3, 169, 244, 0.2)',
+                    borderColor: '#0288d1',
                     borderWidth: 2,
                     pointBackgroundColor: '#03a9f4',
                     pointBorderColor: '#fff',
                     pointRadius: 5,
                     pointHoverRadius: 7,
-                    fill: true, 
-                    tension: 0.3 
-                }] 
+                    fill: true,
+                    tension: 0.3
+                }]
             },
             options: {
                 responsive: true, maintainAspectRatio: false,
-                scales: { 
-                    y: { 
-                        beginAtZero: true, 
-                        title: { display: true, text: 'Amount (₹)' }, 
-                        grace: '10%' 
-                    }, 
-                    x: { 
-                        title: { display: true, text: 'Description' } 
-                    } 
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Amount (₹)' },
+                        grace: '10%'
+                    },
+                    x: {
+                        title: { display: true, text: 'Description' }
+                    }
                 },
-                plugins: { 
-                    legend: { display: false }, 
-                    datalabels: { 
-                        color: '#000', 
-                        anchor: 'end', 
-                        align: 'top', 
-                        font: { weight: 'bold', size: 12 }, 
-                        formatter: function(value, context) { return '₹' + value.toFixed(2); } 
-                    } 
+                plugins: {
+                    legend: { display: false },
+                    datalabels: {
+                        color: '#000',
+                        anchor: 'end',
+                        align: 'top',
+                        font: { weight: 'bold', size: 12 },
+                        formatter: function(value, context) { return '₹' + value.toFixed(2); }
+                    }
                 }
             }
         });
     }
 
     // --- Calendar Module Logic ---
-    let currentCalDate = new Date(); 
+    let currentCalDate = new Date();
 
     function renderCalendar() {
         const grid = document.getElementById('calendar-grid');
         const monthYearText = document.getElementById('calendar-month-year');
         const budgetThreshold = parseFloat(document.getElementById('calendar-budget-input').value) || 200;
-        
+       
         grid.innerHTML = '';
-        
+       
         const year = currentCalDate.getFullYear();
         const month = currentCalDate.getMonth();
-        
+       
         const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         monthYearText.textContent = `${monthNames[month]} ${year}`;
 
@@ -1502,7 +1432,7 @@
         for (let i = 1; i <= daysInMonth; i++) {
             const cell = document.createElement('div');
             cell.className = 'calendar-cell';
-            
+           
             const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
             const dayData = dailyTotals[dateStr];
 
@@ -1514,7 +1444,7 @@
             // 4. Heatmap & Interaction Logic
             if (dayData && dayData.amount > 0) {
                 cell.classList.add('has-data');
-                
+               
                 if (dayData.amount > budgetThreshold) {
                     cell.classList.add('bg-high');
                 } else {
