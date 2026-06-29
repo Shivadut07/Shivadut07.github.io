@@ -674,7 +674,7 @@
             </div>
             <div class="login-form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" value="857447" placeholder="Enter numeric password" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <input type="password" id="password" placeholder="Enter numeric password" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             </div>
             <button class="btn-login" onclick="attemptLogin()">Access Ledger</button>
             <div class="login-error" id="login-error-msg"></div>
@@ -991,7 +991,7 @@
 
     function logout() {
         openPage('login-page');
-        document.getElementById('password').value = '857447'; // Resets to default when logged out
+        document.getElementById('password').value = ''; // Resets to empty when logged out
         document.getElementById('login-error-msg').textContent = '';
     }
 
@@ -1514,3 +1514,4 @@
 </script>
 </body>
 </html>
+Give me the code to run offline without internet. Means i want the font poppins as offline and script tags related graph  as offline . So, that i can put the folder locally and host. Give me the code properly without any error and with perfect ui as you gave now. Tell me the file structure to keep inside my local.
