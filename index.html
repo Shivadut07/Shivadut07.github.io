@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shivadut's Integrated Financial Ledger</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    
+    <link rel="stylesheet" href="css/fonts.css">
+    
+    <script src="js/chart.umd.js"></script>
+    <script src="js/chartjs-plugin-datalabels.min.js"></script>
+
     <style>
         :root {
             /* Core Application Color Palette */
@@ -51,7 +54,7 @@
 
         /* --- PAGE CONTAINERS --- */
         .app-page {
-            display: none; /* All pages hidden by default */
+            display: none; 
             padding: 20px;
             min-height: 100vh;
             flex-direction: column;
@@ -134,39 +137,81 @@
             max-width: 900px;
         }
 
+        /* BEAUTIFIED MENU BOXES */
         .menu-box {
             background: var(--panel-bg);
-            border: 2px solid transparent;
-            border-radius: 15px;
-            padding: 40px 20px;
+            border-radius: 20px; /* More rounded */
+            padding: 35px 20px;
             text-align: center;
             cursor: pointer;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy hover effect */
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #f0f0f0;
+        }
+
+        /* Gradient accent line at the top of each box */
+        .menu-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 6px;
         }
 
         .menu-box:hover {
-            transform: translateY(-5px);
-            border-color: var(--btn-neutral);
-            box-shadow: 0 12px 24px rgba(3, 169, 244, 0.2);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
         }
 
-        .menu-box h3 { font-size: 1.4rem; color: var(--text-main); margin: 0;}
-        .menu-box p { color: var(--text-muted); font-size: 0.9rem; margin: 0;}
+        .menu-box h3 { font-size: 1.3rem; color: var(--text-main); margin: 0; font-weight: 600;}
+        .menu-box p { color: var(--text-muted); font-size: 0.85rem; margin: 0; line-height: 1.4;}
         
-        .menu-icon {
-            font-size: 3rem;
-            margin-bottom: 10px;
+        /* Icon Wrapper to act as beautifully colored photos/badges */
+        .icon-wrapper {
+            width: 75px;
+            height: 75px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
         }
+        
+        .menu-box:hover .icon-wrapper {
+            transform: scale(1.1);
+        }
+
+        /* Specific Box Theme Colors */
+        .box-debit::before { background: linear-gradient(90deg, #4facfe, #00f2fe); }
+        .box-debit .icon-wrapper { background: #e1f5fe; }
+        
+        .box-calendar::before { background: linear-gradient(90deg, #b224ef, #7579ff); }
+        .box-calendar .icon-wrapper { background: #ede7f6; }
+        
+        .box-cohort::before { background: linear-gradient(90deg, #11998e, #38ef7d); }
+        .box-cohort .icon-wrapper { background: #e8f5e9; }
+        
+        .box-savings::before { background: linear-gradient(90deg, #f6d365, #fda085); }
+        .box-savings .icon-wrapper { background: #fff8e1; }
+        
+        .box-calc::before { background: linear-gradient(90deg, #ff0844, #ffb199); }
+        .box-calc .icon-wrapper { background: #ffebee; }
+        
+        .box-analytics::before { background: linear-gradient(90deg, #43e97b, #38f9d7); }
+        .box-analytics .icon-wrapper { background: #e0f2f1; }
 
         /* --- TOOL PAGES COMMON STYLES --- */
         .tool-container {
             width: 100%;
-            max-width: 800px; /* Centered narrow view for each tool */
+            max-width: 800px;
             display: flex;
             flex-direction: column;
             gap: 25px;
@@ -238,14 +283,6 @@
         }
         .input-group { display: flex; flex-direction: column; gap: 10px; width: 100%; }
         .input-row { display: flex; gap: 10px; width: 100%; }
-        input[type="number"], input[type="text"], input[type="password"] {
-            flex: 1 1 auto;
-            padding: 12px;
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            font-size: 1.05rem;
-            min-width: 0; 
-        }
 
         select.modern-select {
             flex: 1 1 auto;
@@ -341,7 +378,7 @@
         .savings-table .grand-total {
             font-size: 1.4rem;
             font-weight: bold;
-            color: #2e7d32; /* Green for savings */
+            color: #2e7d32;
         }
         .savings-table .row-total {
             font-weight: 600;
@@ -683,38 +720,38 @@
 
     <div id="menu-page" class="app-page">
         <div class="menu-header">
-            <h1>Welcome, <span id="display-username">User</span>!</h1>
+            <h1>Welcome, <span id="display-username">Shivadut</span>!</h1>
             <button class="btn-logout" onclick="logout()">Sign Out</button>
         </div>
 
         <div class="menu-grid">
-            <div class="menu-box" onclick="openPage('debit-page')">
-                <div class="menu-icon">🧾</div>
+            <div class="menu-box box-debit" onclick="openPage('debit-page')">
+                <div class="icon-wrapper">🧾</div>
                 <h3>Daily Debit</h3>
                 <p>Track your personal daily expenses and history.</p>
             </div>
-            <div class="menu-box" onclick="openPage('calendar-page')">
-                <div class="menu-icon">📅</div>
+            <div class="menu-box box-calendar" onclick="openPage('calendar-page')">
+                <div class="icon-wrapper">📅</div>
                 <h3>Calendar</h3>
                 <p>Monthly view and daily expenditure heatmap.</p>
             </div>
-            <div class="menu-box" onclick="openPage('cohort-page')">
-                <div class="menu-icon">🤝</div>
+            <div class="menu-box box-cohort" onclick="openPage('cohort-page')">
+                <div class="icon-wrapper">🤝</div>
                 <h3>Cohort Ledger</h3>
                 <p>Manage splits and balances with your friends.</p>
             </div>
-            <div class="menu-box" onclick="openPage('savings-page')">
-                <div class="menu-icon">🏦</div>
+            <div class="menu-box box-savings" onclick="openPage('savings-page')">
+                <div class="icon-wrapper">🏦</div>
                 <h3>Cash Counter</h3>
                 <p>Calculate your physical cash savings by denomination.</p>
             </div>
-            <div class="menu-box" onclick="openPage('calculator-page')">
-                <div class="menu-icon">🧮</div>
+            <div class="menu-box box-calc" onclick="openPage('calculator-page')">
+                <div class="icon-wrapper">🧮</div>
                 <h3>Calculator</h3>
                 <p>Quick financial calculations.</p>
             </div>
-            <div class="menu-box" onclick="openPage('analytics-page')">
-                <div class="menu-icon">📊</div>
+            <div class="menu-box box-analytics" onclick="openPage('analytics-page')">
+                <div class="icon-wrapper">📊</div>
                 <h3>Analytics</h3>
                 <p>Visual data analysis of your daily debits.</p>
             </div>
@@ -940,7 +977,11 @@
 
 <script>
     // --- Register the DataLabels Plugin globally ---
-    Chart.register(ChartDataLabels);
+    if (typeof ChartDataLabels !== 'undefined') {
+        Chart.register(ChartDataLabels);
+    } else {
+        console.warn("ChartDataLabels plugin missing. Ensure offline files are loaded.");
+    }
 
     // --- Page Navigation Logic (SPA Routing) ---
     function openPage(pageId) {
@@ -975,9 +1016,9 @@
             return;
         }
 
-        // Updated Password
         if (pass === '857447') {
-            document.getElementById('display-username').textContent = user;
+            // Hardcoded "Shivadut" to display regardless of input!
+            document.getElementById('display-username').textContent = "Shivadut";
             openPage('menu-page'); 
             
             // Re-render ledger data when logged in
@@ -991,7 +1032,7 @@
 
     function logout() {
         openPage('login-page');
-        document.getElementById('password').value = ''; // Resets to empty when logged out
+        document.getElementById('password').value = ''; 
         document.getElementById('login-error-msg').textContent = '';
     }
 
@@ -1320,6 +1361,11 @@
 
         if (pieChartInstance) { pieChartInstance.destroy(); }
         if (lineChartInstance) { lineChartInstance.destroy(); }
+
+        if (typeof Chart === 'undefined') {
+            console.error("Chart.js failed to load. Please make sure js/chart.umd.js exists locally.");
+            return;
+        }
 
         pieChartInstance = new Chart(ctxPie, {
             type: 'pie',
