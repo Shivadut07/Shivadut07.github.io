@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Integrated Financial Ledger & Transaction Timeline</title>
+    <title>Shivadut's Integrated Financial Ledger</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             /* Core Application Color Palette */
@@ -30,7 +31,7 @@
             --timeline-node-bg: #ffffff;
         }
         
-        /* Global Reset for layout stability and box-model predictability */
+        /* Global Reset */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -41,13 +42,104 @@
             font-family: 'Poppins', Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
-            padding: 20px;
-            display: flex;
-            justify-content: center;
             min-height: 100vh;
         }
 
-        /* Macro Layout Containers establishing the fundamental dashboard structure */
+        /* --- LOGIN PAGE STYLES --- */
+        #login-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--panel-bg);
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-card h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--text-main);
+        }
+
+        .login-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+
+        .login-form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .login-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .login-form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .login-form-group input:focus {
+            outline: none;
+            border-color: var(--btn-neutral);
+            box-shadow: 0 0 0 3px rgba(3, 169, 244, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--btn-neutral);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        .btn-login:hover {
+            background-color: #0288d1;
+        }
+
+        .btn-login:active {
+            transform: scale(0.98);
+        }
+
+        .login-error {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 15px;
+            min-height: 20px;
+            font-weight: 600;
+        }
+
+        /* --- DASHBOARD STYLES --- */
+        #dashboard-page {
+            display: none; /* Hidden by default */
+            padding: 20px;
+            justify-content: center;
+        }
+
         .dashboard-container {
             display: flex;
             gap: 25px;
@@ -80,6 +172,38 @@
             width: 100%;
         }
 
+        .welcome-header {
+            width: 100%;
+            background: var(--panel-bg);
+            border-radius: 15px;
+            padding: 15px 25px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .welcome-header h1 {
+            font-size: 1.4rem;
+            color: var(--text-main);
+            margin: 0;
+        }
+
+        .btn-logout {
+            padding: 8px 16px;
+            background-color: var(--text-muted);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-logout:hover {
+            background-color: #555;
+        }
+
         h2 {
             margin-top: 0;
             font-size: 1.4rem;
@@ -88,7 +212,6 @@
             margin-bottom: 15px;
         }
         
-        /* Personal Debit Module Styling Architecture */
         .debit-display {
             font-size: 2.5rem;
             font-weight: bold;
@@ -122,7 +245,6 @@
             min-width: 0; 
         }
 
-        /* Modern CSS Dropdown Implementation with robust legacy fallbacks */
         select.modern-select {
             flex: 1 1 auto;
             padding: 12px;
@@ -134,10 +256,7 @@
             cursor: pointer;
             font-family: inherit;
             min-width: 140px;
-            
-            /* Standard fallback styling stripping the OS rendering shell */
             appearance: none;
-            /* Synthetic SVG background arrow injection for legacy support */
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>');
             background-repeat: no-repeat;
             background-position: right 10px center;
@@ -150,15 +269,12 @@
             border-color: transparent;
         }
 
-        /* Progressive enhancement utilizing the experimental base-select API */
         @supports (appearance: base-select) {
             select.modern-select {
                 appearance: base-select;
-                background-image: none; /* Remove legacy SVG hack */
+                background-image: none;
                 padding-right: 12px;
             }
-            
-            /* Target the listbox bounding container */
             select.modern-select::picker(select) {
                 appearance: base-select;
                 background: var(--panel-bg);
@@ -185,7 +301,6 @@
         .btn-add { background-color: var(--btn-neutral); flex: 1 1 auto; }
         .btn-reset { background-color: var(--calc-key-action); flex: 0 0 auto; }
         
-        /* Hybrid Layout Architecture: Flex Container wrapping a Grid Row */
         .ledger-item-container {
             display: flex;
             flex-direction: column;
@@ -197,7 +312,6 @@
             border-bottom: none;
         }
 
-        /* Strict Grid Layout defining the primary interaction zone */
         .ledger-row {
             display: grid;
             grid-template-columns: 100px 2.2fr 1.1fr; 
@@ -287,7 +401,6 @@
         .btn-give { background-color: var(--btn-give); }
         .btn-receive { background-color: var(--btn-receive); }
 
-        /* Integrated Communication & Status Panel Reflow */
         .action-container {
             display: flex;
             align-items: center;
@@ -336,7 +449,6 @@
         .balance-negative { color: #c62828; background-color: #ffebee; }
         .balance-neutral { color: var(--text-main); background-color: #f5f5f5; }
 
-        /* Pure CSS Expandable Transaction Timeline */
         .history-panel {
             display: none;
             margin-top: 15px;
@@ -424,7 +536,6 @@
         .timeline-item.receive .timeline-amount { color: var(--btn-receive); }
         .no-history-msg { font-size: 0.85rem; color: var(--text-muted); font-style: italic; text-align: center; padding: 10px 0; }
 
-        /* Calculator Styles */
         .calculator {
             background-color: var(--calc-bg);
             border-radius: 15px;
@@ -479,7 +590,6 @@
             grid-column: span 2;
         }
         
-        /* Newly Architected Audit Log Constraints */
         .debit-audit-panel {
             display: flex;
             flex-direction: column;
@@ -494,7 +604,6 @@
             padding: 15px 20px;
             border: 1px solid var(--border-light);
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
-            /* Preserves smooth scrolling on touch devices */
             -webkit-overflow-scrolling: touch; 
         }
 
@@ -513,7 +622,6 @@
             margin-bottom: 0;
         }
 
-        /* Excel Export Button Architecture */
         .btn-export-excel {
             background-color: #107c41; 
             color: #ffffff;
@@ -547,7 +655,6 @@
             fill: currentColor;
         }
 
-        /* Accessible Visual Progress Bar Module */
         .progress-module {
             width: 100%;
             margin-top: 12px;
@@ -586,9 +693,8 @@
             font-weight: 600;
         }
 
-        /* Responsive Reflow Logic maintaining layout stability across viewports */
         @media (max-width: 850px) {
-            body { padding: 10px; }
+            #dashboard-page { padding: 10px; }
             .dashboard-container { flex-direction: column; align-items: stretch; }
             .left-column, .right-column { max-width: 100%; flex: 1 1 auto; }
             
@@ -612,107 +718,164 @@
 </head>
 <body>
 
-<div class="dashboard-container">
-    
-    <div class="left-column">
-        <!-- Scalar Accumulator Panel with Enhanced Auditing Input -->
-        <div class="panel">
-            <h2>Personal Daily Debit Accumulator</h2>
-            <div class="debit-display">₹<span id="total-debit-val">0.00</span></div>
-            <div class="input-group">
-                <div class="input-row">
-                    <input type="number" id="daily-debit-input" placeholder="Amount (₹)" step="0.01" min="0">
-                    <select id="daily-debit-category" class="modern-select" onchange="toggleCustomInput('daily-debit-category', 'daily-debit-custom')">
-                        <option value="" disabled selected>Select Category</option>
-                        <option value="Train tickets">Train tickets</option>
-                        <option value="Bus tickets">Bus tickets</option>
-                        <option value="Breakfast">Breakfast</option>
-                        <option value="Lunch">Lunch</option>
-                        <option value="Dinner">Dinner</option>
-                        <option value="Tea">Tea</option>
-                        <option value="Snacks">Snacks</option>
-                        <option value="Project components">Project components</option>
-                        <option value="Other">Other (Type below)</option>
-                    </select>
-                </div>
-                <input type="text" id="daily-debit-custom" placeholder="Enter custom description..." style="display: none;">
-                <div class="input-row">
-                    <button class="btn-add" onclick="addDailyDebit()">Add to Total</button>
-                    <button class="btn-reset" onclick="resetDailyDebit()">Reset</button>
-                </div>
+    <div id="login-page">
+        <div class="login-card">
+            <h1>Shivadut's Secure Ledger</h1>
+            <p>Access your financial dashboard & timelines.</p>
+            
+            <div class="login-form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter any username" autocomplete="off">
             </div>
-        </div>
-
-        <!-- Utility Computation Module -->
-        <div class="panel calculator">
-            <div class="calculator__display" id="calc-display">0</div>
-            <div class="calculator__keys" id="calc-keys">
-                <button data-action="clear">AC</button>
-                <button data-action="divide">÷</button>
-                <button data-action="multiply">×</button>
-                <button>7</button>
-                <button>8</button>
-                <button>9</button>
-                <button data-action="subtract">-</button>
-                <button>4</button>
-                <button>5</button>
-                <button>6</button>
-                <button data-action="add">+</button>
-                <button>1</button>
-                <button>2</button>
-                <button>3</button>
-                <button>0</button>
-                <button data-action="decimal">.</button>
-                <button data-action="calculate">=</button>
+            
+            <div class="login-form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter password">
             </div>
-        </div>
-        
-        <!-- Chronological Audit Log Panel with Excel Data Export Module -->
-        <div class="panel debit-audit-panel">
-            <div class="header-action-row">
-                <h2>Transaction History Log</h2>
-                <button class="btn-export-excel" onclick="exportHistoryToExcel()" aria-label="Export to Excel Spreadsheet" title="Download Transaction CSV">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-                        <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM5.884 6.68 8 9.219l2.116-2.54a.5.5 0 1 1 .768.641L8.651 10l2.233 2.68a.5.5 0 0 1-.768.64L8 10.781l-2.116 2.54a.5.5 0 0 1-.768-.641L7.349 10 5.116 7.32a.5.5 0 1 1 .768-.64z"/>
-                    </svg>
-                    Export
-                </button>
-            </div>
-            <div class="debit-history-scroll" id="debit-history-container">
-                <ul class="timeline" id="debit-history-list">
-                    <!-- Dynamic List Population Zone -->
-                </ul>
-            </div>
+            
+            <button class="btn-login" onclick="attemptLogin()">Access Ledger</button>
+            <div class="login-error" id="login-error-msg"></div>
         </div>
     </div>
 
-    <!-- Right Column: Cohort Relational Mapping -->
-    <div class="right-column">
-        <div class="panel">
-            <div class="header-action-row">
-                <h2>Cohort Ledger & Transaction History</h2>
-                <button class="btn-reset" onclick="resetAllCohortHistories()" aria-label="Reset all cohort timelines" title="Clear all friend histories">
-                    Reset All Timelines
-                </button>
+    <div id="dashboard-page">
+        <div class="dashboard-container">
+            
+            <div class="welcome-header">
+                <h1>Welcome, <span id="display-username">User</span>!</h1>
+                <button class="btn-logout" onclick="logout()">Sign Out</button>
             </div>
-            <div id="ledger-container"></div>
+
+            <div class="left-column">
+                <div class="panel">
+                    <h2>Personal Daily Debit Accumulator</h2>
+                    <div class="debit-display">₹<span id="total-debit-val">0.00</span></div>
+                    <div class="input-group">
+                        <div class="input-row">
+                            <input type="number" id="daily-debit-input" placeholder="Amount (₹)" step="0.01" min="0">
+                            <select id="daily-debit-category" class="modern-select" onchange="toggleCustomInput('daily-debit-category', 'daily-debit-custom')">
+                                <option value="" disabled selected>Select Category</option>
+                                <option value="Train tickets">Train tickets</option>
+                                <option value="Bus tickets">Bus tickets</option>
+                                <option value="Breakfast">Breakfast</option>
+                                <option value="Lunch">Lunch</option>
+                                <option value="Dinner">Dinner</option>
+                                <option value="Tea">Tea</option>
+                                <option value="Snacks">Snacks</option>
+                                <option value="Project components">Project components</option>
+                                <option value="Other">Other (Type below)</option>
+                            </select>
+                        </div>
+                        <input type="text" id="daily-debit-custom" placeholder="Enter custom description..." style="display: none;">
+                        <div class="input-row">
+                            <button class="btn-add" onclick="addDailyDebit()">Add to Total</button>
+                            <button class="btn-reset" onclick="resetDailyDebit()">Reset</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel calculator">
+                    <div class="calculator__display" id="calc-display">0</div>
+                    <div class="calculator__keys" id="calc-keys">
+                        <button data-action="clear">AC</button>
+                        <button data-action="divide">÷</button>
+                        <button data-action="multiply">×</button>
+                        <button>7</button>
+                        <button>8</button>
+                        <button>9</button>
+                        <button data-action="subtract">-</button>
+                        <button>4</button>
+                        <button>5</button>
+                        <button>6</button>
+                        <button data-action="add">+</button>
+                        <button>1</button>
+                        <button>2</button>
+                        <button>3</button>
+                        <button>0</button>
+                        <button data-action="decimal">.</button>
+                        <button data-action="calculate">=</button>
+                    </div>
+                </div>
+                
+                <div class="panel debit-audit-panel">
+                    <div class="header-action-row">
+                        <h2>Transaction History Log</h2>
+                        <button class="btn-export-excel" onclick="exportHistoryToExcel()" aria-label="Export to Excel Spreadsheet" title="Download Transaction CSV">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                                <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM5.884 6.68 8 9.219l2.116-2.54a.5.5 0 1 1 .768.641L8.651 10l2.233 2.68a.5.5 0 0 1-.768.64L8 10.781l-2.116 2.54a.5.5 0 0 1-.768-.641L7.349 10 5.116 7.32a.5.5 0 1 1 .768-.64z"/>
+                            </svg>
+                            Export
+                        </button>
+                    </div>
+                    <div class="debit-history-scroll" id="debit-history-container">
+                        <ul class="timeline" id="debit-history-list">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-column">
+                <div class="panel">
+                    <div class="header-action-row">
+                        <h2>Cohort Ledger & Transaction History</h2>
+                        <button class="btn-reset" onclick="resetAllCohortHistories()" aria-label="Reset all cohort timelines" title="Clear all friend histories">
+                            Reset All Timelines
+                        </button>
+                    </div>
+                    <div id="ledger-container"></div>
+                </div>
+            </div>
         </div>
     </div>
-
-</div>
 
 <script>
-    // --- Lexicographical Sorting & Architecture Initialization ---
+    // --- Login Logic ---
+    function attemptLogin() {
+        const user = document.getElementById('username').value.trim();
+        const pass = document.getElementById('password').value;
+        const errorMsg = document.getElementById('login-error-msg');
+
+        if (user === '') {
+            errorMsg.textContent = 'Please enter a username.';
+            return;
+        }
+
+        if (pass === 'shivashang') {
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('dashboard-page').style.display = 'flex';
+            document.getElementById('display-username').textContent = user;
+            
+            // Re-render ledger data when dashboard becomes visible
+            document.getElementById('total-debit-val').textContent = personalTotalDebit.toFixed(2);
+            renderLedger(); 
+            renderDebitHistory(); 
+        } else {
+            errorMsg.textContent = 'Incorrect password. Access denied.';
+        }
+    }
+
+    function logout() {
+        document.getElementById('dashboard-page').style.display = 'none';
+        document.getElementById('login-page').style.display = 'flex';
+        document.getElementById('password').value = '';
+        document.getElementById('login-error-msg').textContent = '';
+    }
+
+    // Bind Enter key to login
+    document.getElementById('password').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            attemptLogin();
+        }
+    });
+
+    // --- Ledger Logic ---
     const rawFriendsArray = ["thiwakar", "gojo", "mowlish", "goww", "aravindh", "mohan", "gowtham", "parithi", "soukar"];
     const sortedFriends = rawFriendsArray.sort(); 
     
-    // State initialization from local persistence handling potentially undefined historical states
     let personalTotalDebit = parseFloat(localStorage.getItem('personalTotalDebit')) || 0;
     let ledgerState = JSON.parse(localStorage.getItem('ledgerState')) || {};
     let debitHistoryState = JSON.parse(localStorage.getItem('debitHistoryState')) || [];
     
-    // --- V2 Schema Migration Engine (Expand & Contract Pattern) ---
-    // Ensuring older objects adapt to receive categorical metadata gracefully.
     sortedFriends.forEach(peer => {
         if (ledgerState[peer] === undefined) {
             ledgerState[peer] = { balance: 0, baseline: 0, transactions: [] };
@@ -732,19 +895,11 @@
     
     localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
 
-    // Formatter leveraging native Intl API for robust cross-browser date localization
     const dateFormatter = new Intl.DateTimeFormat('en-IN', {
         dateStyle: 'medium',
         timeStyle: 'short'
     });
 
-    document.addEventListener("DOMContentLoaded", () => {
-        document.getElementById('total-debit-val').textContent = personalTotalDebit.toFixed(2);
-        renderLedger(); 
-        renderDebitHistory(); 
-    });
-    
-    // Utility function to toggle custom text inputs dynamically when 'Other' is selected
     function toggleCustomInput(selectId, inputId) {
         const selectEl = document.getElementById(selectId);
         const inputEl = document.getElementById(inputId);
@@ -756,7 +911,6 @@
         }
     }
 
-    // Resolves the final qualitative description string based on user UI selection
     function resolveCategoryValue(selectId, inputId) {
         const selectVal = document.getElementById(selectId).value;
         if (selectVal === 'Other') {
@@ -766,7 +920,6 @@
         return selectVal !== "" ? selectVal : "Uncategorized Transaction";
     }
 
-    // --- Core Modification: Event-Sourced Debit Accumulation with Categorical Logging ---
     function addDailyDebit() {
         const inputEl = document.getElementById('daily-debit-input');
         const selectEl = document.getElementById('daily-debit-category');
@@ -793,7 +946,6 @@
             
             renderDebitHistory();
             
-            // Clean up UI state
             inputEl.value = '';
             selectEl.selectedIndex = 0;
             customEl.value = '';
@@ -803,7 +955,6 @@
         }
     }
 
-    // --- Core Modification: Cascading Reset Functionality ---
     function resetDailyDebit() {
         if (confirm("Reset accumulator to ₹0.00? This will permanently purge the audit log as well.")) {
             personalTotalDebit = 0;
@@ -816,7 +967,6 @@
         }
     }
 
-    // --- Batch State Mutation Engine: Cohort Ledger Reset ---
     function resetAllCohortHistories() {
         if (confirm("Are you certain you wish to completely reset the ledger and transaction history for ALL cohort members? This action cannot be undone and permanently deletes the history.")) {
             sortedFriends.forEach(peer => {
@@ -831,7 +981,6 @@
         }
     }
     
-    // --- Rendering Pipeline: Categorical Audit Log DOM Construction Methodology ---
     function renderDebitHistory() {
         const listEl = document.getElementById('debit-history-list');
         
@@ -843,7 +992,6 @@
         listEl.innerHTML = debitHistoryState.map(entry => {
             const dateObj = new Date(entry.timestamp);
             const formattedDate = dateFormatter.format(dateObj);
-            // Defensive check for older entries lacking a category
             const displayCat = entry.category || "General Expense";
             
             return `
@@ -859,64 +1007,45 @@
         }).join('');
     }
 
-    // --- NEW: Client-Side Microsoft Excel CSV Export Engine (Expanded Schema) ---
-    // Serializes volatile array state into Excel-compatible UTF-8 encoded blobs.
     function exportHistoryToExcel() {
         if (!debitHistoryState || debitHistoryState.length === 0) {
             alert("No transactional history available to export.");
             return;
         }
 
-        // Implementation of the UTF-8 Byte Order Mark (BOM). 
-        // This Unicode control character guarantees Microsoft Excel
-        // allocates the correct decoder logic to prevent Rupee symbol (₹) mojibake.
         const universalBOM = "\uFEFF";
-        
-        // Define hierarchical column headers mapped to the newly expanded internal schema
         let csvContent = "Transaction ID,Date,Time,Category/Description,Amount (\u20B9)\n";
 
-        // Iterative serialization mapping objects into CSV string representations
         debitHistoryState.forEach(entry => {
             const dateObj = new Date(entry.timestamp);
-            
-            // Isolate semantic date boundaries, removing inherent commas that disrupt CSV delimiting
             const fullFormattedDate = dateFormatter.format(dateObj);
             const dateParts = fullFormattedDate.split(','); 
             
-            // Standardizing extraction indices securely
             const isolatedDate = dateParts[0] ? dateParts[0].trim() : "Unknown Date";
             const isolatedTime = dateParts[1] ? dateParts[1].trim() : "Unknown Time";
             
-            // Sanitize the user-generated category string to prevent CSV injection or boundary breaking
             const rawCategory = entry.category || "General Expense";
             const sanitizedCategory = `"${rawCategory.replace(/"/g, '""')}"`;
             
-            // Enclose the numeric scalar mathematically fixed to 2 decimal locales
             const serializedRow = `${entry.id},${isolatedDate},${isolatedTime},${sanitizedCategory},${entry.amount.toFixed(2)}`;
             csvContent += serializedRow + "\n";
         });
 
-        // Initialize binary blob allocation
         const blobPayload = new Blob([universalBOM + csvContent], { type: 'text/csv;charset=utf-8;' });
-        
-        // Dynamic event-driven download dispatch logic
         const downloadUrl = URL.createObjectURL(blobPayload);
         const anchorDispatch = document.createElement("a");
         
         anchorDispatch.href = downloadUrl;
         
-        // Synthesizing a dynamic chronological filename output
         const timestampMarker = new Date().toISOString().slice(0, 10);
         anchorDispatch.setAttribute("download", `Transaction_History_${timestampMarker}.csv`);
         
-        // Programmatic DOM injection, trigger, and rapid cleanup 
         document.body.appendChild(anchorDispatch);
         anchorDispatch.click();
         document.body.removeChild(anchorDispatch);
         URL.revokeObjectURL(downloadUrl);
     }
 
-    // --- Dynamic Payload Generation Engine ---
     function generateSharePayload(peer, balance) {
         if (balance > 0) {
             return `Hey ${peer}, just a quick reminder that your pending share is ₹${balance.toFixed(2)} on the dashboard. Let's settle up when you can!`;
@@ -927,7 +1056,6 @@
         }
     }
 
-    // --- Core Rendering Pipeline: Matrix, Timelines, and Communication Routing ---
     function renderLedger() {
         const container = document.getElementById('ledger-container');
         container.innerHTML = ''; 
@@ -989,7 +1117,6 @@
                 </div>
             `;
 
-            // Relational Timeline DOM Generation parsing historical array structures
             let historyHTML = '';
             if (transactions.length === 0) {
                 historyHTML = `<p class="no-history-msg">No historical transactions available.</p>`;
@@ -1016,7 +1143,6 @@
                 historyHTML = `<ul class="timeline">${listItems}</ul>`;
             }
 
-            // Creating the unified dropdown options template strictly mapping to Rasipuram regional context
             const dropdownOptions = `
                 <option value="" disabled selected>Description</option>
                 <option value="Train tickets">Train tickets</option>
@@ -1030,7 +1156,6 @@
                 <option value="Other">Other (Custom)</option>
             `;
 
-            // Root node architectural synthesis with new form control matrix
             const itemContainer = document.createElement('div');
             itemContainer.className = 'ledger-item-container';
             itemContainer.innerHTML = `
@@ -1137,7 +1262,7 @@
         }
     }
 
-    // --- Isolated Event Delegation routing logic for the Calculator Module ---
+    // --- Calculator Logic ---
     const calcKeys = document.getElementById('calc-keys');
     const calcDisplay = document.getElementById('calc-display');
     let calcState = {
