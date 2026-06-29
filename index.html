@@ -817,9 +817,9 @@
             </div>
             
             <div class="panel">
-                <h2>Debit Analysis (Bar Graph)</h2>
+                <h2>Debit Analysis (Line Graph)</h2>
                 <div class="chart-wrapper">
-                    <canvas id="barChart"></canvas>
+                    <canvas id="lineChart"></canvas>
                 </div>
             </div>
         </div>
@@ -1167,11 +1167,11 @@
 
     // --- Chart/Analytics Logic ---
     let pieChartInstance = null;
-    let barChartInstance = null;
+    let lineChartInstance = null; // Replaced barChartInstance
 
     function renderCharts() {
         const ctxPie = document.getElementById('pieChart').getContext('2d');
-        const ctxBar = document.getElementById('barChart').getContext('2d');
+        const ctxLine = document.getElementById('lineChart').getContext('2d'); // Using line chart context
 
         // Aggregate amounts by category from the daily debit history
         const categoryTotals = {};
@@ -1190,7 +1190,7 @@
         ];
 
         if (pieChartInstance) { pieChartInstance.destroy(); }
-        if (barChartInstance) { barChartInstance.destroy(); }
+        if (lineChartInstance) { lineChartInstance.destroy(); } // Destroy old instance
 
         pieChartInstance = new Chart(ctxPie, {
             type: 'pie',
@@ -1208,13 +1208,47 @@
             }
         });
 
-        barChartInstance = new Chart(ctxBar, {
-            type: 'bar',
-            data: { labels: labels, datasets: [{ label: 'Total Amount (₹)', data: data, backgroundColor: '#03a9f4', borderColor: '#0288d1', borderWidth: 1 }] },
+        // Initialize Line Chart
+        lineChartInstance = new Chart(ctxLine, {
+            type: 'line', // Switched to line type
+            data: { 
+                labels: labels, 
+                datasets: [{ 
+                    label: 'Total Amount (₹)', 
+                    data: data, 
+                    backgroundColor: 'rgba(3, 169, 244, 0.2)', // Slightly transparent fill
+                    borderColor: '#0288d1', 
+                    borderWidth: 2,
+                    pointBackgroundColor: '#03a9f4',
+                    pointBorderColor: '#fff',
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    fill: true, // Fill the area under the line
+                    tension: 0.3 // Smooth curves
+                }] 
+            },
             options: {
                 responsive: true, maintainAspectRatio: false,
-                scales: { y: { beginAtZero: true, title: { display: true, text: 'Amount (₹)' }, grace: '10%' }, x: { title: { display: true, text: 'Description' } } },
-                plugins: { legend: { display: false }, datalabels: { color: '#000', anchor: 'end', align: 'top', font: { weight: 'bold', size: 12 }, formatter: function(value, context) { return '₹' + value.toFixed(2); } } }
+                scales: { 
+                    y: { 
+                        beginAtZero: true, 
+                        title: { display: true, text: 'Amount (₹)' }, 
+                        grace: '10%' 
+                    }, 
+                    x: { 
+                        title: { display: true, text: 'Description' } 
+                    } 
+                },
+                plugins: { 
+                    legend: { display: false }, 
+                    datalabels: { 
+                        color: '#000', 
+                        anchor: 'end', 
+                        align: 'top', 
+                        font: { weight: 'bold', size: 12 }, 
+                        formatter: function(value, context) { return '₹' + value.toFixed(2); } 
+                    } 
+                }
             }
         });
     }
