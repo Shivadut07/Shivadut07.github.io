@@ -238,7 +238,7 @@
         }
         .input-group { display: flex; flex-direction: column; gap: 10px; width: 100%; }
         .input-row { display: flex; gap: 10px; width: 100%; }
-        input[type="number"], input[type="text"] {
+        input[type="number"], input[type="text"], input[type="password"] {
             flex: 1 1 auto;
             padding: 12px;
             border: 1px solid var(--border-light);
@@ -670,11 +670,11 @@
             <p>Access your financial dashboard & timelines.</p>
             <div class="login-form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" placeholder="Enter any username" autocomplete="off">
+                <input type="text" id="username" placeholder="Enter numeric username" autocomplete="off" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             </div>
             <div class="login-form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" placeholder="Enter password">
+                <input type="password" id="password" placeholder="Enter numeric password" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             </div>
             <button class="btn-login" onclick="attemptLogin()">Access Ledger</button>
             <div class="login-error" id="login-error-msg"></div>
@@ -971,11 +971,12 @@
         const errorMsg = document.getElementById('login-error-msg');
 
         if (user === '') {
-            errorMsg.textContent = 'Please enter a username.';
+            errorMsg.textContent = 'Please enter a numeric username.';
             return;
         }
 
-        if (pass === 'shivashang') {
+        // Updated Password
+        if (pass === '857447') {
             document.getElementById('display-username').textContent = user;
             openPage('menu-page'); 
             
