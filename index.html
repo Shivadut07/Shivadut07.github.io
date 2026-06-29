@@ -7,6 +7,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root {
             /* Core Application Color Palette */
@@ -94,7 +96,18 @@
             border-color: var(--btn-neutral);
             box-shadow: 0 0 0 3px rgba(3, 169, 244, 0.1);
         }
-
+        .btn-export-pdf {
+            background-color: #d32f2f;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .btn-export-pdf:hover { background-color: #b71c1c; }
         .btn-login {
             width: 100%;
             padding: 14px;
@@ -937,7 +950,64 @@
             </div>
         </div>
     </div>
+<div class="panel">
+        <div class="header-action-row">
+            <h2>Transaction History Log</h2>
+            <div>
+                <button class="btn-export-pdf" onclick="exportHistoryToPdf()">PDF</button>
+                <button class="btn-export-excel" onclick="exportHistoryToExcel()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM5.884 6.68 8 9.219l2.116-2.54a.5.5 0 1 1 .768.641L8.651 10l2.233 2.68a.5.5 0 0 1-.768.64L8 10.781l-2.116 2.54a.5.5 0 0 1-.768-.641L7.349 10 5.116 7.32a.5.5 0 1 1 .768-.64z"/></svg>
+                    Export
+                </button>
+            </div>
+        </div>
+        <div class="debit-history-scroll" id="debit-history-container">
+            <ul class="timeline" id="debit-history-list"></ul>
+        </div>
+    </div>
 
+    <script>
+    // ... (Keep your existing JavaScript functions) ...
+
+    // New PDF Export Function
+    function exportHistoryToPdf() {
+        if (!debitHistoryState || debitHistoryState.length === 0) return alert("No history to export.");
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        doc.setFontSize(16);
+        doc.text("Transaction History Report", 14, 20);
+        doc.setFontSize(10);
+        doc.text("Generated on: " + new Date().toLocaleString(), 14, 28);
+
+        const tableColumn = ["Date", "Time", "Category", "Amount (₹)"];
+        const tableRows = [];
+
+        debitHistoryState.forEach(entry => {
+            const d = new Date(entry.timestamp);
+            const dateStr = d.toLocaleDateString('en-IN');
+            const timeStr = d.toLocaleTimeString('en-IN');
+            
+            const rowData = [
+                dateStr,
+                timeStr,
+                entry.category,
+                entry.amount.toFixed(2)
+            ];
+            tableRows.push(rowData);
+        });
+
+        doc.autoTable({
+            head: [tableColumn],
+            body: tableRows,
+            startY: 35,
+            theme: 'grid', // This adds the border
+            headStyles: { fillColor: [41, 128, 185] },
+        });
+
+        doc.save(`Transaction_History_${new Date().toISOString().slice(0, 10)}.pdf`);
+    }
 <script>
     // --- Register the DataLabels Plugin globally ---
     Chart.register(ChartDataLabels);
