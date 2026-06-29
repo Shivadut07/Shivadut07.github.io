@@ -6,10 +6,12 @@
     <title>Shivadut's Integrated Financial Ledger</title>
     
     <link rel="stylesheet" href="css/fonts.css">
+    
     <script src="js/chart.umd.js"></script>
     <script src="js/chartjs-plugin-datalabels.min.js"></script>
-    <script src="js/jspdf.umd.min.js"></script>
-    <script src="js/jspdf.plugin.autotable.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root {
             /* Core Application Color Palette */
@@ -140,12 +142,12 @@
         /* BEAUTIFIED MENU BOXES */
         .menu-box {
             background: var(--panel-bg);
-            border-radius: 20px; /* More rounded */
+            border-radius: 20px;
             padding: 35px 20px;
             text-align: center;
             cursor: pointer;
             box-shadow: 0 8px 20px rgba(0,0,0,0.04);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy hover effect */
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -155,7 +157,6 @@
             border: 1px solid #f0f0f0;
         }
 
-        /* Gradient accent line at the top of each box */
         .menu-box::before {
             content: '';
             position: absolute;
@@ -171,7 +172,6 @@
         .menu-box h3 { font-size: 1.3rem; color: var(--text-main); margin: 0; font-weight: 600;}
         .menu-box p { color: var(--text-muted); font-size: 0.85rem; margin: 0; line-height: 1.4;}
         
-        /* Icon Wrapper to act as beautifully colored photos/badges */
         .icon-wrapper {
             width: 75px;
             height: 75px;
@@ -189,7 +189,6 @@
             transform: scale(1.1);
         }
 
-        /* Specific Box Theme Colors */
         .box-debit::before { background: linear-gradient(90deg, #4facfe, #00f2fe); }
         .box-debit .icon-wrapper { background: #e1f5fe; }
         
@@ -211,7 +210,7 @@
         /* --- TOOL PAGES COMMON STYLES --- */
         .tool-container {
             width: 100%;
-            max-width: 800px; /* Centered narrow view for each tool */
+            max-width: 800px;
             display: flex;
             flex-direction: column;
             gap: 25px;
@@ -410,7 +409,7 @@
         .savings-table .grand-total {
             font-size: 1.4rem;
             font-weight: bold;
-            color: #2e7d32; /* Green for savings */
+            color: #2e7d32;
         }
         .savings-table .row-total {
             font-weight: 600;
@@ -1218,64 +1217,66 @@
             return alert("No history to export.");
         }
         
-        // Ensure PDF scripts are loaded
-        if (!window.jspdf || !window.jspdf.jsPDF) {
-            return alert("PDF library not loaded. Ensure jspdf and autotable scripts are placed in your 'js' folder.");
+        try {
+            // Failsafe bind to ensure autotable finds jsPDF in local environments
+            window.jsPDF = window.jspdf.jsPDF;
+            const doc = new window.jsPDF();
+
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('en-IN');
+            const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+            // Add Header
+            doc.setFontSize(18);
+            doc.setTextColor(0, 14, 26);
+            doc.text("Shivadut's Transaction History Log", 14, 22);
+
+            // Add Subtitle (Downloaded Date & Time)
+            doc.setFontSize(10);
+            doc.setTextColor(108, 122, 137);
+            doc.text(`Downloaded on: ${dateStr} at ${timeStr}`, 14, 30);
+
+            // Prepare table data
+            const tableColumn = ["Date", "Time", "Category", "Amount (Rs.)"];
+            const tableRows = [];
+
+            debitHistoryState.forEach(entry => {
+                const d = new Date(entry.timestamp);
+                const entryDate = d.toLocaleDateString('en-IN');
+                const entryTime = d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+                const category = entry.category || "General";
+                const amount = parseFloat(entry.amount).toFixed(2);
+                
+                tableRows.push([entryDate, entryTime, category, amount]);
+            });
+
+            // Generate Table with AutoTable
+            doc.autoTable({
+                startY: 38,
+                head: [tableColumn],
+                body: tableRows,
+                theme: 'grid',
+                headStyles: { fillColor: [3, 169, 244], textColor: 255, fontStyle: 'bold' },
+                styles: { fontSize: 10, cellPadding: 5 },
+                alternateRowStyles: { fillColor: [248, 249, 250] },
+                didDrawPage: function (data) {
+                    // NEAT PAGE BORDER HOOK
+                    const pageWidth = doc.internal.pageSize.width;
+                    const pageHeight = doc.internal.pageSize.height;
+                    doc.setDrawColor(200, 200, 200); // Light gray border
+                    doc.setLineWidth(0.5);
+                    doc.rect(5, 5, pageWidth - 10, pageHeight - 10);
+                }
+            });
+
+            // Save PDF file
+            const isoDate = now.toISOString().slice(0, 10);
+            doc.save(`Shivadut_History_${isoDate}.pdf`);
+
+        } catch (error) {
+            console.error(error);
+            alert("PDF library is missing or blocked. The internet links have been enabled in the HTML <head> to fix this issue.");
         }
-
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-
-        const now = new Date();
-        const dateStr = now.toLocaleDateString('en-IN');
-        const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-
-        // Add Header
-        doc.setFontSize(18);
-        doc.setTextColor(0, 14, 26);
-        doc.text("Shivadut's Transaction History Log", 14, 22);
-
-        // Add Subtitle (Downloaded Date & Time)
-        doc.setFontSize(10);
-        doc.setTextColor(108, 122, 137);
-        doc.text(`Downloaded on: ${dateStr} at ${timeStr}`, 14, 30);
-
-        // Prepare table data
-        const tableColumn = ["Date", "Time", "Category", "Amount (Rs.)"];
-        const tableRows = [];
-
-        debitHistoryState.forEach(entry => {
-            const d = new Date(entry.timestamp);
-            const entryDate = d.toLocaleDateString('en-IN');
-            const entryTime = d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-            const category = entry.category || "General";
-            const amount = parseFloat(entry.amount).toFixed(2);
-            
-            tableRows.push([entryDate, entryTime, category, amount]);
-        });
-
-        // Generate Table with AutoTable
-        doc.autoTable({
-            startY: 38,
-            head: [tableColumn],
-            body: tableRows,
-            theme: 'grid',
-            headStyles: { fillColor: [3, 169, 244], textColor: 255, fontStyle: 'bold' },
-            styles: { fontSize: 10, cellPadding: 5 },
-            alternateRowStyles: { fillColor: [248, 249, 250] },
-            didDrawPage: function (data) {
-                // NEAT PAGE BORDER HOOK
-                const pageWidth = doc.internal.pageSize.width;
-                const pageHeight = doc.internal.pageSize.height;
-                doc.setDrawColor(200, 200, 200); // Light gray border
-                doc.setLineWidth(0.5);
-                doc.rect(5, 5, pageWidth - 10, pageHeight - 10);
-            }
-        });
-
-        // Save PDF file
-        const isoDate = now.toISOString().slice(0, 10);
-        doc.save(`Shivadut_History_${isoDate}.pdf`);
     }
 
     function exportHistoryToExcel() {
@@ -1361,12 +1362,12 @@
                         <div class="action-container">
                             <div class="balance-display ${balanceClass}">${balanceText}</div>
                             <a href="${whatsappUri}" target="_blank" class="btn-share-wa"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg></a>
+                            </div>
+                            <div class="progress-module"><div class="progress-container"><div class="progress-fill ${roundedProgress===100&&currentBalance===0?'settled':''}" style="transform: scaleX(${progress/100});"></div></div><div class="progress-label-text">${roundedProgress}% Settled</div></div>
                         </div>
-                        <div class="progress-module"><div class="progress-container"><div class="progress-fill ${roundedProgress===100&&currentBalance===0?'settled':''}" style="transform: scaleX(${progress/100});"></div></div><div class="progress-label-text">${roundedProgress}% Settled</div></div>
                     </div>
-                </div>
-                <div class="history-panel" id="history-${peer}"><h4>Transaction Timeline</h4>${historyHTML}</div>
-            `;
+                    <div class="history-panel" id="history-${peer}"><h4>Transaction Timeline</h4>${historyHTML}</div>
+                `;
             container.appendChild(itemContainer);
         });
     }
