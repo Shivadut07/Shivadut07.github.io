@@ -1206,7 +1206,7 @@
             headStyles: { fillColor: [41, 128, 185] },
         });
 
-        doc.save(`Transaction_History_${new Date().toISOString().slice(0, 10)}.pdf`);
+        doc.save(`Transaction_History_{new Date().toISOString().slice(0, 10)}.pdf`);
     }
 
     function renderLedger() {
