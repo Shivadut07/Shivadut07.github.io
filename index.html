@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shivadut's Integrated Financial Ledger</title>
+    <title>Mowlish's Integrated Financial Ledger</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
@@ -168,7 +168,7 @@
         /* --- TOOL PAGES COMMON STYLES --- */
         .tool-container {
             width: 100%;
-            max-width: 800px; /* Centered narrow view for each tool */
+            max-width: 800px;
             display: flex;
             flex-direction: column;
             gap: 25px;
@@ -227,17 +227,24 @@
             margin-bottom: 15px;
         }
 
-        /* --- DEBIT STYLES --- */
-        .debit-display {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--btn-give);
+        /* --- DEBIT STYLES & ACCUMULATOR --- */
+        .account-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
             margin: 20px 0;
-            text-align: center;
-            background-color: #fff3e0;
-            border-radius: 8px;
-            padding: 10px;
         }
+        .summary-box {
+            text-align: center;
+            border-radius: 8px;
+            padding: 15px 10px;
+            font-weight: bold;
+        }
+        .summary-initial { background-color: #e3f2fd; color: #1565c0; font-size: 1.4rem; }
+        .summary-spent { background-color: #fff3e0; color: var(--btn-give); font-size: 1.4rem; }
+        .summary-remaining { background-color: #e8f5e9; color: #2e7d32; font-size: 1.4rem; }
+        .summary-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 5px; }
+
         .input-group { display: flex; flex-direction: column; gap: 10px; width: 100%; }
         .input-row { display: flex; gap: 10px; width: 100%; }
         input[type="number"], input[type="text"], input[type="password"] {
@@ -306,7 +313,6 @@
         }
         .btn-export-excel svg { width: 18px; height: 18px; fill: currentColor; }
 
-        /* Added specific style for PDF button */
         .btn-export-pdf {
             background-color: #d32f2f;
             color: #ffffff;
@@ -328,6 +334,25 @@
             padding: 15px 20px;
             border: 1px solid var(--border-light);
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+        }
+
+        /* History Edit/Delete Actions Style */
+        .history-action-btns {
+            display: flex;
+            gap: 8px;
+            margin-left: 15px;
+        }
+        .btn-edit-inline {
+            background-color: #ff9800;
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            border-radius: 4px;
+        }
+        .btn-delete-inline {
+            background-color: #e74c3c;
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            border-radius: 4px;
         }
 
         /* --- SAVINGS CASH COUNTER STYLES --- */
@@ -357,7 +382,7 @@
         .savings-table .grand-total {
             font-size: 1.4rem;
             font-weight: bold;
-            color: #2e7d32; /* Green for savings */
+            color: #2e7d32;
         }
         .savings-table .row-total {
             font-weight: 600;
@@ -619,8 +644,8 @@
         }
 
         /* Heatmap colors */
-        .bg-low { background-color: #e8f5e9; border-color: #a5d6a7; } /* Green */
-        .bg-high { background-color: #ffebee; border-color: #ef9a9a; } /* Red */
+        .bg-low { background-color: #e8f5e9; border-color: #a5d6a7; }
+        .bg-high { background-color: #ffebee; border-color: #ef9a9a; }
 
         /* --- MODAL STYLES --- */
         .modal-overlay {
@@ -670,11 +695,14 @@
             .action-container { flex-direction: row; }
             .balance-display { text-align: center; }
             .input-row { flex-direction: column; }
+            .account-summary-grid { grid-template-columns: 1fr; gap: 10px; }
            
             .calendar-cell { min-height: 60px; padding: 4px; }
             .cell-date { font-size: 0.8rem; }
             .cell-amount { font-size: 0.75rem; }
             .calendar-header h2 { font-size: 1.1rem; }
+            .timeline-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .history-action-btns { margin-left: 0; margin-top: 5px; }
         }
     </style>
 </head>
@@ -682,7 +710,7 @@
 
     <div id="login-page" class="app-page" style="display: flex;">
         <div class="login-card">
-            <h1>Shivadut's Secure Ledger</h1>
+            <h1>Mowlish's Secure Ledger</h1>
             <p>Access your financial dashboard & timelines.</p>
             <div class="login-form-group">
                 <label for="username">Username</label>
@@ -803,47 +831,61 @@
             <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
             <button class="btn-logout" onclick="logout()">Sign Out</button>
         </div>
-       
         <div class="tool-container">
             <div class="panel">
                 <h2>Personal Daily Debit Accumulator</h2>
-                <div class="debit-display">₹<span id="total-debit-val">0.00</span></div>
+                <div class="account-summary-grid">
+                    <div class="summary-box summary-initial">
+                        <span class="summary-label">Account Balance</span>
+                        ₹<span id="initial-balance-val">0.00</span>
+                    </div>
+                    <div class="summary-box summary-spent">
+                        <span class="summary-label">Monthly Spent</span>
+                        ₹<span id="total-debit-val">0.00</span>
+                    </div>
+                    <div class="summary-box summary-remaining">
+                        <span class="summary-label">Remaining Balance</span>
+                        ₹<span id="remaining-balance-val">0.00</span>
+                    </div>
+                </div>
+
                 <div class="input-group">
+                    <div class="input-row" style="margin-bottom: 10px;">
+                        <input type="number" id="account-initial-input" placeholder="Set/Update Account Balance (₹)" step="0.01" min="0">
+                        <button class="btn-add" style="background-color: var(--btn-receive); flex: 0 0 auto;" onclick="updateInitialBalance()">Save Balance</button>
+                    </div>
                     <div class="input-row">
-                        <input type="number" id="daily-debit-input" placeholder="Amount (₹)" step="0.01" min="0">
+                        <input type="number" id="daily-debit-input" placeholder="Amount spent (₹)" step="0.01" min="0">
                         <select id="daily-debit-category" class="modern-select" onchange="toggleCustomInput('daily-debit-category', 'daily-debit-custom')">
-                            <option value="" disabled selected>Select Category</option>
-                            <option value="Train tickets">Train tickets</option>
-                            <option value="Bus tickets">Bus tickets</option>
-                            <option value="Breakfast">Breakfast</option>
-                            <option value="Lunch">Lunch</option>
-                            <option value="Dinner">Dinner</option>
-                            <option value="Tea">Tea</option>
-                            <option value="Snacks">Snacks</option>
-                            <option value="Project components">Project components</option>
-                            <option value="Other">Other (Type below)</option>
+                            <option value="" disabled selected>Choose Category</option>
+                            <option value="Food & Drinks">Food & Drinks</option>
+                            <option value="Travel & Fuel">Travel & Fuel</option>
+                            <option value="Shopping & Clothes">Shopping & Clothes</option>
+                            <option value="Rent & Bills">Rent & Bills</option>
+                            <option value="Entertainment & Movies">Entertainment & Movies</option>
+                            <option value="Other">Other (Type Custom)</option>
                         </select>
                     </div>
-                    <input type="text" id="daily-debit-custom" placeholder="Enter custom description..." style="display: none;">
+                    <input type="text" id="daily-debit-custom" placeholder="Type custom description/category" style="display: none;">
                     <div class="input-row">
-                        <button class="btn-add" onclick="addDailyDebit()">Add to Total</button>
-                        <button class="btn-reset" onclick="resetDailyDebit()">Reset</button>
+                        <button class="btn-add" id="debit-submit-btn" onclick="addDailyDebit()">Add to Total</button>
+                        <button class="btn-reset" id="debit-cancel-btn" onclick="resetDailyDebit()">Reset All</button>
                     </div>
                 </div>
             </div>
 
             <div class="panel">
                 <div class="header-action-row">
-                    <h2>Transaction History Log</h2>
-                    <div style="display: flex; align-items: center;">
-                        <button class="btn-export-pdf" onclick="exportHistoryToPdf()">PDF</button>
+                    <h2>Personal Spending Log</h2>
+                    <div style="display: flex;">
+                        <button class="btn-export-pdf" onclick="exportHistoryToPDF()">Export PDF</button>
                         <button class="btn-export-excel" onclick="exportHistoryToExcel()">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM5.884 6.68 8 9.219l2.116-2.54a.5.5 0 1 1 .768.641L8.651 10l2.233 2.68a.5.5 0 0 1-.768.64L8 10.781l-2.116 2.54a.5.5 0 0 1-.768-.641L7.349 10 5.116 7.32a.5.5 0 1 1 .768-.64z"/></svg>
-                            Export
+                            <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                            Export Excel
                         </button>
                     </div>
                 </div>
-                <div class="debit-history-scroll" id="debit-history-container">
+                <div class="debit-history-scroll">
                     <ul class="timeline" id="debit-history-list"></ul>
                 </div>
             </div>
@@ -855,7 +897,6 @@
             <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
             <button class="btn-logout" onclick="logout()">Sign Out</button>
         </div>
-       
         <div class="tool-container">
             <div class="panel">
                 <div class="calendar-header">
@@ -863,14 +904,11 @@
                     <h2 id="calendar-month-year">Month Year</h2>
                     <button onclick="changeMonth(1)">&#10095;</button>
                 </div>
-               
                 <div class="budget-control">
                     <label for="calendar-budget-input">Daily Budget Threshold: ₹</label>
                     <input type="number" id="calendar-budget-input" value="200" step="10" min="0" onchange="renderCalendar()">
                 </div>
-
-                <div class="calendar-grid" id="calendar-grid">
-                </div>
+                <div class="calendar-grid" id="calendar-grid"></div>
             </div>
         </div>
     </div>
@@ -880,7 +918,6 @@
             <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
             <button class="btn-logout" onclick="logout()">Sign Out</button>
         </div>
-
         <div class="tool-container">
             <div class="panel">
                 <div class="header-action-row">
@@ -897,7 +934,6 @@
             <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
             <button class="btn-logout" onclick="logout()">Sign Out</button>
         </div>
-
         <div class="tool-container">
             <div class="panel calculator" id="calculator-section">
                 <div class="calculator__display" id="calc-display">0</div>
@@ -929,7 +965,6 @@
             <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
             <button class="btn-logout" onclick="logout()">Sign Out</button>
         </div>
-
         <div class="tool-container">
             <div class="panel">
                 <h2>Debit Analysis (Pie Chart)</h2>
@@ -937,9 +972,8 @@
                     <canvas id="pieChart"></canvas>
                 </div>
             </div>
-           
             <div class="panel">
-                <h2>Debit Analysis (Line Graph)</h2>
+                <h2>Spending Timeline Trends</h2>
                 <div class="chart-wrapper">
                     <canvas id="lineChart"></canvas>
                 </div>
@@ -950,110 +984,83 @@
     <div id="calendar-modal" class="modal-overlay">
         <div class="modal-box">
             <span class="modal-close" onclick="closeCalendarModal()">&times;</span>
-            <h2 id="modal-date-title" style="margin-bottom: 0;">Date</h2>
+            <h2 id="calendar-modal-title" style="border-bottom: 2px solid var(--border-light); padding-bottom: 10px;">Transactions</h2>
             <div class="modal-content-scroll">
-                <ul class="timeline" id="modal-transaction-list"></ul>
+                <ul class="timeline" id="calendar-modal-list"></ul>
             </div>
         </div>
     </div>
 
 <script>
-    // --- Register the DataLabels Plugin globally ---
-    Chart.register(ChartDataLabels);
-
-    // --- Page Navigation Logic (SPA Routing) ---
-    function openPage(pageId) {
-        // Hide all pages
-        document.querySelectorAll('.app-page').forEach(page => {
-            page.style.display = 'none';
-        });
-       
-        // Show target page
-        const target = document.getElementById(pageId);
-        target.style.display = (pageId === 'login-page') ? 'flex' : 'flex';
-       
-        // Specific page renders
-        if (pageId === 'analytics-page') {
-            renderCharts();
-        } else if (pageId === 'calendar-page') {
-            renderCalendar();
-        }
-
-        // Quick visual reset on scroll
-        window.scrollTo(0,0);
-    }
-
-    // --- Login Logic ---
     function attemptLogin() {
-        const user = document.getElementById('username').value.trim();
-        const pass = document.getElementById('password').value;
-        const errorMsg = document.getElementById('login-error-msg');
-
-        if (user === '') {
-            errorMsg.textContent = 'Please enter a numeric username.';
-            return;
-        }
-
-        // Updated Password
-        if (pass === '857447') {
-            document.getElementById('display-username').textContent = user;
+        const u = document.getElementById('username').value.trim();
+        const p = document.getElementById('password').value.trim();
+        const err = document.getElementById('login-error-msg');
+        if (u === "2311022" && p === "2311022") {
+            err.textContent = "";
+            sessionStorage.setItem('ledgerAuthenticated', 'true');
+            sessionStorage.setItem('ledgerUser', "Mowlish");
+            document.getElementById('display-username').textContent = "Mowlish";
             openPage('menu-page');
-           
-            // Re-render ledger data when logged in
-            document.getElementById('total-debit-val').textContent = personalTotalDebit.toFixed(2);
-            renderLedger();
-            renderDebitHistory();
         } else {
-            errorMsg.textContent = 'Incorrect password. Access denied.';
+            err.textContent = "Thappana Credentials! Correct numeric User & Pass enter pannunga.";
         }
     }
 
     function logout() {
+        sessionStorage.removeItem('ledgerAuthenticated');
+        sessionStorage.removeItem('ledgerUser');
         openPage('login-page');
-        document.getElementById('password').value = ''; // Resets to empty when logged out
-        document.getElementById('login-error-msg').textContent = '';
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
     }
 
-    document.getElementById('password').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') attemptLogin();
-    });
+    function openPage(pageId) {
+        if (pageId !== 'login-page' && sessionStorage.getItem('ledgerAuthenticated') !== 'true') {
+            pageId = 'login-page';
+        }
+        document.querySelectorAll('.app-page').forEach(p => p.style.display = 'none');
+        const activePage = document.getElementById(pageId);
+        if (activePage) {
+            activePage.style.display = 'flex';
+            if (pageId === 'debit-page') renderDebitHistory();
+            if (pageId === 'cohort-page') renderLedger();
+            if (pageId === 'calendar-page') renderCalendar();
+            if (pageId === 'analytics-page') renderCharts();
+        }
+    }
 
-function calculateSavings() {
-    let grandTotal = 0;
-    const inputs = document.querySelectorAll('.note-input');
-    const savedData = {}; // Object to store counts
+    function calculateSavings() {
+        let grandTotal = 0;
+        const noteInputs = document.querySelectorAll('.note-input');
+        const savingsData = {};
+       
+        noteInputs.forEach(input => {
+            const denom = parseInt(input.getAttribute('data-denom'));
+            const count = parseInt(input.value) || 0;
+            const total = denom * count;
+            grandTotal += total;
+            savingsData[denom] = input.value;
+            document.getElementById(`row-total-${denom}`).textContent = total.toFixed(2);
+        });
 
-    inputs.forEach(input => {
-        const denom = input.getAttribute('data-denom');
-        const count = parseInt(input.value) || 0;
-        
-        // Save to temporary object
-        savedData[denom] = count;
+        localStorage.setItem('savingsData', JSON.stringify(savingsData));
+        document.getElementById('savings-grand-total').textContent = `₹${grandTotal.toFixed(2)}`;
+    }
 
-        const rowTotal = denom * count;
-        document.getElementById(`row-total-${denom}`).textContent = rowTotal.toFixed(2);
-        grandTotal += rowTotal;
-    });
-
-    // Save the input counts to localStorage
-    localStorage.setItem('savingsData', JSON.stringify(savedData));
-    
-    document.getElementById('savings-grand-total').textContent = `₹${grandTotal.toFixed(2)}`;
-}
-
-    // --- Core Ledger Logic ---
-    const rawFriendsArray = ["thiwakar", "gojo", "mowlish", "goww", "aravindh", "mohan", "gowtham", "parithi", "soukar"];
+    // --- Core Ledger States ---
+    const rawFriendsArray = ["Siddharrth", "gowtham", "aravindh", "mohan", "parithi","Kavi","aShivadut"];
     const sortedFriends = rawFriendsArray.sort();
-   
+
     let personalTotalDebit = parseFloat(localStorage.getItem('personalTotalDebit')) || 0;
+    let initialAccountBalance = parseFloat(localStorage.getItem('initialAccountBalance')) || 0;
     let ledgerState = JSON.parse(localStorage.getItem('ledgerState')) || {};
     let debitHistoryState = JSON.parse(localStorage.getItem('debitHistoryState')) || [];
-   
+    let currentEditingId = null;
+
     sortedFriends.forEach(peer => {
         if (ledgerState[peer] === undefined) {
             ledgerState[peer] = { balance: 0, baseline: 0, transactions: [] };
-        } else if (typeof ledgerState[peer] === 'number') {
-            ledgerState[peer] = { balance: ledgerState[peer], baseline: Math.abs(ledgerState[peer]), transactions: [] };
         }
     });
     localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
@@ -1063,27 +1070,48 @@ function calculateSavings() {
     function toggleCustomInput(selectId, inputId) {
         const selectEl = document.getElementById(selectId);
         const inputEl = document.getElementById(inputId);
-        if (selectEl.value === 'Other') {
-            inputEl.style.display = 'block';
-            inputEl.focus();
-        } else {
-            inputEl.style.display = 'none';
+        inputEl.style.display = (selectEl.value === 'Other') ? 'block' : 'none';
+        if (selectEl.value === 'Other') inputEl.focus();
+    }
+
+    function loadSavingsData() {
+        const savedData = JSON.parse(localStorage.getItem('savingsData'));
+        if (savedData) {
+            Object.keys(savedData).forEach(denom => {
+                const input = document.querySelector(`.note-input[data-denom="${denom}"]`);
+                if (input) {
+                    input.value = savedData[denom];
+                }
+            });
+            calculateSavings();
         }
     }
-    function loadSavingsData() {
-    const savedData = JSON.parse(localStorage.getItem('savingsData'));
-    if (savedData) {
-        Object.keys(savedData).forEach(denom => {
-            const input = document.querySelector(`.note-input[data-denom="${denom}"]`);
-            if (input) {
-                input.value = savedData[denom];
-            }
-        });
-        calculateSavings(); // Recalculate totals based on loaded data
+
+    function updateInitialBalance() {
+        const inputEl = document.getElementById('account-initial-input');
+        const value = parseFloat(inputEl.value);
+        if (!isNaN(value) && value >= 0) {
+            initialAccountBalance = value;
+            localStorage.setItem('initialAccountBalance', initialAccountBalance);
+            updateBalancesUI();
+            inputEl.value = '';
+        } else {
+            alert("Valid initial balance steady amount enter pannunga!");
+        }
     }
-}
+
+    function updateBalancesUI() {
+        personalTotalDebit = debitHistoryState.reduce((sum, item) => sum + item.amount, 0);
+        localStorage.setItem('personalTotalDebit', personalTotalDebit);
+        document.getElementById('initial-balance-val').textContent = initialAccountBalance.toFixed(2);
+        document.getElementById('total-debit-val').textContent = personalTotalDebit.toFixed(2);
+        const remainingBalance = initialAccountBalance - personalTotalDebit;
+        document.getElementById('remaining-balance-val').textContent = remainingBalance.toFixed(2);
+    }
+
     function resolveCategoryValue(selectId, inputId) {
-        const selectVal = document.getElementById(selectId).value;
+        const selectEl = document.getElementById(selectId);
+        const selectVal = selectEl.value;
         if (selectVal === 'Other') {
             const customVal = document.getElementById(inputId).value.trim();
             return customVal !== "" ? customVal : "Uncategorized Transaction";
@@ -1093,468 +1121,552 @@ function calculateSavings() {
 
     function addDailyDebit() {
         const inputEl = document.getElementById('daily-debit-input');
-        const selectEl = document.getElementById('daily-debit-category');
-        const customEl = document.getElementById('daily-debit-custom');
-        const displayEl = document.getElementById('total-debit-val');
-       
         const amount = parseFloat(inputEl.value);
         const categoryDesc = resolveCategoryValue('daily-debit-category', 'daily-debit-custom');
-       
+
         if (!isNaN(amount) && amount > 0) {
-            personalTotalDebit += amount;
-            displayEl.textContent = personalTotalDebit.toFixed(2);
-            localStorage.setItem('personalTotalDebit', personalTotalDebit);
-           
-            debitHistoryState.unshift({
-                id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
-                amount: amount,
-                category: categoryDesc,
-                timestamp: new Date().toISOString()
-            });
+            if (currentEditingId) {
+                const txIndex = debitHistoryState.findIndex(item => item.id === currentEditingId);
+                if (txIndex !== -1) {
+                    debitHistoryState[txIndex].amount = amount;
+                    debitHistoryState[txIndex].category = categoryDesc;
+                }
+                currentEditingId = null;
+                document.getElementById('debit-submit-btn').textContent = "Add to Total";
+                document.getElementById('debit-cancel-btn').textContent = "Reset All";
+                document.getElementById('debit-cancel-btn').setAttribute("onclick", "resetDailyDebit()");
+            } else {
+                const newEntry = {
+                    id: 'tx_' + Date.now() + '_' + Math.floor(Math.random()*1000),
+                    amount: amount,
+                    category: categoryDesc,
+                    timestamp: new Date().toISOString()
+                };
+                debitHistoryState.unshift(newEntry);
+            }
             localStorage.setItem('debitHistoryState', JSON.stringify(debitHistoryState));
+            updateBalancesUI();
             renderDebitHistory();
-           
-            inputEl.value = ''; selectEl.selectedIndex = 0; customEl.value = ''; customEl.style.display = 'none';
-        } else alert("Please enter a valid numeric amount.");
+
+            inputEl.value = '';
+            document.getElementById('daily-debit-category').value = '';
+            document.getElementById('daily-debit-custom').style.display = 'none';
+            document.getElementById('daily-debit-custom').value = '';
+        } else {
+            alert("Sariyana debit amount enter pannunga!");
+        }
+    }
+
+    function editDebitTransaction(id) {
+        const tx = debitHistoryState.find(item => item.id === id);
+        if (!tx) return;
+
+        currentEditingId = id;
+        openPage('debit-page');
+        document.getElementById('daily-debit-input').value = tx.amount;
+        
+        const categorySelect = document.getElementById('daily-debit-category');
+        const customInput = document.getElementById('daily-debit-custom');
+        const options = Array.from(categorySelect.options).map(opt => opt.value);
+
+        if (options.includes(tx.category)) {
+            categorySelect.value = tx.category;
+            customInput.style.display = 'none';
+        } else {
+            categorySelect.value = 'Other';
+            customInput.style.display = 'block';
+            customInput.value = tx.category;
+        }
+
+        document.getElementById('debit-submit-btn').textContent = "Update Amount";
+        document.getElementById('debit-cancel-btn').textContent = "Cancel Edit";
+        document.getElementById('debit-cancel-btn').setAttribute("onclick", "cancelDebitEdit()");
+        document.getElementById('daily-debit-input').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function cancelDebitEdit() {
+        currentEditingId = null;
+        document.getElementById('daily-debit-input').value = '';
+        document.getElementById('daily-debit-category').value = '';
+        document.getElementById('daily-debit-custom').style.display = 'none';
+        document.getElementById('daily-debit-custom').value = '';
+        document.getElementById('debit-submit-btn').textContent = "Add to Total";
+        document.getElementById('debit-cancel-btn').textContent = "Reset All";
+        document.getElementById('debit-cancel-btn').setAttribute("onclick", "resetDailyDebit()");
+    }
+
+    function deleteDebitTransaction(id) {
+        if (confirm("Intha transaction-ai permanent-aga delete seiya venduma?")) {
+            if (currentEditingId === id) cancelDebitEdit();
+            debitHistoryState = debitHistoryState.filter(item => item.id !== id);
+            localStorage.setItem('debitHistoryState', JSON.stringify(debitHistoryState));
+            updateBalancesUI();
+            renderDebitHistory();
+            const openModal = document.getElementById('calendar-modal').style.display === 'flex';
+            if (openModal) {
+                closeCalendarModal();
+            }
+        }
     }
 
     function resetDailyDebit() {
-        if (confirm("Reset accumulator to ₹0.00? This will permanently purge the audit log as well.")) {
+        if (confirm("Moththa history matrum Spent balances reset seiya venduma?")) {
             personalTotalDebit = 0;
-            document.getElementById('total-debit-val').textContent = '0.00';
-            localStorage.setItem('personalTotalDebit', 0);
+            initialAccountBalance = 0;
             debitHistoryState = [];
-            localStorage.setItem('debitHistoryState', JSON.stringify([]));
+            currentEditingId = null;
+            localStorage.setItem('personalTotalDebit', personalTotalDebit);
+            localStorage.setItem('initialAccountBalance', initialAccountBalance);
+            localStorage.setItem('debitHistoryState', JSON.stringify(debitHistoryState));
+            updateBalancesUI();
             renderDebitHistory();
         }
     }
 
-    function resetAllCohortHistories() {
-        if (confirm("Reset all cohort timelines? Action cannot be undone.")) {
-            sortedFriends.forEach(peer => {
-                if(ledgerState[peer]) { ledgerState[peer].balance = 0; ledgerState[peer].baseline = 0; ledgerState[peer].transactions = []; }
-            });
-            localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
-            renderLedger();
-        }
-    }
-   
     function renderDebitHistory() {
         const listEl = document.getElementById('debit-history-list');
+        if (!listEl) return;
+
         if (debitHistoryState.length === 0) {
-            listEl.innerHTML = `<li class="no-history-msg">No debits recorded yet.</li>`;
+            listEl.innerHTML = `<li class="no-history-msg">No personal expenditure logged yet.</li>`;
+        } else {
+            listEl.innerHTML = debitHistoryState.map(entry => {
+                const formattedDate = dateFormatter.format(new Date(entry.timestamp));
+                return `
+                    <li class="timeline-item give" style="padding-bottom:20px;">
+                        <div class="timeline-meta" style="max-width: 60%;">
+                            <span class="timeline-desc">${entry.category}</span>
+                            <span class="timeline-date">${formattedDate}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div class="timeline-amount">₹${entry.amount.toFixed(2)}</div>
+                            <div class="history-action-btns">
+                                <button class="btn-edit-inline" onclick="editDebitTransaction('${entry.id}')">✏️</button>
+                                <button class="btn-delete-inline" onclick="deleteDebitTransaction('${entry.id}')">🗑️</button>
+                            </div>
+                        </div>
+                    </li>
+                `;
+            }).join('');
+        }
+    }
+
+    function exportHistoryToPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+       
+        doc.setFillColor(0, 14, 26);
+        doc.rect(0, 0, 210, 40, 'F');
+       
+        doc.setFont("Helvetica", "bold");
+        doc.setFontSize(22);
+        doc.setTextColor(255, 255, 255);
+        doc.text("Mowlish's Personal Ledger Report", 14, 20);
+       
+        doc.setFontSize(10);
+        doc.setFont("Helvetica", "normal");
+        doc.setTextColor(100);
+        doc.text(`Generated on: ${new Date().toLocaleString('en-IN')}`, 14, 26);
+        doc.text(`Initial Account Balance: INR ${initialAccountBalance.toFixed(2)}`, 14, 32);
+        doc.text(`Total Monthly Spent: INR ${personalTotalDebit.toFixed(2)}`, 14, 38);
+        doc.text(`Remaining Balance: INR ${(initialAccountBalance - personalTotalDebit).toFixed(2)}`, 14, 44);
+
+        const tableRows = [];
+        debitHistoryState.forEach((item, index) => {
+            const dateStr = dateFormatter.format(new Date(item.timestamp));
+            tableRows.push([index + 1, dateStr, item.category, `Rs. ${item.amount.toFixed(2)}`]);
+        });
+
+        doc.autoTable({
+            startY: 50,
+            head: [['#', 'Date & Time', 'Category/Description', 'Amount']],
+            body: tableRows,
+            theme: 'striped',
+            headStyles: { fillColor: [0, 14, 26], textColor: [255, 255, 255] },
+            styles: { font: "Helvetica", fontSize: 9 }
+        });
+
+        doc.save(`Debit_Ledger_${new Date().toISOString().slice(0,10)}.pdf`);
+    }
+
+    // Fixed Export to Excel / CSV Functionality
+    function exportHistoryToExcel() {
+        if (debitHistoryState.length === 0) {
+            alert("Export panna entries ethuvum illai!");
             return;
         }
-        listEl.innerHTML = debitHistoryState.map(entry => {
-            const formattedDate = dateFormatter.format(new Date(entry.timestamp));
-            const displayCat = entry.category || "General Expense";
+        
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Serial No,Date and Time,Category/Description,Amount (INR)\n";
+        
+        debitHistoryState.forEach((item, index) => {
+            const dateStr = dateFormatter.format(new Date(item.timestamp)).replace(/,/g, '');
+            const categoryStr = item.category.replace(/"/g, '""');
+            csvContent += `${index + 1},"${dateStr}","${categoryStr}",${item.amount.toFixed(2)}\n`;
+        });
+        
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `Debit_Ledger_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // --- Cohort Ledger Logic ---
+    function renderLedger() {
+        const container = document.getElementById('ledger-container');
+        if (!container) return;
+
+        container.innerHTML = sortedFriends.map(peer => {
+            const data = ledgerState[peer];
+            const bal = data.balance;
+            const absoluteBalance = Math.abs(bal).toFixed(2);
+            let balClass = "balance-neutral";
+            let statusText = "Settled Up";
+
+            if (bal > 0) {
+                balClass = "balance-positive";
+                statusText = `Owes you ₹${absoluteBalance}`;
+            } else if (bal < 0) {
+                balClass = "balance-negative";
+                statusText = `You owe ₹${absoluteBalance}`;
+            }
+
+            let progressPercent = 0;
+            if(data.baseline > 0) {
+                progressPercent = Math.min(((data.baseline - Math.abs(bal)) / data.baseline) * 100, 100);
+            } else if (bal === 0) {
+                progressPercent = 100;
+            }
+
             return `
-                <li class="timeline-item give">
-                    <div class="timeline-meta">
-                        <span class="timeline-desc">Debit Added</span>
-                        <div class="timeline-category-tag">${displayCat}</div>
-                        <span class="timeline-date">${formattedDate}</span>
+                <div class="ledger-item-container">
+                    <div class="ledger-row">
+                        <div class="peer-info">
+                            <span class="peer-name">${peer}</span>
+                            <button class="btn-history-toggle" onclick="toggleCohortHistory('${peer}')">Logs/History</button>
+                        </div>
+                        <div class="ledger-controls">
+                            <div class="ledger-inputs">
+                                <input type="number" id="amt-${peer}" placeholder="Amount (₹)" min="0" step="0.01">
+                                <select id="cat-${peer}" class="modern-select" onchange="toggleCustomInput('cat-${peer}', 'cust-${peer}')">
+                                    <option value="" disabled selected>Select reason</option>
+                                    <option value="Tea & Snacks">Tea & Snacks</option>
+                                    <option value="Lunch Split">Lunch Split</option>
+                                    <option value="Movie Ticket">Movie Ticket</option>
+                                    <option value="Room Rent Share">Room Rent Share</option>
+                                    <option value="Fuel / Travel Split">Fuel / Travel Split</option>
+                                    <option value="Settlement Outright">Cash Settlement</option>
+                                    <option value="Other">Other Custom Reason</option>
+                                </select>
+                            </div>
+                            <input type="text" id="cust-${peer}" placeholder="Type unique custom split description" style="display: none; margin-bottom: 4px;">
+                            <div class="ledger-buttons">
+                                <button class="btn-give" onclick="processCohortTx('${peer}', 'give')">Given (Avanuku Thanthathu)</button>
+                                <button class="btn-receive" onclick="processCohortTx('${peer}', 'receive')">Taken (Avan Kitta Vangiyathu)</button>
+                            </div>
+                        </div>
+                        <div class="action-container">
+                            <div class="balance-display ${balClass}">${statusText}</div>
+                            <a class="btn-share-wa" href="#" onclick="shareCohortWhatsApp('${peer}')">
+                                <svg viewBox="0 0 448 512"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7 .9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
+                            </a>
+                        </div>
                     </div>
-                    <div class="timeline-amount">+₹${entry.amount.toFixed(2)}</div>
-                </li>
+                    <div class="progress-module">
+                        <div class="progress-container">
+                            <div class="progress-fill ${bal===0?'settled':''}" style="transform: scaleX(${progressPercent/100});"></div>
+                        </div>
+                        <div class="progress-label-text">Settlement Progress: ${progressPercent.toFixed(0)}%</div>
+                    </div>
+                    <div class="history-panel" id="history-box-${peer}">
+                        <ul class="timeline" id="history-list-${peer}"></ul>
+                    </div>
+                </div>
             `;
         }).join('');
     }
 
-    function exportHistoryToExcel() {
-        if (!debitHistoryState || debitHistoryState.length === 0) return alert("No history to export.");
-        let csvContent = "Transaction ID,Date,Time,Category/Description,Amount (\u20B9)\n";
-        debitHistoryState.forEach(entry => {
-            const dateParts = dateFormatter.format(new Date(entry.timestamp)).split(',');
-            const isolatedDate = dateParts[0] ? dateParts[0].trim() : "Unknown";
-            const isolatedTime = dateParts[1] ? dateParts[1].trim() : "Unknown";
-            const sanitizedCategory = `"${(entry.category || "General").replace(/"/g, '""')}"`;
-            csvContent += `${entry.id},${isolatedDate},${isolatedTime},${sanitizedCategory},${entry.amount.toFixed(2)}\n`;
-        });
-        const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = `Transaction_History_${new Date().toISOString().slice(0, 10)}.csv`;
-        link.click();
+    function toggleCohortHistory(peer) {
+        const el = document.getElementById(`history-box-${peer}`);
+        const open = el.style.display === 'block';
+        el.style.display = open ? 'none' : 'block';
+        if (!open) renderCohortHistoryList(peer);
     }
 
- function exportHistoryToPdf() {
-    if (!debitHistoryState || debitHistoryState.length === 0) return alert("No history to export.");
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    doc.setFontSize(16);
-    doc.text("Transaction History Report", 14, 20);
-    doc.setFontSize(10);
-    doc.text("Generated on: " + new Date().toLocaleString(), 14, 28);
-    // Explicitly add the currency note
-    doc.text("All amounts are in Indian Rupee (INR)", 14, 33);
-
-    // Changed column header to be simple text
-    const tableColumn = ["Date", "Time", "Category", "Amount"];
-    const tableRows = [];
-
-    debitHistoryState.forEach(entry => {
-        const d = new Date(entry.timestamp);
-        const dateStr = d.toLocaleDateString('en-IN');
-        const timeStr = d.toLocaleTimeString('en-IN');
-        
-        const rowData = [
-            dateStr,
-            timeStr,
-            entry.category,
-            entry.amount.toFixed(2) // Removed the ₹ symbol to prevent encoding errors
-        ];
-        tableRows.push(rowData);
-    });
-
-    doc.autoTable({
-        head: [tableColumn],
-        body: tableRows,
-        startY: 38, // Adjusted startY to accommodate the extra text
-        theme: 'grid',
-        headStyles: { 
-            fillColor: [41, 128, 185],
-            textColor: 255,
-            lineWidth: 0.6
-        },
-       bodyStyles: {
-            lineWidth: 0.6, // Border thickness for table body
-            lineColor: [34,139,34]}
-    });
-
-    doc.save(`Transaction_History_${new Date().toISOString().slice(0, 10)}.pdf`);
-}
-
-    function renderLedger() {
-        const container = document.getElementById('ledger-container');
-        container.innerHTML = '';
-
-        sortedFriends.forEach(peer => {
-            const peerData = ledgerState[peer];
-            const currentBalance = peerData.balance;
-            const currentBaseline = peerData.baseline;
-           
-            let balanceText = 'Settled (₹0)'; let balanceClass = 'balance-neutral';
-            if (currentBalance > 0) { balanceText = `Avunga kudukanum ₹${currentBalance.toFixed(2)}`; balanceClass = 'balance-positive'; }
-            else if (currentBalance < 0) { balanceText = `Naan Kudukanum ₹${Math.abs(currentBalance).toFixed(2)}`; balanceClass = 'balance-negative'; }
-
-            const msg = currentBalance > 0 ? `Hey ${peer}, pending share is ₹${currentBalance.toFixed(2)}.` : currentBalance < 0 ? `Hey ${peer}, I owe you ₹${Math.abs(currentBalance).toFixed(2)}.` : `Hey ${peer}, ledger settled!`;
-            const whatsappUri = `https://wa.me/?text=${encodeURIComponent(msg)}`;
-
-            let progress = currentBalance === 0 ? 100 : currentBaseline > 0 ? ((currentBaseline - Math.abs(currentBalance)) / currentBaseline) * 100 : 0;
-            const roundedProgress = Math.max(0, Math.min(Math.round(progress), 100));
-
-            const historyHTML = peerData.transactions.length === 0 ? `<p class="no-history-msg">No historical transactions.</p>` :
-                `<ul class="timeline">${peerData.transactions.map(txn => {
-                    const formattedDate = dateFormatter.format(new Date(txn.timestamp));
-                    return `
-                        <li class="timeline-item ${txn.action}">
-                            <div class="timeline-meta">
-                                <span class="timeline-desc">${txn.action === 'give' ? 'Naa Kuduthen' : 'Avunga Kuduthanga'}</span>
-                                <div class="timeline-category-tag">${txn.category || "General"}</div>
-                                <span class="timeline-date">${formattedDate}</span>
-                            </div>
-                            <div class="timeline-amount">${txn.action === 'give' ? '+' : '-'}₹${txn.amount.toFixed(2)}</div>
-                        </li>`;
-                }).join('')}</ul>`;
-
-            const itemContainer = document.createElement('div');
-            itemContainer.className = 'ledger-item-container';
-            itemContainer.innerHTML = `
-                <div class="ledger-row">
-                    <div class="peer-info">
-                        <div class="peer-name">${peer}</div>
-                        <button class="btn-history-toggle" onclick="toggleHistory('${peer}')">View Timeline</button>
-                    </div>
-                    <div class="ledger-controls">
-                        <div class="ledger-inputs">
-                            <input type="number" id="input-${peer}" placeholder="₹ Amt" step="0.01" min="0">
-                            <select id="cat-${peer}" class="modern-select" onchange="toggleCustomInput('cat-${peer}', 'custom-${peer}')">
-                                <option value="" disabled selected>Description</option>
-                                <option value="Train tickets">Train tickets</option>
-                                <option value="Bus tickets">Bus tickets</option>
-                                <option value="Tea">Tea</option>
-                                <option value="Breakfast">Breakfast</option>
-                                <option value="Lunch">Lunch</option>
-                                <option value="Dinner">Dinner</option>
-                                <option value="Meals/Snacks">Meals/Snacks</option>
-                                <option value="Other">Other (Custom)</option>
-                            </select>
+    function renderCohortHistoryList(peer) {
+        const listEl = document.getElementById(`history-list-${peer}`);
+        const txs = ledgerState[peer].transactions;
+        if (txs.length === 0) {
+            listEl.innerHTML = `<li class="no-history-msg">No transactions between you & ${peer} yet.</li>`;
+        } else {
+            listEl.innerHTML = txs.map(tx => {
+                const typeClass = tx.type === 'give' ? 'give' : 'receive';
+                const label = tx.type === 'give' ? 'You advanced' : 'Received from';
+                return `
+                    <li class="timeline-item ${typeClass}">
+                        <div class="timeline-meta">
+                            <span class="timeline-desc">${label}: ${tx.category}</span>
+                            <span class="timeline-date">${dateFormatter.format(new Date(tx.timestamp))}</span>
                         </div>
-                        <input type="text" id="custom-${peer}" placeholder="Type note..." style="display:none; width: 100%;">
-                        <div class="ledger-buttons">
-                            <button class="btn-give" onclick="processTransaction('${peer}', 'give')">Naa kuduthen</button>
-                            <button class="btn-receive" onclick="processTransaction('${peer}', 'receive')">Avunga kuduthanga</button>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="action-container">
-                            <div class="balance-display ${balanceClass}">${balanceText}</div>
-                            <a href="${whatsappUri}" target="_blank" class="btn-share-wa"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg></a>
-                        </div>
-                        <div class="progress-module"><div class="progress-container"><div class="progress-fill ${roundedProgress===100&&currentBalance===0?'settled':''}" style="transform: scaleX(${progress/100});"></div></div><div class="progress-label-text">${roundedProgress}% Settled</div></div>
-                    </div>
-                </div>
-                <div class="history-panel" id="history-${peer}"><h4>Transaction Timeline</h4>${historyHTML}</div>
-            `;
-            container.appendChild(itemContainer);
-        });
+                        <div class="timeline-amount">₹${tx.amount.toFixed(2)}</div>
+                    </li>
+                `;
+            }).join('');
+        }
     }
 
-    function toggleHistory(peer) {
-        const panel = document.getElementById(`history-${peer}`);
-        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-    }
+    function processCohortTx(peer, type) {
+        const amtEl = document.getElementById(`amt-${peer}`);
+        const amount = parseFloat(amtEl.value);
+        const categoryDesc = resolveCategoryValue(`cat-${peer}`, `cust-${peer}`);
 
-    function processTransaction(peer, action) {
-        const inputEl = document.getElementById(`input-${peer}`);
-        const selectEl = document.getElementById(`cat-${peer}`);
-        const customEl = document.getElementById(`custom-${peer}`);
-        const amount = parseFloat(inputEl.value);
-       
         if (!isNaN(amount) && amount > 0) {
-            let pb = ledgerState[peer].balance; let pbl = ledgerState[peer].baseline;
-            let nb = pb; let nbl = pbl;
-
-            if (action === 'give') { nb = pb + amount; nbl = pb >= 0 ? pbl + amount : (nb > 0 ? nb : pbl); }
-            else { nb = pb - amount; nbl = pb <= 0 ? pbl + amount : (nb < 0 ? Math.abs(nb) : pbl); }
-            if (nb === 0) nbl = 0;
-
-            ledgerState[peer].balance = nb; ledgerState[peer].baseline = nbl;
-            ledgerState[peer].transactions.unshift({
-                id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
-                amount: amount, category: resolveCategoryValue(`cat-${peer}`, `custom-${peer}`), action: action, timestamp: new Date().toISOString()
+            const peerData = ledgerState[peer];
+            if (type === 'give') {
+                peerData.balance += amount;
+            } else {
+                peerData.balance -= amount;
+            }
+            if (Math.abs(peerData.balance) > peerData.baseline) {
+                peerData.baseline = Math.abs(peerData.balance);
+            }
+            peerData.transactions.unshift({
+                type: type,
+                amount: amount,
+                category: categoryDesc,
+                timestamp: new Date().toISOString()
             });
-           
-            inputEl.value = ''; selectEl.selectedIndex = 0; customEl.value = ''; customEl.style.display = 'none';
             localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
             renderLedger();
-            document.getElementById(`history-${peer}`).style.display = 'block';
-        } else alert("Please provide a valid numeric amount.");
+            amtEl.value = '';
+            document.getElementById(`cat-${peer}`).value = '';
+            document.getElementById(`cust-${peer}`).style.display = 'none';
+            document.getElementById(`cust-${peer}`).value = '';
+        } else {
+            alert("Sariyana ledger split amount enter pannunga!");
+        }
     }
 
-    // --- Calculator Logic ---
-    const calcKeys = document.getElementById('calc-keys');
-    const calcDisplay = document.getElementById('calc-display');
-    let calcState = { firstOperand: null, operator: null, waitingForSecondOperand: false, displayValue: '0' };
+    function shareCohortWhatsApp(peer) {
+        const bal = ledgerState[peer].balance;
+        let msg = "";
+        if (bal > 0) {
+            msg = `Macha ${peer}, nee enaku ₹${bal.toFixed(2)} thara vendi iruku. En integrated financial ledger la update panniten, check panniko!`;
+        } else if (bal < 0) {
+            msg = `Macha ${peer}, nan unaku ₹${Math.abs(bal).toFixed(2)} thara vendi iruku. Record track aairuchu, safe ah settle panren!`;
+        } else {
+            msg = `Macha ${peer}, namakululla ella dues-um fully clear / settled up aairuchu!`;
+        }
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+    }
 
-    function updateCalcDisplay() { calcDisplay.textContent = calcState.displayValue; }
+    function resetAllCohortHistories() {
+        if (confirm("Ella cohort records matrum timelines structural-ah permanently clean seiya venduma?")) {
+            sortedFriends.forEach(peer => {
+                ledgerState[peer] = { balance: 0, baseline: 0, transactions: [] };
+            });
+            localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
+            renderLedger();
+        }
+    }
 
-    calcKeys.addEventListener('click', (event) => {
-        const target = event.target; if (!target.matches('button')) return;
-        const action = target.dataset.action; const keyContent = target.textContent;
+    // --- Calculator Engine ---
+    const display = document.querySelector('#calc-display');
+    const keys = document.querySelector('#calc-keys');
+    let calcValue = '0';
+    let prevCalcValue = null;
+    let calcOp = null;
+    let expectValue = false;
+
+    keys.addEventListener('click', e => {
+        if (!e.target.matches('button')) return;
+        const key = e.target;
+        const action = key.dataset.action;
+        const keyContent = key.textContent;
 
         if (!action) {
-            if (calcState.waitingForSecondOperand) { calcState.displayValue = keyContent; calcState.waitingForSecondOperand = false; }
-            else calcState.displayValue = calcState.displayValue === '0' ? keyContent : calcState.displayValue + keyContent;
-        } else if (action === 'decimal' && !calcState.displayValue.includes('.')) calcState.displayValue += '.';
-        else if (['add', 'subtract', 'multiply', 'divide'].includes(action)) handleOperator(action);
-        else if (action === 'calculate' && calcState.operator && calcState.firstOperand !== null) {
-            calcState.displayValue = String(calculateResult(calcState.firstOperand, parseFloat(calcState.displayValue), calcState.operator));
-            calcState.firstOperand = null; calcState.operator = null; calcState.waitingForSecondOperand = false;
-        } else if (action === 'clear') { calcState.displayValue = '0'; calcState.firstOperand = null; calcState.operator = null; calcState.waitingForSecondOperand = false; }
-        updateCalcDisplay();
+            if (calcValue === '0' || expectValue) {
+                calcValue = keyContent;
+                expectValue = false;
+            } else {
+                calcValue += keyContent;
+            }
+        } else if(action === 'decimal') {
+            if(!calcValue.includes('.')) calcValue += '.';
+        } else if(['add','subtract','multiply','divide'].includes(action)) {
+            calcOp = action;
+            prevCalcValue = calcValue;
+            expectValue = true;
+        } else if(action === 'clear') {
+            calcValue = '0';
+            prevCalcValue = null;
+            calcOp = null;
+            expectValue = false;
+        } else if(action === 'calculate') {
+            if(calcOp && prevCalcValue !== null) {
+                const first = parseFloat(prevCalcValue);
+                const second = parseFloat(calcValue);
+                if(calcOp === 'add') calcValue = (first + second).toString();
+                else if(calcOp === 'subtract') calcValue = (first - second).toString();
+                else if(calcOp === 'multiply') calcValue = (first * second).toString();
+                else if(calcOp === 'divide') calcValue = (second !== 0) ? (first / second).toString() : 'Error';
+                calcOp = null;
+                prevCalcValue = null;
+            }
+        }
+        display.textContent = calcValue;
     });
 
-    function handleOperator(nextOp) {
-        const input = parseFloat(calcState.displayValue);
-        if (calcState.operator && calcState.waitingForSecondOperand) { calcState.operator = nextOp; return; }
-        if (calcState.firstOperand == null && !isNaN(input)) calcState.firstOperand = input;
-        else if (calcState.operator) {
-            const res = calculateResult(calcState.firstOperand, input, calcState.operator);
-            calcState.displayValue = String(res); calcState.firstOperand = res;
-        }
-        calcState.waitingForSecondOperand = true; calcState.operator = nextOp;
-    }
-
-    function calculateResult(f, s, op) { return op === 'add' ? f+s : op === 'subtract' ? f-s : op === 'multiply' ? f*s : s!==0 ? f/s : 0; }
-
-    // --- Chart/Analytics Logic ---
-    let pieChartInstance = null;
-    let lineChartInstance = null;
+    // --- Analytics Engine ---
+    let pieInstance = null;
+    let lineInstance = null;
 
     function renderCharts() {
+        const catMap = {};
+        const dailyMap = {};
+        const sortedHistory = [...debitHistoryState].reverse();
+
+        sortedHistory.forEach(item => {
+            catMap[item.category] = (catMap[item.category] || 0) + item.amount;
+            const dateKey = new Date(item.timestamp).toLocaleDateString('en-IN', {day:'2-digit', month:'short'});
+            dailyMap[dateKey] = (dailyMap[dateKey] || 0) + item.amount;
+        });
+
+        const pieLabels = Object.keys(catMap);
+        const pieData = Object.values(catMap);
         const ctxPie = document.getElementById('pieChart').getContext('2d');
-        const ctxLine = document.getElementById('lineChart').getContext('2d');
 
-        // Aggregate amounts by category from the daily debit history
-        const categoryTotals = {};
-        debitHistoryState.forEach(entry => {
-            const cat = entry.category || "Uncategorized";
-            categoryTotals[cat] = (categoryTotals[cat] || 0) + entry.amount;
-        });
-
-        const labels = Object.keys(categoryTotals);
-        const data = Object.values(categoryTotals);
-
-        // Predefined nice colors for the charts
-        const backgroundColors = [
-            '#03a9f4', '#8bc34a', '#ff9800', '#e91e63',
-            '#9c27b0', '#ffeb3b', '#00bcd4', '#4caf50', '#ff5722'
-        ];
-
-        if (pieChartInstance) { pieChartInstance.destroy(); }
-        if (lineChartInstance) { lineChartInstance.destroy(); }
-
-        pieChartInstance = new Chart(ctxPie, {
+        if(pieInstance) pieInstance.destroy();
+        pieInstance = new Chart(ctxPie, {
             type: 'pie',
-            data: { labels: labels, datasets: [{ data: data, backgroundColor: backgroundColors, borderWidth: 1 }] },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom' },
-                    datalabels: {
-                        color: '#fff', font: { weight: 'bold', size: 14 },
-                        formatter: function(value, context) { return '₹' + value.toFixed(2); },
-                        textStrokeColor: 'rgba(0, 0, 0, 0.4)', textStrokeWidth: 3
-                    }
-                }
-            }
-        });
-
-        // Initialize Line Chart
-        lineChartInstance = new Chart(ctxLine, {
-            type: 'line',
             data: {
-                labels: labels,
+                labels: pieLabels,
                 datasets: [{
-                    label: 'Total Amount (₹)',
-                    data: data,
-                    backgroundColor: 'rgba(3, 169, 244, 0.2)',
-                    borderColor: '#0288d1',
-                    borderWidth: 2,
-                    pointBackgroundColor: '#03a9f4',
-                    pointBorderColor: '#fff',
-                    pointRadius: 5,
-                    pointHoverRadius: 7,
-                    fill: true,
-                    tension: 0.3
+                    data: pieData,
+                    backgroundColor: ['#ff5722', '#8bc34a', '#03a9f4', '#e91e63', '#9c27b0', '#ffeb3b', '#009688', '#795548']
                 }]
             },
             options: {
-                responsive: true, maintainAspectRatio: false,
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        const lineLabels = Object.keys(dailyMap);
+        const lineData = Object.values(dailyMap);
+        const ctxLine = document.getElementById('lineChart').getContext('2d');
+
+        if(lineInstance) lineInstance.destroy();
+        lineInstance = new Chart(ctxLine, {
+            type: 'line',
+            data: {
+                labels: lineLabels,
+                datasets: [{
+                    label: 'Daily personal Expense Trend (INR)',
+                    data: lineData,
+                    borderColor: '#03a9f4',
+                    backgroundColor: 'rgba(3, 169, 244, 0.1)',
+                    fill: true,
+                    tension: 0.2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: { display: true, text: 'Amount (₹)' },
-                        grace: '10%'
-                    },
-                    x: {
-                        title: { display: true, text: 'Description' }
-                    }
-                },
-               plugins: {
-                    legend: { display: false },
-                    datalabels: {
-                        color: '#000',
-                        anchor: 'end',
-                        align: 'top',
-                        font: { weight: 'bold', size: 12 },
-                        formatter: function(value, context) { return '₹' + value.toFixed(2); }
-                    }
+                    y: { beginAtZero: true }
                 }
             }
         });
     }
 
-    // --- Calendar Module Logic ---
+    // --- Calendar Heatmap Section ---
     let currentCalDate = new Date();
 
     function renderCalendar() {
         const grid = document.getElementById('calendar-grid');
-        const monthYearText = document.getElementById('calendar-month-year');
+        const monthYearTitle = document.getElementById('calendar-month-year');
         const budgetThreshold = parseFloat(document.getElementById('calendar-budget-input').value) || 200;
-       
         grid.innerHTML = '';
-       
+
         const year = currentCalDate.getFullYear();
         const month = currentCalDate.getMonth();
-       
-        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        monthYearText.textContent = `${monthNames[month]} ${year}`;
+        const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+        monthYearTitle.textContent = `${monthNames[month]} ${year}`;
 
-        // 1. Data Mapping: Aggregate debits by YYYY-MM-DD
-        const dailyTotals = {};
-        debitHistoryState.forEach(entry => {
-            const d = new Date(entry.timestamp);
-            const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-            if(!dailyTotals[key]) dailyTotals[key] = { amount: 0, items: [] };
-            dailyTotals[key].amount += entry.amount;
-            dailyTotals[key].items.push(entry);
+        const weekdays = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+        weekdays.forEach(day => {
+            const hw = document.createElement('div');
+            hw.className = 'calendar-day-header';
+            hw.textContent = day;
+            grid.appendChild(hw);
         });
 
-        // 2. Generate Grid Headers
-        const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        daysOfWeek.forEach(day => {
-            const el = document.createElement('div');
-            el.className = 'calendar-day-header';
-            el.textContent = day;
-            grid.appendChild(el);
-        });
+        const firstDayIndex = new Date(year, month, 1).getDay();
+        const totalDays = new Date(year, month + 1, 0).getDate();
 
-        // Calculate days for the grid
-        const firstDayOfMonth = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-        // Empty cells for the start of the month
-        for (let i = 0; i < firstDayOfMonth; i++) {
+        for(let i=0; i<firstDayIndex; i++) {
             const emptyCell = document.createElement('div');
             emptyCell.className = 'calendar-cell empty-cell';
             grid.appendChild(emptyCell);
         }
 
-        // 3. Render populated and empty days
-        for (let i = 1; i <= daysInMonth; i++) {
+        const dayAmountMap = {};
+        debitHistoryState.forEach(tx => {
+            const txDate = new Date(tx.timestamp);
+            if (txDate.getFullYear() === year && txDate.getMonth() === month) {
+                const dateNum = txDate.getDate();
+                dayAmountMap[dateNum] = (dayAmountMap[dateNum] || 0) + tx.amount;
+            }
+        });
+
+        for (let day = 1; day <= totalDays; day++) {
             const cell = document.createElement('div');
             cell.className = 'calendar-cell';
            
-            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-            const dayData = dailyTotals[dateStr];
+            const dSpan = document.createElement('span');
+            dSpan.className = 'cell-date';
+            dSpan.textContent = day;
+            cell.appendChild(dSpan);
 
-            const dateSpan = document.createElement('span');
-            dateSpan.className = 'cell-date';
-            dateSpan.textContent = i;
-            cell.appendChild(dateSpan);
+            if (dayAmountMap[day]) {
+                const totalSpent = dayAmountMap[day];
+                const amtSpan = document.createElement('span');
+                amtSpan.className = 'cell-amount';
+                amtSpan.textContent = `₹${totalSpent.toFixed(0)}`;
+                cell.appendChild(amtSpan);
 
-            // 4. Heatmap & Interaction Logic
-            if (dayData && dayData.amount > 0) {
                 cell.classList.add('has-data');
-               
-                if (dayData.amount > budgetThreshold) {
+                if (totalSpent > budgetThreshold) {
                     cell.classList.add('bg-high');
                 } else {
                     cell.classList.add('bg-low');
                 }
-
-                const amountSpan = document.createElement('span');
-                amountSpan.className = 'cell-amount';
-                amountSpan.textContent = `₹${dayData.amount.toFixed(2)}`;
-                cell.appendChild(amountSpan);
-
-                cell.onclick = () => openCalendarModal(dateStr, monthNames[month], i, year);
+                cell.setAttribute('onclick', `openCalendarDayModal(${year}, ${month}, ${day})`);
             }
-
             grid.appendChild(cell);
         }
     }
 
-    function changeMonth(offset) {
-        currentCalDate.setMonth(currentCalDate.getMonth() + offset);
+    function changeMonth(dir) {
+        currentCalDate.setMonth(currentCalDate.getMonth() + dir);
         renderCalendar();
     }
 
-    // --- Modal Drill-Down Logic ---
-    function openCalendarModal(dateKey, monthName, dayNum, year) {
-        document.getElementById('modal-date-title').textContent = `${monthName} ${dayNum}, ${year}`;
-        const listEl = document.getElementById('modal-transaction-list');
-        listEl.innerHTML = '';
-
+    function openCalendarDayModal(year, month, day) {
+        const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+        document.getElementById('calendar-modal-title').textContent = `${day} ${monthNames[month]} ${year} - Spent Details`;
+        const listEl = document.getElementById('calendar-modal-list');
+       
         const dayTransactions = debitHistoryState.filter(entry => {
             const d = new Date(entry.timestamp);
-            const entryKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-            return entryKey === dateKey;
+            return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day;
         });
 
         if (dayTransactions.length === 0) {
@@ -1562,36 +1674,37 @@ function calculateSavings() {
         } else {
             listEl.innerHTML = dayTransactions.map(entry => {
                 const formattedTime = new Intl.DateTimeFormat('en-IN', { timeStyle: 'short' }).format(new Date(entry.timestamp));
-                const displayCat = entry.category || "General Expense";
                 return `
-                    <li class="timeline-item give">
-                        <div class="timeline-meta">
-                            <span class="timeline-desc">${displayCat}</span>
+                    <li class="timeline-item give" style="padding-bottom:15px;">
+                        <div class="timeline-meta" style="max-width: 60%;">
+                            <span class="timeline-desc">${entry.category}</span>
                             <span class="timeline-date">${formattedTime}</span>
                         </div>
-                        <div class="timeline-amount">₹${entry.amount.toFixed(2)}</div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div class="timeline-amount">₹${entry.amount.toFixed(2)}</div>
+                            <div class="history-action-btns">
+                                <button class="btn-edit-inline" onclick="closeCalendarModal(); editDebitTransaction('${entry.id}')">✏️</button>
+                                <button class="btn-delete-inline" onclick="closeCalendarModal(); deleteDebitTransaction('${entry.id}')">🗑️</button>
+                            </div>
+                        </div>
                     </li>
                 `;
             }).join('');
         }
-
         document.getElementById('calendar-modal').style.display = 'flex';
     }
 
-    function closeCalendarModal() {
-        document.getElementById('calendar-modal').style.display = 'none';
-    }
+    function closeCalendarModal() { document.getElementById('calendar-modal').style.display = 'none'; }
 
     window.onclick = function(event) {
         const modal = document.getElementById('calendar-modal');
-        if (event.target == modal) {
-            closeCalendarModal();
-        }
+        if (event.target == modal) closeCalendarModal();
     }
-    // Add this at the end of your script section
-window.addEventListener('DOMContentLoaded', (event) => {
-    loadSavingsData();
-});
+
+    window.addEventListener('DOMContentLoaded', () => {
+        loadSavingsData();
+        updateBalancesUI();
+    });
 </script>
 </body>
 </html>
