@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mowlish's Integrated Financial Ledger</title>
+    <title>Shivadut's Integrated Financial Ledger</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
@@ -710,7 +710,7 @@
 
     <div id="login-page" class="app-page" style="display: flex;">
         <div class="login-card">
-            <h1>Mowlish's Secure Ledger</h1>
+            <h1>Shivadut's Secure Ledger</h1>
             <p>Access your financial dashboard & timelines.</p>
             <div class="login-form-group">
                 <label for="username">Username</label>
@@ -858,7 +858,10 @@
                         <input type="number" id="daily-debit-input" placeholder="Amount spent (₹)" step="0.01" min="0">
                         <select id="daily-debit-category" class="modern-select" onchange="toggleCustomInput('daily-debit-category', 'daily-debit-custom')">
                             <option value="" disabled selected>Choose Category</option>
-                            <option value="Food & Drinks">Food & Drinks</option>
+                            <option value="Breakfast">Breakfast</option>
+                            <option value="Lunch">Lunch</option>
+                            <option value="Dinner">Dinner</option>
+                            <option value="Tea & Coffee">Tea & Coffee</option>
                             <option value="Travel & Fuel">Travel & Fuel</option>
                             <option value="Shopping & Clothes">Shopping & Clothes</option>
                             <option value="Rent & Bills">Rent & Bills</option>
@@ -996,11 +999,11 @@
         const u = document.getElementById('username').value.trim();
         const p = document.getElementById('password').value.trim();
         const err = document.getElementById('login-error-msg');
-        if (u === "2311022" && p === "2311022") {
+        if (u === "2007" && p === "2007") {
             err.textContent = "";
             sessionStorage.setItem('ledgerAuthenticated', 'true');
-            sessionStorage.setItem('ledgerUser', "Mowlish");
-            document.getElementById('display-username').textContent = "Mowlish";
+            sessionStorage.setItem('ledgerUser', "Shivadut");
+            document.getElementById('display-username').textContent = "Shivadut";
             openPage('menu-page');
         } else {
             err.textContent = "Thappana Credentials! Correct numeric User & Pass enter pannunga.";
@@ -1049,7 +1052,7 @@
     }
 
     // --- Core Ledger States ---
-    const rawFriendsArray = ["Siddharrth", "gowtham", "aravindh", "mohan", "parithi","Kavi","aShivadut"];
+    const rawFriendsArray = ["Aravindh", "Gojo", "Mohan","Mowlish", "Parithi", "Soukar","Goww","Gowtham","Thiwakar"];
     const sortedFriends = rawFriendsArray.sort();
 
     let personalTotalDebit = parseFloat(localStorage.getItem('personalTotalDebit')) || 0;
@@ -1261,7 +1264,7 @@
         doc.setFont("Helvetica", "bold");
         doc.setFontSize(22);
         doc.setTextColor(255, 255, 255);
-        doc.text("Mowlish's Personal Ledger Report", 14, 20);
+        doc.text("Shivadut's Personal Ledger Report", 14, 20);
        
         doc.setFontSize(10);
         doc.setFont("Helvetica", "normal");
@@ -1354,7 +1357,7 @@
                                 <select id="cat-${peer}" class="modern-select" onchange="toggleCustomInput('cat-${peer}', 'cust-${peer}')">
                                     <option value="" disabled selected>Select reason</option>
                                     <option value="Tea & Snacks">Tea & Snacks</option>
-                                    <option value="Lunch Split">Lunch Split</option>
+                                    <option value="Food">Food</option>
                                     <option value="Movie Ticket">Movie Ticket</option>
                                     <option value="Room Rent Share">Room Rent Share</option>
                                     <option value="Fuel / Travel Split">Fuel / Travel Split</option>
