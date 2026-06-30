@@ -1207,9 +1207,12 @@
         theme: 'grid',
         headStyles: { 
             fillColor: [41, 128, 185],
-            textColor: 255 
+            textColor: 255,
+            lineWidth: 0.1
         },
-        alternateRowStyles: { fillColor: [245, 245, 245] }
+       bodyStyles: {
+            lineWidth: 0.1, // Border thickness for table body
+            lineColor: [0, 0, 0]}
     });
 
     doc.save(`Transaction_History_${new Date().toISOString().slice(0, 10)}.pdf`);
