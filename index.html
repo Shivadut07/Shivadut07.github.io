@@ -1170,45 +1170,49 @@
     }
 
     // New PDF Export Function
-    function exportHistoryToPdf() {
-        if (!debitHistoryState || debitHistoryState.length === 0) return alert("No history to export.");
+function exportHistoryToPdf() {
+    if (!debitHistoryState || debitHistoryState.length === 0) return alert("No history to export.");
 
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
 
-        doc.setFontSize(16);
-        doc.text("Transaction History Report", 14, 20);
-        doc.setFontSize(10);
-        doc.text("Generated on: " + new Date().toLocaleString(), 14, 28);
+    doc.setFontSize(16);
+    doc.text("Transaction History Report", 14, 20);
+    doc.setFontSize(10);
+    doc.text("Generated on: " + new Date().toLocaleString(), 14, 28);
 
-        const tableColumn = ["Date", "Time", "Category", "Amount (₹)"];
-        const tableRows = [];
+    const tableColumn = ["Date", "Time", "Category", "Amount (₹)"];
+    const tableRows = [];
 
-        debitHistoryState.forEach(entry => {
-            const d = new Date(entry.timestamp);
-            const dateStr = d.toLocaleDateString('en-IN');
-            const timeStr = d.toLocaleTimeString('en-IN');
-            
-            const rowData = [
-                dateStr,
-                timeStr,
-                entry.category,
-                entry.amount.toFixed(2)
-            ];
-            tableRows.push(rowData);
-        });
+    debitHistoryState.forEach(entry => {
+        const d = new Date(entry.timestamp);
+        const dateStr = d.toLocaleDateString('en-IN');
+        const timeStr = d.toLocaleTimeString('en-IN');
+        
+        const rowData = [
+            dateStr,
+            timeStr,
+            entry.category,
+            "₹" + entry.amount.toFixed(2) // Added rupee symbol for clarity
+        ];
+        tableRows.push(rowData);
+    });
 
-        doc.autoTable({
-            head: [tableColumn],
-            body: tableRows,
-            startY: 35,
-            theme: 'grid', // This adds the border
-            headStyles: { fillColor: [41, 128, 185] },
-        });
+    // The 'theme: grid' is what forces the borders to appear
+    doc.autoTable({
+        head: [tableColumn],
+        body: tableRows,
+        startY: 35,
+        theme: 'grid', 
+        headStyles: { 
+            fillColor: [41, 128, 185],
+            textColor: 255 
+        },
+        alternateRowStyles: { fillColor: [245, 245, 245] }
+    });
 
-        doc.save(`Transaction_History_${new Date().toISOString().slice(0, 10)}.pdf`);
-    }
-
+    doc.save(`Transaction_History_${new Date().toISOString().slice(0, 10)}.pdf`);
+}
     function renderLedger() {
         const container = document.getElementById('ledger-container');
         container.innerHTML = '';
