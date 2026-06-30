@@ -1018,30 +1018,28 @@
         if (e.key === 'Enter') attemptLogin();
     });
 
-    // --- Savings Calculation Logic ---
-    function calculateSavings() {
-        let grandTotal = 0;
-        // Select all note inputs
-        const inputs = document.querySelectorAll('.note-input');
-       
-        inputs.forEach(input => {
-            // Get denomination and count
-            const denom = parseInt(input.getAttribute('data-denom'));
-            const count = parseInt(input.value) || 0; // Default to 0 if empty
-           
-            // Calculate row total
-            const rowTotal = denom * count;
-           
-            // Update row display
-            document.getElementById(`row-total-${denom}`).textContent = rowTotal.toFixed(2);
-           
-            // Add to grand total
-            grandTotal += rowTotal;
-        });
-       
-        // Update grand total display
-        document.getElementById('savings-grand-total').textContent = `₹${grandTotal.toFixed(2)}`;
-    }
+function calculateSavings() {
+    let grandTotal = 0;
+    const inputs = document.querySelectorAll('.note-input');
+    const savedData = {}; // Object to store counts
+
+    inputs.forEach(input => {
+        const denom = input.getAttribute('data-denom');
+        const count = parseInt(input.value) || 0;
+        
+        // Save to temporary object
+        savedData[denom] = count;
+
+        const rowTotal = denom * count;
+        document.getElementById(`row-total-${denom}`).textContent = rowTotal.toFixed(2);
+        grandTotal += rowTotal;
+    });
+
+    // Save the input counts to localStorage
+    localStorage.setItem('savingsData', JSON.stringify(savedData));
+    
+    document.getElementById('savings-grand-total').textContent = `₹${grandTotal.toFixed(2)}`;
+}
 
     // --- Core Ledger Logic ---
     const rawFriendsArray = ["thiwakar", "gojo", "mowlish", "goww", "aravindh", "mohan", "gowtham", "parithi", "soukar"];
@@ -1072,7 +1070,18 @@
             inputEl.style.display = 'none';
         }
     }
-
+    function loadSavingsData() {
+    const savedData = JSON.parse(localStorage.getItem('savingsData'));
+    if (savedData) {
+        Object.keys(savedData).forEach(denom => {
+            const input = document.querySelector(`.note-input[data-denom="${denom}"]`);
+            if (input) {
+                input.value = savedData[denom];
+            }
+        });
+        calculateSavings(); // Recalculate totals based on loaded data
+    }
+}
     function resolveCategoryValue(selectId, inputId) {
         const selectVal = document.getElementById(selectId).value;
         if (selectVal === 'Other') {
@@ -1579,6 +1588,10 @@
             closeCalendarModal();
         }
     }
+    // Add this at the end of your script section
+window.addEventListener('DOMContentLoaded', (event) => {
+    loadSavingsData();
+});
 </script>
 </body>
 </html>
