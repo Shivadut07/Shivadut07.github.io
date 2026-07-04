@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shivadut's Integrated Financial Ledger</title>
+    <title>Aravindh's Integrated Financial Ledger</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
@@ -710,7 +710,7 @@
 
     <div id="login-page" class="app-page" style="display: flex;">
         <div class="login-card">
-            <h1>Shivadut's Secure Ledger</h1>
+            <h1>Aravindh's Secure Ledger</h1>
             <p>Access your financial dashboard & timelines.</p>
             <div class="login-form-group">
                 <label for="username">Username</label>
@@ -999,11 +999,11 @@
         const u = document.getElementById('username').value.trim();
         const p = document.getElementById('password').value.trim();
         const err = document.getElementById('login-error-msg');
-        if (u === "2007" && p === "2007") {
+        if (u === "2006" && p === "2006") {
             err.textContent = "";
             sessionStorage.setItem('ledgerAuthenticated', 'true');
-            sessionStorage.setItem('ledgerUser', "Shivadut");
-            document.getElementById('display-username').textContent = "Shivadut";
+            sessionStorage.setItem('ledgerUser', "Aravindh");
+            document.getElementById('display-username').textContent = "Aravindh";
             openPage('menu-page');
         } else {
             err.textContent = "Thappana Credentials! Correct numeric User & Pass enter pannunga.";
@@ -1052,7 +1052,7 @@
     }
 
     // --- Core Ledger States ---
-    const rawFriendsArray = ["Aravindh", "Gojo", "Mohan","Mowlish", "Parithi", "Soukar","Goww","Gowtham","Thiwakar"];
+    const rawFriendsArray = ["Shivadut", "Gojo", "Tamilkarthik", "Soukar","Gowtham","Thiwakar"];
     const sortedFriends = rawFriendsArray.sort();
 
     let personalTotalDebit = parseFloat(localStorage.getItem('personalTotalDebit')) || 0;
