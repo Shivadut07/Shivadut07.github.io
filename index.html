@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light only">
     <title>Shivadut's Integrated Financial Ledger</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,7 +13,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root {
-            /* --- "Passbook" Palette: deep ledger-ink + brass coin gold on cool mint paper --- */
+            color-scheme: light only;
+            /* --- "Passbook" Palette --- */
             --bg-color: #E9F2EF;
             --bg-color-deep: #DCEAE5;
             --panel-bg: #ffffff;
@@ -24,7 +26,6 @@
             --accent-gold: #C99A2E;
             --accent-gold-soft: #F3E4BE;
 
-            /* Semantic Financial Action Colors */
             --btn-give: #D64550;
             --btn-give-soft: #FBE3E1;
             --btn-receive: #2F9E6E;
@@ -33,46 +34,51 @@
             --btn-neutral-soft: #DDEEF5;
             --btn-whatsapp: #25D366;
 
-            /* Timeline Specific Variables */
             --timeline-spine: #CFE2DC;
             --timeline-node-bg: #ffffff;
 
             --font-display: 'Fraunces', Georgia, serif;
             --font-body: 'Inter', Arial, sans-serif;
         }
-        
-        /* Global Reset */
+
+        /* Force light theme even on dark-mode phones */
+        @media (prefers-color-scheme: dark) {
+            :root { color-scheme: light only; }
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        html { scroll-behavior: smooth; }
+        html { scroll-behavior: smooth; background-color: #E9F2EF; }
 
         body {
             font-family: var(--font-body);
-            background-color: var(--bg-color);
-            background-image: 
+            background-color: var(--bg-color) !important;
+            background-image:
                 radial-gradient(circle at 100% 0%, rgba(201,154,46,0.07), transparent 45%),
                 radial-gradient(circle at 0% 100%, rgba(11,61,59,0.06), transparent 40%);
             color: var(--text-main);
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
 
         h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.01em; }
 
         /* --- PAGE CONTAINERS --- */
         .app-page {
-            display: none; /* All pages hidden by default */
+            display: none;
             padding: 20px;
-            padding-bottom: 110px; /* clearance for fixed bottom navbar */
+            padding-bottom: 110px;
             min-height: 100vh;
             flex-direction: column;
             align-items: center;
         }
 
-        /* --- LOGIN PAGE STYLES --- */
+        /* --- LOGIN PAGE --- */
         #login-page {
             display: flex;
             justify-content: center;
@@ -116,7 +122,7 @@
             box-shadow: 0 8px 18px rgba(11,61,59,0.35);
         }
 
-        .login-card h1 { font-size: 1.7rem; margin-bottom: 8px; font-weight: 600; }
+        .login-card h1 { font-size: 1.7rem; margin-bottom: 8px; font-weight: 600; color: var(--text-main); }
         .login-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 28px; }
 
         .login-form-group { margin-bottom: 20px; text-align: left; }
@@ -130,6 +136,7 @@
             font-family: var(--font-body);
             transition: border-color 0.3s;
             background: #F7FAF9;
+            color: var(--text-deep);
         }
         .login-form-group input:focus {
             outline: none;
@@ -155,22 +162,23 @@
         .btn-login:active { transform: scale(0.98); }
         .login-error { color: var(--btn-give); font-size: 0.85rem; margin-top: 15px; min-height: 20px; font-weight: 600; }
 
-        /* --- MAIN MENU STYLES (NEW DASHBOARD) --- */
+        /* --- MENU HEADER --- */
         .menu-header {
             width: 100%;
             max-width: 900px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 12px;
             background: linear-gradient(120deg, var(--text-main), var(--text-deep));
             color: #EAF2F0;
-            padding: 22px 30px;
+            padding: 22px 26px;
             border-radius: 18px;
             box-shadow: 0 10px 25px rgba(11,61,59,0.18);
             margin-bottom: 0;
             margin-top: 6px;
         }
-        .menu-header h1 { font-size: 1.5rem; font-weight: 600; }
+        .menu-header h1 { font-size: 1.5rem; font-weight: 600; color: #EAF2F0; line-height: 1.2; }
         .menu-header h1 span { color: var(--accent-gold); }
 
         .perforation-strip {
@@ -204,13 +212,13 @@
             gap: 15px;
             border-top: 4px solid var(--accent-gold);
         }
-        
+
         .dashboard-card h3 { font-size: 1.3rem; color: var(--text-main); margin-bottom: 5px; display: flex; align-items: center; gap: 8px;}
         .dashboard-card p.card-desc { color: var(--text-muted); font-size: 0.9rem; margin: 0; }
-        
+
         .stat-value { font-size: 2.2rem; font-weight: bold; font-family: var(--font-display); color: var(--btn-give); }
         .stat-value.positive { color: var(--btn-receive); }
-        
+
         .btn-dash {
             padding: 10px;
             background: var(--btn-neutral-soft);
@@ -223,6 +231,8 @@
             cursor: pointer;
             transition: all 0.2s;
             margin-top: auto;
+            font-family: var(--font-body);
+            font-size: 0.95rem;
         }
         .btn-dash:hover { background: var(--btn-neutral); color: white; }
 
@@ -260,7 +270,7 @@
         }
         .app-footer .footer-icon { font-size: 1rem; }
 
-        /* --- TOOL PAGES COMMON STYLES --- */
+        /* --- TOOL PAGES --- */
         .tool-container {
             width: 100%;
             max-width: 800px;
@@ -275,6 +285,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
             margin-bottom: 20px;
             margin-top: 6px;
         }
@@ -282,22 +293,24 @@
         .btn-back {
             background-color: var(--text-main);
             color: #EAF2F0;
-            padding: 10px 20px;
+            padding: 10px 18px;
             border-radius: 10px;
             text-decoration: none;
             font-weight: 600;
             border: none;
             cursor: pointer;
             transition: background 0.2s;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 8px;
             font-family: var(--font-body);
+            font-size: 0.9rem;
+            white-space: nowrap;
         }
         .btn-back:hover { background-color: var(--text-deep); }
 
         .btn-logout {
-            padding: 10px 20px;
+            padding: 10px 18px;
             background-color: var(--btn-give);
             color: white;
             border: none;
@@ -305,15 +318,18 @@
             cursor: pointer;
             font-weight: 600;
             font-family: var(--font-body);
+            font-size: 0.9rem;
+            white-space: nowrap;
         }
         .btn-logout:hover { opacity: 0.9; }
 
         .panel {
-            background: var(--panel-bg);
+            background: var(--panel-bg) !important;
             border-radius: 16px;
             padding: 25px;
             box-shadow: 0 8px 20px rgba(11,61,59,0.08);
             width: 100%;
+            color: var(--text-main);
         }
 
         h2 {
@@ -326,7 +342,7 @@
             color: var(--text-main);
         }
 
-        /* --- NOTES PAGE STYLES --- */
+        /* --- NOTES --- */
         #notes-area {
             width: 100%;
             flex-grow: 1;
@@ -347,7 +363,7 @@
             box-shadow: 0 0 0 3px rgba(201, 154, 46, 0.15);
         }
 
-        /* --- DEBIT STYLES & ACCUMULATOR --- */
+        /* --- DEBIT --- */
         .account-summary-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -385,6 +401,7 @@
             min-width: 0;
             font-family: var(--font-body);
             background: #FBFDFC;
+            color: var(--text-deep);
         }
 
         select.modern-select {
@@ -398,6 +415,7 @@
             cursor: pointer;
             font-family: var(--font-body);
             appearance: none;
+            -webkit-appearance: none;
         }
         select.modern-select:focus, input:focus {
             outline: 2px solid var(--accent-gold);
@@ -419,7 +437,7 @@
         button:active { transform: scale(0.95); }
         .btn-add { background-color: var(--btn-neutral); flex: 1 1 auto; }
         .btn-reset { background-color: var(--btn-give); flex: 0 0 auto; }
-        
+
         .header-action-row {
             display: flex;
             justify-content: space-between;
@@ -470,7 +488,6 @@
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
         }
 
-        /* History Edit/Delete Actions Style */
         .history-action-btns {
             display: flex;
             gap: 8px;
@@ -489,21 +506,28 @@
             border-radius: 6px;
         }
 
-        /* --- SAVINGS CASH COUNTER STYLES --- */
+        /* --- SAVINGS TABLE --- */
+        .savings-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
         .savings-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
+            background: var(--panel-bg);
         }
         .savings-table th, .savings-table td {
-            padding: 15px;
+            padding: 15px 10px;
             text-align: center;
             border-bottom: 1px solid var(--border-light);
+            color: var(--text-main);
         }
         .savings-table th {
             background-color: #F3F8F6;
             font-weight: 600;
             color: var(--text-muted);
+            font-size: 0.9rem;
         }
         .savings-table input[type="number"] {
             width: 100px;
@@ -512,6 +536,8 @@
             border-radius: 8px;
             text-align: center;
             font-size: 1rem;
+            background: #FBFDFC;
+            color: var(--text-deep);
         }
         .savings-table .grand-total {
             font-size: 1.4rem;
@@ -527,7 +553,7 @@
             background-color: #F7FBFA;
         }
 
-        /* --- COHORT LEDGER STYLES --- */
+        /* --- COHORT LEDGER --- */
         .ledger-item-container {
             display: flex;
             flex-direction: column;
@@ -535,7 +561,7 @@
             padding: 18px 0;
         }
         .ledger-item-container:last-child { border-bottom: none; }
-        
+
         .ledger-row {
             display: grid;
             grid-template-columns: 120px 2fr 1fr;
@@ -544,8 +570,8 @@
         }
 
         .peer-info { display: flex; flex-direction: column; gap: 6px; }
-        .peer-name { font-weight: 600; text-transform: capitalize; font-size: 1.05rem; font-family: var(--font-display); }
-        
+        .peer-name { font-weight: 600; text-transform: capitalize; font-size: 1.05rem; font-family: var(--font-display); color: var(--text-main); }
+
         .btn-history-toggle {
             padding: 5px 8px;
             font-size: 0.72rem;
@@ -553,12 +579,12 @@
             border-radius: 6px;
             align-self: flex-start;
         }
-        
+
         .ledger-controls { display: flex; flex-direction: column; gap: 8px; }
         .ledger-inputs { display: flex; gap: 6px; width: 100%; }
         .ledger-inputs input[type="number"] { width: 90px; padding: 8px; }
         .ledger-inputs select, .ledger-inputs input[type="text"] { flex: 1; padding: 8px; }
-        
+
         .ledger-buttons { display: flex; gap: 6px; width: 100%; }
         .ledger-buttons button { flex: 1; padding: 8px 10px; font-size: 0.78rem; border-radius: 8px; }
         .btn-give { background-color: var(--btn-give); }
@@ -588,6 +614,7 @@
             justify-content: center;
             width: 36px;
             height: 36px;
+            min-width: 36px;
             background-color: var(--btn-whatsapp);
             color: white;
             border-radius: 50%;
@@ -611,7 +638,7 @@
             border: 1px solid var(--border-light);
         }
 
-        /* --- TIMELINE (Shared) --- */
+        /* --- TIMELINE --- */
         .timeline { list-style: none; position: relative; padding-left: 20px; }
         .timeline::before {
             content: "";
@@ -667,7 +694,7 @@
         .progress-fill.settled { background: linear-gradient(90deg, var(--btn-receive), #237a54); }
         .progress-label-text { font-size: 0.72rem; color: var(--text-muted); text-align: right; font-weight: 600; }
 
-        /* --- CHART STYLES --- */
+        /* --- CHARTS --- */
         .chart-wrapper {
             position: relative;
             height: 350px;
@@ -675,17 +702,20 @@
             margin-top: 15px;
         }
 
-        /* --- CALENDAR STYLES --- */
+        /* --- CALENDAR --- */
         .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            gap: 10px;
         }
         .calendar-header h2 {
             border-bottom: none;
             margin: 0;
             padding: 0;
+            text-align: center;
+            flex: 1;
         }
         .calendar-header button {
             background: var(--btn-neutral);
@@ -693,7 +723,7 @@
             font-size: 1.2rem;
             border-radius: 10px;
         }
-        
+
         .budget-control {
             display: flex;
             justify-content: flex-end;
@@ -702,6 +732,7 @@
             margin-bottom: 15px;
             font-size: 0.9rem;
             font-weight: 600;
+            flex-wrap: wrap;
         }
         .budget-control input {
             width: 90px;
@@ -731,6 +762,7 @@
             flex-direction: column;
             justify-content: space-between;
             transition: transform 0.2s, box-shadow 0.2s;
+            color: var(--text-main);
         }
         .calendar-cell.has-data {
             cursor: pointer;
@@ -756,11 +788,10 @@
             margin-top: 10px;
         }
 
-        /* Heatmap colors */
         .bg-low { background-color: var(--btn-receive-soft); border-color: #a9dcc4; }
         .bg-high { background-color: var(--btn-give-soft); border-color: #eeb3b0; }
 
-        /* --- MODAL STYLES --- */
+        /* --- MODAL --- */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -770,10 +801,11 @@
             justify-content: center;
             align-items: center;
             backdrop-filter: blur(3px);
+            padding: 15px;
         }
         .modal-box {
             background: var(--panel-bg);
-            width: 90%;
+            width: 100%;
             max-width: 500px;
             border-radius: 16px;
             padding: 25px;
@@ -799,7 +831,7 @@
             padding-right: 5px;
         }
 
-        /* --- FIXED BOTTOM NAVBAR --- */
+        /* --- BOTTOM NAVBAR --- */
         .bottom-navbar {
             display: none;
             position: fixed;
@@ -834,6 +866,9 @@
         .nav-tab.active { color: var(--accent-gold); background: rgba(201,154,46,0.14); }
         .nav-tab.active .nav-icon { transform: translateY(-1px); }
 
+        /* ============================
+           MOBILE RESPONSIVE FIXES
+           ============================ */
         @media (max-width: 850px) {
             .dashboard-grid { grid-template-columns: 1fr; }
             .ledger-row { grid-template-columns: 1fr; gap: 14px; }
@@ -846,7 +881,7 @@
             .balance-display { text-align: center; }
             .input-row { flex-direction: column; }
             .account-summary-grid { grid-template-columns: 1fr; gap: 10px; }
-            
+
             .calendar-cell { min-height: 60px; padding: 4px; }
             .cell-date { font-size: 0.8rem; }
             .cell-amount { font-size: 0.75rem; }
@@ -854,6 +889,64 @@
             .timeline-item { flex-direction: column; align-items: flex-start; gap: 10px; }
             .history-action-btns { margin-left: 0; margin-top: 5px; }
             .nav-tab .nav-label { display: none; }
+        }
+
+        @media (max-width: 640px) {
+            .app-page { padding: 14px; padding-bottom: 100px; }
+            
+            /* Menu header on mobile */
+            .menu-header {
+                padding: 18px 18px;
+                border-radius: 14px;
+            }
+            .menu-header h1 { font-size: 1.15rem; }
+            .btn-logout { padding: 8px 14px; font-size: 0.82rem; }
+
+            .perforation-strip { margin-bottom: 22px; }
+
+            /* Dashboard cards on mobile */
+            .dashboard-card { padding: 20px; border-radius: 14px; }
+            .dashboard-card h3 { font-size: 1.15rem; }
+            .stat-value { font-size: 1.8rem; }
+
+            /* Tool nav bar on mobile */
+            .tool-nav-bar { gap: 8px; }
+            .btn-back { padding: 9px 14px; font-size: 0.85rem; }
+
+            /* Panels */
+            .panel { padding: 18px; border-radius: 14px; }
+            h2 { font-size: 1.15rem; }
+
+            /* Header action row */
+            .header-action-row { flex-direction: column; align-items: stretch; }
+            .header-action-row h2 { text-align: left; }
+            .header-action-buttons { justify-content: flex-start; }
+            .header-action-buttons button { flex: 1 1 auto; justify-content: center; }
+
+            /* Savings table on mobile - make responsive */
+            .savings-table th, .savings-table td { padding: 12px 6px; font-size: 0.9rem; }
+            .savings-table input[type="number"] { width: 80px; padding: 8px 4px; font-size: 0.95rem; }
+            .savings-table .grand-total { font-size: 1.15rem; }
+            .savings-table .row-total { font-size: 1rem; }
+
+            /* Summary boxes */
+            .summary-box { padding: 14px 10px; font-size: 1.2rem; }
+
+            /* Calendar */
+            .calendar-header button { padding: 6px 12px; font-size: 1rem; }
+            .calendar-day-header { font-size: 0.72rem; }
+            .budget-control { justify-content: center; }
+        }
+
+        @media (max-width: 400px) {
+            .menu-header { padding: 16px 14px; }
+            .menu-header h1 { font-size: 1rem; }
+            .btn-logout { padding: 7px 10px; font-size: 0.75rem; }
+            .btn-back { padding: 8px 10px; font-size: 0.8rem; }
+            .savings-table th, .savings-table td { padding: 10px 4px; font-size: 0.82rem; }
+            .savings-table input[type="number"] { width: 62px; font-size: 0.9rem; }
+            .dashboard-card { padding: 16px; }
+            .panel { padding: 14px; }
         }
     </style>
 </head>
@@ -863,7 +956,7 @@
         <div class="login-card">
             <div class="login-brand-icon">📖</div>
             <h1>Shivadut's Secure Ledger</h1>
-            <p>Access your financial dashboard & timelines.</p>
+            <p>Access your financial dashboard &amp; timelines.</p>
             <div class="login-form-group">
                 <label for="username">Username</label>
                 <input type="text" id="username" placeholder="Enter numeric username" autocomplete="off" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
@@ -890,7 +983,7 @@
                 <h3>🧾 Daily Debit Summary</h3>
                 <p class="card-desc">Your overall personal expenses.</p>
                 <div class="stat-value" id="dash-total-spent">₹0.00</div>
-                <button class="btn-dash" onclick="openPage('debit-page')">Log Expense & View History</button>
+                <button class="btn-dash" onclick="openPage('debit-page')">Log Expense &amp; View History</button>
             </div>
 
             <!-- World News Portal -->
@@ -902,29 +995,11 @@
                         <span>Top Stories</span><span>📰</span>
                     </a>
                     <a href="https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtVnVHZ0pWVXlnQVAB" target="_blank" class="news-btn">
-                        <span>Business & Finance</span><span>📈</span>
+                        <span>Business &amp; Finance</span><span>📈</span>
                     </a>
                     <a href="https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FtVnVHZ0pWVXlnQVAB" target="_blank" class="news-btn">
                         <span>Technology</span><span>💻</span>
                     </a>
-                </div>
-            </div>
-
-            <!-- Cohort / Friends Summary -->
-            <div class="dashboard-card">
-                <h3>🤝 Cohort Status</h3>
-                <p class="card-desc">Quick jump to your shared balances.</p>
-                <button class="btn-dash" onclick="openPage('cohort-page')">Manage Splits & Friends</button>
-            </div>
-            
-            <!-- Quick Tools -->
-            <div class="dashboard-card">
-                <h3>🛠️ Quick Tools</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: auto;">
-                    <button class="btn-dash" style="margin: 0;" onclick="openPage('calendar-page')">📅 Calendar</button>
-                    <button class="btn-dash" style="margin: 0;" onclick="openPage('savings-page')">🏦 Savings</button>
-                    <button class="btn-dash" style="margin: 0;" onclick="openPage('analytics-page')">📊 Analytics</button>
-                    <button class="btn-dash" style="margin: 0;" onclick="openPage('notes-page')">📝 Notes</button>
                 </div>
             </div>
         </div>
@@ -955,11 +1030,12 @@
             <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
             <button class="btn-logout" onclick="logout()">Sign Out</button>
         </div>
-        
+
         <div class="tool-container">
             <div class="panel">
                 <h2>🏦 Savings Cash Counter</h2>
                 <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Enter the number of notes you have for each denomination to calculate your total savings.</p>
+                <div class="savings-table-wrapper">
                 <table class="savings-table">
                     <thead>
                         <tr>
@@ -1007,6 +1083,7 @@
                         </tr>
                     </tfoot>
                 </table>
+                </div>
             </div>
             <div class="app-footer"><span class="footer-icon">🪙</span> Every note counted is a rupee accounted for.</div>
         </div>
@@ -1040,13 +1117,13 @@
                             <option value="Breakfast">Breakfast</option>
                             <option value="Lunch">Lunch</option>
                             <option value="Dinner">Dinner</option>
-                            <option value="Tea & Coffee">Tea & Coffee</option>
-                            <option value="Travel & Fuel">Travel & Fuel</option>
-                            <option value="Shopping & Clothes">Shopping & Clothes</option>
-                            <option value="Rent & Bills">Rent & Bills</option>
+                            <option value="Tea & Coffee">Tea &amp; Coffee</option>
+                            <option value="Travel & Fuel">Travel &amp; Fuel</option>
+                            <option value="Shopping & Clothes">Shopping &amp; Clothes</option>
+                            <option value="Rent & Bills">Rent &amp; Bills</option>
                             <option value="Juice">Juice</option>
                             <option value="Snacks">Snacks</option>
-                            <option value="Entertainment & Movies">Entertainment & Movies</option>
+                            <option value="Entertainment & Movies">Entertainment &amp; Movies</option>
                             <option value="Other">Other (Type Custom)</option>
                         </select>
                     </div>
@@ -1118,7 +1195,7 @@
         <div class="tool-container">
             <div class="panel">
                 <div class="header-action-row">
-                    <h2>🤝 Cohort Ledger & History</h2>
+                    <h2>🤝 Cohort Ledger &amp; History</h2>
                     <div class="header-action-buttons">
                         <button class="btn-export-pdf" onclick="exportCohortToPDF()">Export PDF</button>
                         <button class="btn-export-excel" onclick="exportCohortToExcel()">
@@ -1229,7 +1306,6 @@
             if (pageId === 'analytics-page') renderCharts();
         }
 
-        // Sync the fixed bottom navbar visibility + active tab
         const navbar = document.getElementById('bottom-navbar');
         if (pageId === 'login-page') {
             navbar.style.display = 'none';
@@ -1239,13 +1315,14 @@
                 btn.classList.toggle('active', btn.getAttribute('data-page') === pageId);
             });
         }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function calculateSavings() {
         let grandTotal = 0;
         const noteInputs = document.querySelectorAll('.note-input');
         const savingsData = {};
-        
+
         noteInputs.forEach(input => {
             const denom = parseInt(input.getAttribute('data-denom'));
             const count = parseInt(input.value) || 0;
@@ -1259,15 +1336,13 @@
         document.getElementById('savings-grand-total').textContent = `₹${grandTotal.toFixed(2)}`;
     }
 
-    // --- Notes Logic ---
+    // --- Notes ---
     function autoSaveNotes() {
         const content = document.getElementById('notes-area').value;
         localStorage.setItem('ledgerNotes', content);
-        
         const statusEl = document.getElementById('save-status');
         statusEl.textContent = "Saving...";
         statusEl.style.color = 'var(--text-main)';
-        
         clearTimeout(window.notesTimeout);
         window.notesTimeout = setTimeout(() => {
             statusEl.textContent = "Saved";
@@ -1275,7 +1350,7 @@
         }, 600);
     }
 
-    // --- Core Ledger States ---
+    // --- State ---
     const rawFriendsArray = ["Aravindh", "Gojo", "Mowlish", "Soukar","Gowtham","Thiwakar"];
     const sortedFriends = rawFriendsArray.sort();
 
@@ -1304,19 +1379,14 @@
         if (savedData) {
             Object.keys(savedData).forEach(denom => {
                 const input = document.querySelector(`.note-input[data-denom="${denom}"]`);
-                if (input) {
-                    input.value = savedData[denom];
-                }
+                if (input) input.value = savedData[denom];
             });
             calculateSavings();
         }
     }
 
     function updateBalancesUI() {
-        // Calculate Total Spent (all time)
         const totalSpent = debitHistoryState.reduce((sum, item) => sum + item.amount, 0);
-
-        // Calculate Current Month Spent (resets automatically when system month changes)
         const now = new Date();
         const currentMonthSpent = debitHistoryState.reduce((sum, item) => {
             const d = new Date(item.timestamp);
@@ -1326,10 +1396,11 @@
             return sum;
         }, 0);
 
-        document.getElementById('total-spent-val').textContent = totalSpent.toFixed(2);
-        document.getElementById('current-month-val').textContent = currentMonthSpent.toFixed(2);
-        
-        // Update Dashboard
+        const tsv = document.getElementById('total-spent-val');
+        const cmv = document.getElementById('current-month-val');
+        if (tsv) tsv.textContent = totalSpent.toFixed(2);
+        if (cmv) cmv.textContent = currentMonthSpent.toFixed(2);
+
         const dashTotalSpent = document.getElementById('dash-total-spent');
         if (dashTotalSpent) dashTotalSpent.textContent = `₹${totalSpent.toFixed(2)}`;
     }
@@ -1341,37 +1412,26 @@
             document.getElementById('monthly-breakdown-modal').style.display = 'flex';
             return;
         }
-
         const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-
-        // Group past history records by formatted Month & Year
         const groupedData = debitHistoryState.reduce((acc, item) => {
             const d = new Date(item.timestamp);
             const key = `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
-            if (!acc[key]) {
-                acc[key] = { amount: 0, year: d.getFullYear(), monthIdx: d.getMonth(), label: key };
-            }
+            if (!acc[key]) acc[key] = { amount: 0, year: d.getFullYear(), monthIdx: d.getMonth(), label: key };
             acc[key].amount += item.amount;
             return acc;
         }, {});
-
-        // Sort chronologically (most recent month at the top)
         const sortedGroups = Object.values(groupedData).sort((a, b) => {
             if (a.year !== b.year) return b.year - a.year;
             return b.monthIdx - a.monthIdx;
         });
-
-        listEl.innerHTML = sortedGroups.map(group => {
-            return `
-                <li class="timeline-item give" style="padding-bottom:15px;">
-                    <div class="timeline-meta" style="max-width: 60%;">
-                        <span class="timeline-desc">${group.label}</span>
-                    </div>
-                    <div class="timeline-amount">₹${group.amount.toFixed(2)}</div>
-                </li>
-            `;
-        }).join('');
-
+        listEl.innerHTML = sortedGroups.map(group => `
+            <li class="timeline-item give" style="padding-bottom:15px;">
+                <div class="timeline-meta" style="max-width: 60%;">
+                    <span class="timeline-desc">${group.label}</span>
+                </div>
+                <div class="timeline-amount">₹${group.amount.toFixed(2)}</div>
+            </li>
+        `).join('');
         document.getElementById('monthly-breakdown-modal').style.display = 'flex';
     }
 
@@ -1430,15 +1490,12 @@
     function editDebitTransaction(id) {
         const tx = debitHistoryState.find(item => item.id === id);
         if (!tx) return;
-
         currentEditingId = id;
         openPage('debit-page');
         document.getElementById('daily-debit-input').value = tx.amount;
-        
         const categorySelect = document.getElementById('daily-debit-category');
         const customInput = document.getElementById('daily-debit-custom');
         const options = Array.from(categorySelect.options).map(opt => opt.value);
-
         if (options.includes(tx.category)) {
             categorySelect.value = tx.category;
             customInput.style.display = 'none';
@@ -1447,7 +1504,6 @@
             customInput.style.display = 'block';
             customInput.value = tx.category;
         }
-
         document.getElementById('debit-submit-btn').textContent = "Update Amount";
         document.getElementById('debit-cancel-btn').textContent = "Cancel Edit";
         document.getElementById('debit-cancel-btn').setAttribute("onclick", "cancelDebitEdit()");
@@ -1473,9 +1529,7 @@
             updateBalancesUI();
             renderDebitHistory();
             const openModal = document.getElementById('calendar-modal').style.display === 'flex';
-            if (openModal) {
-                closeCalendarModal();
-            }
+            if (openModal) closeCalendarModal();
         }
     }
 
@@ -1492,7 +1546,6 @@
     function renderDebitHistory() {
         const listEl = document.getElementById('debit-history-list');
         if (!listEl) return;
-
         if (debitHistoryState.length === 0) {
             listEl.innerHTML = `<li class="no-history-msg">No personal expenditure logged yet.</li>`;
         } else {
@@ -1520,29 +1573,23 @@
     function exportHistoryToPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        
         doc.setFillColor(11, 61, 59);
         doc.rect(0, 0, 210, 40, 'F');
-        
         doc.setFont("Helvetica", "bold");
         doc.setFontSize(22);
         doc.setTextColor(255, 255, 255);
         doc.text("Shivadut's Personal Ledger Report", 14, 20);
-        
         const totalSpent = debitHistoryState.reduce((sum, item) => sum + item.amount, 0);
-
         doc.setFontSize(10);
         doc.setFont("Helvetica", "normal");
         doc.setTextColor(220, 220, 220);
         doc.text(`Generated on: ${new Date().toLocaleString('en-IN')}`, 14, 26);
         doc.text(`Total Spent (All Time): INR ${totalSpent.toFixed(2)}`, 14, 32);
-
         const tableRows = [];
         debitHistoryState.forEach((item, index) => {
             const dateStr = dateFormatter.format(new Date(item.timestamp));
             tableRows.push([index + 1, dateStr, item.category, `Rs. ${item.amount.toFixed(2)}`]);
         });
-
         doc.autoTable({
             startY: 46,
             head: [['#', 'Date & Time', 'Category/Description', 'Amount']],
@@ -1552,7 +1599,6 @@
             alternateRowStyles: { fillColor: [233, 242, 239] },
             styles: { font: "Helvetica", fontSize: 9 }
         });
-
         doc.save(`Debit_Ledger_${new Date().toISOString().slice(0,10)}.pdf`);
     }
 
@@ -1561,16 +1607,13 @@
             alert("Export panna entries ethuvum illai!");
             return;
         }
-        
         let csvContent = "data:text/csv;charset=utf-8,";
         csvContent += "Serial No,Date and Time,Category/Description,Amount (INR)\n";
-        
         debitHistoryState.forEach((item, index) => {
             const dateStr = dateFormatter.format(new Date(item.timestamp)).replace(/,/g, '');
             const categoryStr = item.category.replace(/"/g, '""');
             csvContent += `${index + 1},"${dateStr}","${categoryStr}",${item.amount.toFixed(2)}\n`;
         });
-        
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
@@ -1580,32 +1623,22 @@
         document.body.removeChild(link);
     }
 
-    // --- Cohort Ledger Logic ---
+    // --- Cohort Ledger ---
     function renderLedger() {
         const container = document.getElementById('ledger-container');
         if (!container) return;
-
         container.innerHTML = sortedFriends.map(peer => {
             const data = ledgerState[peer];
             const bal = data.balance;
             const absoluteBalance = Math.abs(bal).toFixed(2);
             let balClass = "balance-neutral";
             let statusText = "Settled Up";
-
-            if (bal > 0) {
-                balClass = "balance-positive";
-                statusText = `Owes you ₹${absoluteBalance}`;
-            } else if (bal < 0) {
-                balClass = "balance-negative";
-                statusText = `You owe ₹${absoluteBalance}`;
-            }
+            if (bal > 0) { balClass = "balance-positive"; statusText = `Owes you ₹${absoluteBalance}`; }
+            else if (bal < 0) { balClass = "balance-negative"; statusText = `You owe ₹${absoluteBalance}`; }
 
             let progressPercent = 0;
-            if(data.baseline > 0) {
-                progressPercent = Math.min(((data.baseline - Math.abs(bal)) / data.baseline) * 100, 100);
-            } else if (bal === 0) {
-                progressPercent = 100;
-            }
+            if (data.baseline > 0) progressPercent = Math.min(((data.baseline - Math.abs(bal)) / data.baseline) * 100, 100);
+            else if (bal === 0) progressPercent = 100;
 
             return `
                 <div class="ledger-item-container">
@@ -1619,7 +1652,7 @@
                                 <input type="number" id="amt-${peer}" placeholder="Amount (₹)" min="0" step="0.01">
                                 <select id="cat-${peer}" class="modern-select" onchange="toggleCustomInput('cat-${peer}', 'cust-${peer}')">
                                     <option value="" disabled selected>Select reason</option>
-                                    <option value="Tea & Snacks">Tea & Snacks</option>
+                                    <option value="Tea & Snacks">Tea &amp; Snacks</option>
                                     <option value="Lunch">Lunch</option>
                                     <option value="Food">Food</option>
                                     <option value="Movie Ticket">Movie Ticket</option>
@@ -1637,7 +1670,7 @@
                         </div>
                         <div class="action-container">
                             <div class="balance-display ${balClass}">${statusText}</div>
-                            <a class="btn-share-wa" href="#" onclick="shareCohortWhatsApp('${peer}')">
+                            <a class="btn-share-wa" href="#" onclick="shareCohortWhatsApp('${peer}'); return false;">
                                 <svg viewBox="0 0 448 512"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7 .9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
                             </a>
                         </div>
@@ -1689,21 +1722,13 @@
         const amtEl = document.getElementById(`amt-${peer}`);
         const amount = parseFloat(amtEl.value);
         const categoryDesc = resolveCategoryValue(`cat-${peer}`, `cust-${peer}`);
-
         if (!isNaN(amount) && amount > 0) {
             const peerData = ledgerState[peer];
-            if (type === 'give') {
-                peerData.balance += amount;
-            } else {
-                peerData.balance -= amount;
-            }
-            if (Math.abs(peerData.balance) > peerData.baseline) {
-                peerData.baseline = Math.abs(peerData.balance);
-            }
+            if (type === 'give') peerData.balance += amount;
+            else peerData.balance -= amount;
+            if (Math.abs(peerData.balance) > peerData.baseline) peerData.baseline = Math.abs(peerData.balance);
             peerData.transactions.unshift({
-                type: type,
-                amount: amount,
-                category: categoryDesc,
+                type: type, amount: amount, category: categoryDesc,
                 timestamp: new Date().toISOString()
             });
             localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
@@ -1720,13 +1745,9 @@
     function shareCohortWhatsApp(peer) {
         const bal = ledgerState[peer].balance;
         let msg = "";
-        if (bal > 0) {
-            msg = `Macha ${peer}, nee enaku ₹${bal.toFixed(2)} thara vendi iruku. En integrated financial ledger la update panniten, check panniko!`;
-        } else if (bal < 0) {
-            msg = `Macha ${peer}, nan unaku ₹${Math.abs(bal).toFixed(2)} thara vendi iruku. Record track aairuchu, safe ah settle panren!`;
-        } else {
-            msg = `Macha ${peer}, namakululla ella kanakum-um fully clear / settled up aairuchu!`;
-        }
+        if (bal > 0) msg = `Macha ${peer}, nee enaku ₹${bal.toFixed(2)} thara vendi iruku. En integrated financial ledger la update panniten, check panniko!`;
+        else if (bal < 0) msg = `Macha ${peer}, nan unaku ₹${Math.abs(bal).toFixed(2)} thara vendi iruku. Record track aairuchu, safe ah settle panren!`;
+        else msg = `Macha ${peer}, namakululla ella kanakum-um fully clear / settled up aairuchu!`;
         window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
@@ -1740,9 +1761,7 @@
         }
     }
 
-    // --- Cohort Ledger Export (PDF / Excel) ---
     function getAllCohortRows() {
-        // Flattens every peer's transaction history into a single, date-sorted list of rows
         const rows = [];
         sortedFriends.forEach(peer => {
             ledgerState[peer].transactions.forEach(tx => {
@@ -1761,27 +1780,19 @@
 
     function exportCohortToPDF() {
         const rows = getAllCohortRows();
-        if (rows.length === 0) {
-            alert("Export panna cohort transactions ethuvum illai!");
-            return;
-        }
-
+        if (rows.length === 0) { alert("Export panna cohort transactions ethuvum illai!"); return; }
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-
         doc.setFillColor(11, 61, 59);
         doc.rect(0, 0, 210, 40, 'F');
-
         doc.setFont("Helvetica", "bold");
         doc.setFontSize(22);
         doc.setTextColor(255, 255, 255);
         doc.text("Shivadut's Cohort Ledger Report", 14, 20);
-
         doc.setFontSize(10);
         doc.setFont("Helvetica", "normal");
         doc.setTextColor(220, 220, 220);
         doc.text(`Generated on: ${new Date().toLocaleString('en-IN')}`, 14, 26);
-
         let summaryLine = sortedFriends.map(peer => {
             const bal = ledgerState[peer].balance;
             const tag = bal > 0 ? `Owes You Rs.${bal.toFixed(2)}` : bal < 0 ? `You Owe Rs.${Math.abs(bal).toFixed(2)}` : `Settled`;
@@ -1790,12 +1801,10 @@
         doc.setFontSize(8.5);
         const wrapped = doc.splitTextToSize(summaryLine, 180);
         doc.text(wrapped, 14, 32);
-
         const tableRows = rows.map((row, index) => {
             const dateStr = dateFormatter.format(new Date(row.timestamp));
             return [index + 1, row.peer, row.type, row.category, `Rs. ${row.amount.toFixed(2)}`, dateStr];
         });
-
         doc.autoTable({
             startY: 40 + (wrapped.length * 4),
             head: [['#', 'Friend', 'Direction', 'Reason / Category', 'Amount', 'Date & Time']],
@@ -1805,27 +1814,20 @@
             alternateRowStyles: { fillColor: [233, 242, 239] },
             styles: { font: "Helvetica", fontSize: 8.5 }
         });
-
         doc.save(`Cohort_Ledger_${new Date().toISOString().slice(0,10)}.pdf`);
     }
 
     function exportCohortToExcel() {
         const rows = getAllCohortRows();
-        if (rows.length === 0) {
-            alert("Export panna cohort transactions ethuvum illai!");
-            return;
-        }
-
+        if (rows.length === 0) { alert("Export panna cohort transactions ethuvum illai!"); return; }
         let csvContent = "data:text/csv;charset=utf-8,";
         csvContent += "Serial No,Friend,Direction,Reason/Category,Amount (INR),Date and Time,Current Balance (INR)\n";
-
         rows.forEach((row, index) => {
             const dateStr = dateFormatter.format(new Date(row.timestamp)).replace(/,/g, '');
             const categoryStr = row.category.replace(/"/g, '""');
             const currentBal = ledgerState[row.peer].balance.toFixed(2);
             csvContent += `${index + 1},"${row.peer}","${row.type}","${categoryStr}",${row.amount.toFixed(2)},"${dateStr}",${currentBal}\n`;
         });
-
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
@@ -1835,7 +1837,7 @@
         document.body.removeChild(link);
     }
 
-    // --- Analytics Engine ---
+    // --- Analytics ---
     let pieInstance = null;
     let lineInstance = null;
 
@@ -1843,17 +1845,14 @@
         const catMap = {};
         const dailyMap = {};
         const sortedHistory = [...debitHistoryState].reverse();
-
         sortedHistory.forEach(item => {
             catMap[item.category] = (catMap[item.category] || 0) + item.amount;
             const dateKey = new Date(item.timestamp).toLocaleDateString('en-IN', {day:'2-digit', month:'short'});
             dailyMap[dateKey] = (dailyMap[dateKey] || 0) + item.amount;
         });
-
         const pieLabels = Object.keys(catMap);
         const pieData = Object.values(catMap);
         const ctxPie = document.getElementById('pieChart').getContext('2d');
-
         if(pieInstance) pieInstance.destroy();
         pieInstance = new Chart(ctxPie, {
             type: 'pie',
@@ -1872,26 +1871,18 @@
                     legend: { position: 'bottom' },
                     datalabels: {
                         color: '#ffffff',
-                        font: {
-                            weight: 'bold',
-                            size: 12
-                        },
-                        formatter: function(value, context) {
-                            // Only show label if value is greater than 0
-                            if (value > 0) {
-                                return '₹' + value.toFixed(0);
-                            }
+                        font: { weight: 'bold', size: 12 },
+                        formatter: function(value) {
+                            if (value > 0) return '₹' + value.toFixed(0);
                             return '';
                         }
                     }
                 }
             }
         });
-
         const lineLabels = Object.keys(dailyMap);
         const lineData = Object.values(dailyMap);
         const ctxLine = document.getElementById('lineChart').getContext('2d');
-
         if(lineInstance) lineInstance.destroy();
         lineInstance = new Chart(ctxLine, {
             type: 'line',
@@ -1909,19 +1900,13 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    datalabels: {
-                        display: false // We explicitly disable data labels for the line chart so it doesn't get cluttered
-                    }
-                },
-                scales: {
-                    y: { beginAtZero: true }
-                }
+                plugins: { datalabels: { display: false } },
+                scales: { y: { beginAtZero: true } }
             }
         });
     }
 
-    // --- Calendar Heatmap Section ---
+    // --- Calendar ---
     let currentCalDate = new Date();
 
     function renderCalendar() {
@@ -1929,12 +1914,10 @@
         const monthYearTitle = document.getElementById('calendar-month-year');
         const budgetThreshold = parseFloat(document.getElementById('calendar-budget-input').value) || 200;
         grid.innerHTML = '';
-
         const year = currentCalDate.getFullYear();
         const month = currentCalDate.getMonth();
         const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
         monthYearTitle.textContent = `${monthNames[month]} ${year}`;
-
         const weekdays = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
         weekdays.forEach(day => {
             const hw = document.createElement('div');
@@ -1942,16 +1925,13 @@
             hw.textContent = day;
             grid.appendChild(hw);
         });
-
         const firstDayIndex = new Date(year, month, 1).getDay();
         const totalDays = new Date(year, month + 1, 0).getDate();
-
         for(let i=0; i<firstDayIndex; i++) {
             const emptyCell = document.createElement('div');
             emptyCell.className = 'calendar-cell empty-cell';
             grid.appendChild(emptyCell);
         }
-
         const dayAmountMap = {};
         debitHistoryState.forEach(tx => {
             const txDate = new Date(tx.timestamp);
@@ -1960,29 +1940,22 @@
                 dayAmountMap[dateNum] = (dayAmountMap[dateNum] || 0) + tx.amount;
             }
         });
-
         for (let day = 1; day <= totalDays; day++) {
             const cell = document.createElement('div');
             cell.className = 'calendar-cell';
-            
             const dSpan = document.createElement('span');
             dSpan.className = 'cell-date';
             dSpan.textContent = day;
             cell.appendChild(dSpan);
-
             if (dayAmountMap[day]) {
                 const totalSpent = dayAmountMap[day];
                 const amtSpan = document.createElement('span');
                 amtSpan.className = 'cell-amount';
                 amtSpan.textContent = `₹${totalSpent.toFixed(0)}`;
                 cell.appendChild(amtSpan);
-
                 cell.classList.add('has-data');
-                if (totalSpent > budgetThreshold) {
-                    cell.classList.add('bg-high');
-                } else {
-                    cell.classList.add('bg-low');
-                }
+                if (totalSpent > budgetThreshold) cell.classList.add('bg-high');
+                else cell.classList.add('bg-low');
                 cell.setAttribute('onclick', `openCalendarDayModal(${year}, ${month}, ${day})`);
             }
             grid.appendChild(cell);
@@ -1998,12 +1971,10 @@
         const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
         document.getElementById('calendar-modal-title').textContent = `${day} ${monthNames[month]} ${year} - Spent Details`;
         const listEl = document.getElementById('calendar-modal-list');
-        
         const dayTransactions = debitHistoryState.filter(entry => {
             const d = new Date(entry.timestamp);
             return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day;
         });
-
         if (dayTransactions.length === 0) {
             listEl.innerHTML = `<li class="no-history-msg">No transactions found for this date.</li>`;
         } else {
@@ -2031,7 +2002,6 @@
 
     function closeCalendarModal() { document.getElementById('calendar-modal').style.display = 'none'; }
 
-    // Control all modal closes dynamically
     window.onclick = function(event) {
         const calModal = document.getElementById('calendar-modal');
         const breakdownModal = document.getElementById('monthly-breakdown-modal');
@@ -2040,14 +2010,16 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-        // Clean out legacy balances from older versions to prevent bloat
         localStorage.removeItem('initialAccountBalance');
         localStorage.removeItem('personalTotalDebit');
-
-        // Load specific saved states
         loadSavingsData();
         document.getElementById('notes-area').value = localStorage.getItem('ledgerNotes') || '';
         updateBalancesUI();
+        // If user was previously authenticated in this tab session, jump to menu
+        if (sessionStorage.getItem('ledgerAuthenticated') === 'true') {
+            document.getElementById('display-username').textContent = sessionStorage.getItem('ledgerUser') || 'Shivadut';
+            openPage('menu-page');
+        }
     });
 </script>
 </body>
