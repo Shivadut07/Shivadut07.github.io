@@ -33,12 +33,6 @@
             --btn-neutral-soft: #DDEEF5;
             --btn-whatsapp: #25D366;
 
-            /* Calculator Module Colors */
-            --calc-bg: #0B3D3B;
-            --calc-key: #EAF2F0;
-            --calc-key-op: #C99A2E;
-            --calc-key-action: #D64550;
-
             /* Timeline Specific Variables */
             --timeline-spine: #CFE2DC;
             --timeline-node-bg: #ffffff;
@@ -46,7 +40,7 @@
             --font-display: 'Fraunces', Georgia, serif;
             --font-body: 'Inter', Arial, sans-serif;
         }
-       
+        
         /* Global Reset */
         * {
             box-sizing: border-box;
@@ -59,7 +53,7 @@
         body {
             font-family: var(--font-body);
             background-color: var(--bg-color);
-            background-image:
+            background-image: 
                 radial-gradient(circle at 100% 0%, rgba(201,154,46,0.07), transparent 45%),
                 radial-gradient(circle at 0% 100%, rgba(11,61,59,0.06), transparent 40%);
             color: var(--text-main);
@@ -161,7 +155,7 @@
         .btn-login:active { transform: scale(0.98); }
         .login-error { color: var(--btn-give); font-size: 0.85rem; margin-top: 15px; min-height: 20px; font-weight: 600; }
 
-        /* --- MAIN MENU STYLES --- */
+        /* --- MAIN MENU STYLES (NEW DASHBOARD) --- */
         .menu-header {
             width: 100%;
             max-width: 900px;
@@ -179,7 +173,6 @@
         .menu-header h1 { font-size: 1.5rem; font-weight: 600; }
         .menu-header h1 span { color: var(--accent-gold); }
 
-        /* Signature element: perforated passbook edge */
         .perforation-strip {
             width: 100%;
             max-width: 900px;
@@ -193,41 +186,64 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.08);
         }
 
-        .menu-grid {
+        .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 25px;
             width: 100%;
             max-width: 900px;
         }
 
-        .menu-box {
+        .dashboard-card {
             background: var(--panel-bg);
-            border: 2px solid transparent;
             border-radius: 16px;
-            padding: 36px 20px;
-            text-align: center;
-            cursor: pointer;
+            padding: 25px;
             box-shadow: 0 8px 20px rgba(11,61,59,0.08);
-            transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
+            gap: 15px;
+            border-top: 4px solid var(--accent-gold);
+        }
+        
+        .dashboard-card h3 { font-size: 1.3rem; color: var(--text-main); margin-bottom: 5px; display: flex; align-items: center; gap: 8px;}
+        .dashboard-card p.card-desc { color: var(--text-muted); font-size: 0.9rem; margin: 0; }
+        
+        .stat-value { font-size: 2.2rem; font-weight: bold; font-family: var(--font-display); color: var(--btn-give); }
+        .stat-value.positive { color: var(--btn-receive); }
+        
+        .btn-dash {
+            padding: 10px;
+            background: var(--btn-neutral-soft);
+            color: var(--btn-neutral);
+            border: 1px solid var(--btn-neutral);
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: auto;
+        }
+        .btn-dash:hover { background: var(--btn-neutral); color: white; }
+
+        .news-links { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+        .news-btn {
+            background: #F8FBFA;
+            border: 1px solid var(--border-light);
+            padding: 12px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 12px;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-
-        .menu-box:hover {
-            transform: translateY(-5px);
+        .news-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             border-color: var(--accent-gold);
-            box-shadow: 0 14px 28px rgba(201,154,46,0.22);
-        }
-
-        .menu-box h3 { font-size: 1.3rem; color: var(--text-main); margin: 0; font-weight: 600;}
-        .menu-box p { color: var(--text-muted); font-size: 0.88rem; margin: 0;}
-       
-        .menu-icon {
-            font-size: 2.6rem;
-            margin-bottom: 6px;
         }
 
         .app-footer {
@@ -310,6 +326,27 @@
             color: var(--text-main);
         }
 
+        /* --- NOTES PAGE STYLES --- */
+        #notes-area {
+            width: 100%;
+            flex-grow: 1;
+            min-height: 400px;
+            border: 1.5px solid var(--border-light);
+            border-radius: 12px;
+            padding: 18px;
+            font-size: 1.05rem;
+            font-family: var(--font-body);
+            color: var(--text-deep);
+            background-color: #FBFDFC;
+            resize: vertical;
+            line-height: 1.6;
+        }
+        #notes-area:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 0 3px rgba(201, 154, 46, 0.15);
+        }
+
         /* --- DEBIT STYLES & ACCUMULATOR --- */
         .account-summary-grid {
             display: grid;
@@ -382,7 +419,7 @@
         button:active { transform: scale(0.95); }
         .btn-add { background-color: var(--btn-neutral); flex: 1 1 auto; }
         .btn-reset { background-color: var(--btn-give); flex: 0 0 auto; }
-       
+        
         .header-action-row {
             display: flex;
             justify-content: space-between;
@@ -498,7 +535,7 @@
             padding: 18px 0;
         }
         .ledger-item-container:last-child { border-bottom: none; }
-       
+        
         .ledger-row {
             display: grid;
             grid-template-columns: 120px 2fr 1fr;
@@ -508,7 +545,7 @@
 
         .peer-info { display: flex; flex-direction: column; gap: 6px; }
         .peer-name { font-weight: 600; text-transform: capitalize; font-size: 1.05rem; font-family: var(--font-display); }
-       
+        
         .btn-history-toggle {
             padding: 5px 8px;
             font-size: 0.72rem;
@@ -516,12 +553,12 @@
             border-radius: 6px;
             align-self: flex-start;
         }
-       
+        
         .ledger-controls { display: flex; flex-direction: column; gap: 8px; }
         .ledger-inputs { display: flex; gap: 6px; width: 100%; }
         .ledger-inputs input[type="number"] { width: 90px; padding: 8px; }
         .ledger-inputs select, .ledger-inputs input[type="text"] { flex: 1; padding: 8px; }
-       
+        
         .ledger-buttons { display: flex; gap: 6px; width: 100%; }
         .ledger-buttons button { flex: 1; padding: 8px 10px; font-size: 0.78rem; border-radius: 8px; }
         .btn-give { background-color: var(--btn-give); }
@@ -630,31 +667,6 @@
         .progress-fill.settled { background: linear-gradient(90deg, var(--btn-receive), #237a54); }
         .progress-label-text { font-size: 0.72rem; color: var(--text-muted); text-align: right; font-weight: 600; }
 
-        /* --- CALCULATOR STYLES --- */
-        .calculator { background-color: var(--calc-bg); border-radius: 18px; padding: 20px; max-width: 450px; margin: 0 auto; width: 100%; }
-        .calculator__display {
-            background-color: var(--accent-gold-soft);
-            color: var(--text-deep);
-            font-family: var(--font-display);
-            font-size: 2.2rem;
-            text-align: right;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-        }
-        .calculator__keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-        .calculator__keys button {
-            background-color: var(--calc-key); color: var(--text-main);
-            font-size: 1.4rem; padding: 18px 0; border-radius: 12px; font-weight: bold;
-        }
-        .calculator__keys button[data-action="add"],
-        .calculator__keys button[data-action="subtract"],
-        .calculator__keys button[data-action="multiply"],
-        .calculator__keys button[data-action="divide"] { background-color: var(--calc-key-op); color: white; }
-        .calculator__keys button[data-action="calculate"] { background-color: var(--btn-receive); color: white; grid-column: span 2; }
-        .calculator__keys button[data-action="clear"] { background-color: var(--calc-key-action); color: white; grid-column: span 2; }
-
         /* --- CHART STYLES --- */
         .chart-wrapper {
             position: relative;
@@ -681,7 +693,7 @@
             font-size: 1.2rem;
             border-radius: 10px;
         }
-       
+        
         .budget-control {
             display: flex;
             justify-content: flex-end;
@@ -823,6 +835,7 @@
         .nav-tab.active .nav-icon { transform: translateY(-1px); }
 
         @media (max-width: 850px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
             .ledger-row { grid-template-columns: 1fr; gap: 14px; }
             .peer-info { align-items: center; border-bottom: 1px dashed var(--border-light); padding-bottom: 10px; }
             .peer-name { text-align: center; font-size: 1.25rem; }
@@ -833,7 +846,7 @@
             .balance-display { text-align: center; }
             .input-row { flex-direction: column; }
             .account-summary-grid { grid-template-columns: 1fr; gap: 10px; }
-           
+            
             .calendar-cell { min-height: 60px; padding: 4px; }
             .cell-date { font-size: 0.8rem; }
             .cell-amount { font-size: 0.75rem; }
@@ -871,40 +884,70 @@
         </div>
         <div class="perforation-strip"></div>
 
-        <div class="menu-grid">
-            <div class="menu-box" onclick="openPage('debit-page')">
-                <div class="menu-icon">🧾</div>
-                <h3>Daily Debit</h3>
-                <p>Track your personal daily expenses and history.</p>
+        <div class="dashboard-grid">
+            <!-- Personal Summary -->
+            <div class="dashboard-card">
+                <h3>🧾 Daily Debit Summary</h3>
+                <p class="card-desc">Your overall personal expenses.</p>
+                <div class="stat-value" id="dash-total-spent">₹0.00</div>
+                <button class="btn-dash" onclick="openPage('debit-page')">Log Expense & View History</button>
             </div>
-            <div class="menu-box" onclick="openPage('calendar-page')">
-                <div class="menu-icon">📅</div>
-                <h3>Calendar</h3>
-                <p>Monthly view and daily expenditure heatmap.</p>
+
+            <!-- World News Portal -->
+            <div class="dashboard-card">
+                <h3>🌍 World News Portal</h3>
+                <p class="card-desc">Top worldwide news via Google News.</p>
+                <div class="news-links">
+                    <a href="https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx1YlY4U0FtVnVHZ0pWVXlnQVAB" target="_blank" class="news-btn">
+                        <span>Top Stories</span><span>📰</span>
+                    </a>
+                    <a href="https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtVnVHZ0pWVXlnQVAB" target="_blank" class="news-btn">
+                        <span>Business & Finance</span><span>📈</span>
+                    </a>
+                    <a href="https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FtVnVHZ0pWVXlnQVAB" target="_blank" class="news-btn">
+                        <span>Technology</span><span>💻</span>
+                    </a>
+                </div>
             </div>
-            <div class="menu-box" onclick="openPage('cohort-page')">
-                <div class="menu-icon">🤝</div>
-                <h3>Cohort Ledger</h3>
-                <p>Manage splits and balances with your friends.</p>
+
+            <!-- Cohort / Friends Summary -->
+            <div class="dashboard-card">
+                <h3>🤝 Cohort Status</h3>
+                <p class="card-desc">Quick jump to your shared balances.</p>
+                <button class="btn-dash" onclick="openPage('cohort-page')">Manage Splits & Friends</button>
             </div>
-            <div class="menu-box" onclick="openPage('savings-page')">
-                <div class="menu-icon">🏦</div>
-                <h3>Cash Counter</h3>
-                <p>Calculate your physical cash savings by denomination.</p>
-            </div>
-            <div class="menu-box" onclick="openPage('calculator-page')">
-                <div class="menu-icon">🧮</div>
-                <h3>Calculator</h3>
-                <p>Quick financial calculations.</p>
-            </div>
-            <div class="menu-box" onclick="openPage('analytics-page')">
-                <div class="menu-icon">📊</div>
-                <h3>Analytics</h3>
-                <p>Visual data analysis of your daily debits.</p>
+            
+            <!-- Quick Tools -->
+            <div class="dashboard-card">
+                <h3>🛠️ Quick Tools</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: auto;">
+                    <button class="btn-dash" style="margin: 0;" onclick="openPage('calendar-page')">📅 Calendar</button>
+                    <button class="btn-dash" style="margin: 0;" onclick="openPage('savings-page')">🏦 Savings</button>
+                    <button class="btn-dash" style="margin: 0;" onclick="openPage('analytics-page')">📊 Analytics</button>
+                    <button class="btn-dash" style="margin: 0;" onclick="openPage('notes-page')">📝 Notes</button>
+                </div>
             </div>
         </div>
 
-        <div class="app-footer"><span class="footer-icon">🪙</span> Shivadut's Ledger — track every rupee, settle every macha</div>
+        <div class="app-footer" style="margin-top: 30px;"><span class="footer-icon">🪙</span> Shivadut's Ledger — track every rupee, settle every macha</div>
+    </div>
+
+    <div id="notes-page" class="app-page">
+        <div class="tool-nav-bar">
+            <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
+            <button class="btn-logout" onclick="logout()">Sign Out</button>
+        </div>
+        <div class="tool-container" style="flex: 1;">
+            <div class="panel" style="display: flex; flex-direction: column; flex: 1;">
+                <div class="header-action-row">
+                    <h2>📝 Personal Notes</h2>
+                    <span id="save-status" style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Saved</span>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Your notes are auto-saved directly to your browser.</p>
+                <textarea id="notes-area" placeholder="Start typing your notes, reminders, or thoughts here..." oninput="autoSaveNotes()"></textarea>
+            </div>
+            <div class="app-footer"><span class="footer-icon">📝</span> Jot it down before you forget.</div>
+        </div>
     </div>
 
     <div id="savings-page" class="app-page">
@@ -1091,37 +1134,6 @@
         </div>
     </div>
 
-    <div id="calculator-page" class="app-page">
-        <div class="tool-nav-bar">
-            <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
-            <button class="btn-logout" onclick="logout()">Sign Out</button>
-        </div>
-        <div class="tool-container">
-            <div class="panel calculator" id="calculator-section">
-                <div class="calculator__display" id="calc-display">0</div>
-                <div class="calculator__keys" id="calc-keys">
-                    <button data-action="clear">AC</button>
-                    <button data-action="divide">÷</button>
-                    <button data-action="multiply">×</button>
-                    <button>7</button>
-                    <button>8</button>
-                    <button>9</button>
-                    <button data-action="subtract">-</button>
-                    <button>4</button>
-                    <button>5</button>
-                    <button>6</button>
-                    <button data-action="add">+</button>
-                    <button>1</button>
-                    <button>2</button>
-                    <button>3</button>
-                    <button>0</button>
-                    <button data-action="decimal">.</button>
-                    <button data-action="calculate">=</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div id="analytics-page" class="app-page">
         <div class="tool-nav-bar">
             <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
@@ -1171,8 +1183,8 @@
         <button class="nav-tab" data-page="savings-page" onclick="openPage('savings-page')">
             <span class="nav-icon">🏦</span><span class="nav-label">Savings</span>
         </button>
-        <button class="nav-tab" data-page="calculator-page" onclick="openPage('calculator-page')">
-            <span class="nav-icon">🧮</span><span class="nav-label">Calc</span>
+        <button class="nav-tab" data-page="notes-page" onclick="openPage('notes-page')">
+            <span class="nav-icon">📝</span><span class="nav-label">Notes</span>
         </button>
         <button class="nav-tab" data-page="analytics-page" onclick="openPage('analytics-page')">
             <span class="nav-icon">📊</span><span class="nav-label">Stats</span>
@@ -1247,6 +1259,22 @@
         document.getElementById('savings-grand-total').textContent = `₹${grandTotal.toFixed(2)}`;
     }
 
+    // --- Notes Logic ---
+    function autoSaveNotes() {
+        const content = document.getElementById('notes-area').value;
+        localStorage.setItem('ledgerNotes', content);
+        
+        const statusEl = document.getElementById('save-status');
+        statusEl.textContent = "Saving...";
+        statusEl.style.color = 'var(--text-main)';
+        
+        clearTimeout(window.notesTimeout);
+        window.notesTimeout = setTimeout(() => {
+            statusEl.textContent = "Saved";
+            statusEl.style.color = 'var(--text-muted)';
+        }, 600);
+    }
+
     // --- Core Ledger States ---
     const rawFriendsArray = ["Aravindh", "Gojo", "Mowlish", "Soukar","Gowtham","Thiwakar"];
     const sortedFriends = rawFriendsArray.sort();
@@ -1300,6 +1328,10 @@
 
         document.getElementById('total-spent-val').textContent = totalSpent.toFixed(2);
         document.getElementById('current-month-val').textContent = currentMonthSpent.toFixed(2);
+        
+        // Update Dashboard
+        const dashTotalSpent = document.getElementById('dash-total-spent');
+        if (dashTotalSpent) dashTotalSpent.textContent = `₹${totalSpent.toFixed(2)}`;
     }
 
     function openMonthlyBreakdownModal() {
@@ -1803,53 +1835,6 @@
         document.body.removeChild(link);
     }
 
-    // --- Calculator Engine ---
-    const display = document.querySelector('#calc-display');
-    const keys = document.querySelector('#calc-keys');
-    let calcValue = '0';
-    let prevCalcValue = null;
-    let calcOp = null;
-    let expectValue = false;
-
-    keys.addEventListener('click', e => {
-        if (!e.target.matches('button')) return;
-        const key = e.target;
-        const action = key.dataset.action;
-        const keyContent = key.textContent;
-
-        if (!action) {
-            if (calcValue === '0' || expectValue) {
-                calcValue = keyContent;
-                expectValue = false;
-            } else {
-                calcValue += keyContent;
-            }
-        } else if(action === 'decimal') {
-            if(!calcValue.includes('.')) calcValue += '.';
-        } else if(['add','subtract','multiply','divide'].includes(action)) {
-            calcOp = action;
-            prevCalcValue = calcValue;
-            expectValue = true;
-        } else if(action === 'clear') {
-            calcValue = '0';
-            prevCalcValue = null;
-            calcOp = null;
-            expectValue = false;
-        } else if(action === 'calculate') {
-            if(calcOp && prevCalcValue !== null) {
-                const first = parseFloat(prevCalcValue);
-                const second = parseFloat(calcValue);
-                if(calcOp === 'add') calcValue = (first + second).toString();
-                else if(calcOp === 'subtract') calcValue = (first - second).toString();
-                else if(calcOp === 'multiply') calcValue = (first * second).toString();
-                else if(calcOp === 'divide') calcValue = (second !== 0) ? (first / second).toString() : 'Error';
-                calcOp = null;
-                prevCalcValue = null;
-            }
-        }
-        display.textContent = calcValue;
-    });
-
     // --- Analytics Engine ---
     let pieInstance = null;
     let lineInstance = null;
@@ -2059,7 +2044,9 @@
         localStorage.removeItem('initialAccountBalance');
         localStorage.removeItem('personalTotalDebit');
 
+        // Load specific saved states
         loadSavingsData();
+        document.getElementById('notes-area').value = localStorage.getItem('ledgerNotes') || '';
         updateBalancesUI();
     });
 </script>
