@@ -4,37 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shivadut's Integrated Financial Ledger</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root {
-            /* Core Application Color Palette */
-            --bg-color: #e0e3eb;
+            /* --- "Passbook" Palette: deep ledger-ink + brass coin gold on cool mint paper --- */
+            --bg-color: #E9F2EF;
+            --bg-color-deep: #DCEAE5;
             --panel-bg: #ffffff;
-            --text-main: #000e1a;
-            --text-muted: #6c7a89;
-            --border-light: #cccccc;
-            
+            --text-main: #0B3D3B;
+            --text-deep: #072826;
+            --text-muted: #5E7370;
+            --border-light: #D5E4DF;
+
+            --accent-gold: #C99A2E;
+            --accent-gold-soft: #F3E4BE;
+
             /* Semantic Financial Action Colors */
-            --btn-give: #ff5722;
-            --btn-receive: #8bc34a;
-            --btn-neutral: #03a9f4;
+            --btn-give: #D64550;
+            --btn-give-soft: #FBE3E1;
+            --btn-receive: #2F9E6E;
+            --btn-receive-soft: #E1F3E9;
+            --btn-neutral: #2C7DA0;
+            --btn-neutral-soft: #DDEEF5;
             --btn-whatsapp: #25D366;
-            
+
             /* Calculator Module Colors */
-            --calc-bg: #2c3e50;
-            --calc-key: #eee;
-            --calc-key-op: #ff9800;
-            --calc-key-action: #e74c3c;
-            
+            --calc-bg: #0B3D3B;
+            --calc-key: #EAF2F0;
+            --calc-key-op: #C99A2E;
+            --calc-key-action: #D64550;
+
             /* Timeline Specific Variables */
-            --timeline-spine: #d2d7d3;
+            --timeline-spine: #CFE2DC;
             --timeline-node-bg: #ffffff;
+
+            --font-display: 'Fraunces', Georgia, serif;
+            --font-body: 'Inter', Arial, sans-serif;
         }
-        
+       
         /* Global Reset */
         * {
             box-sizing: border-box;
@@ -45,16 +57,22 @@
         html { scroll-behavior: smooth; }
 
         body {
-            font-family: 'Poppins', Arial, sans-serif;
+            font-family: var(--font-body);
             background-color: var(--bg-color);
+            background-image:
+                radial-gradient(circle at 100% 0%, rgba(201,154,46,0.07), transparent 45%),
+                radial-gradient(circle at 0% 100%, rgba(11,61,59,0.06), transparent 40%);
             color: var(--text-main);
             min-height: 100vh;
         }
+
+        h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.01em; }
 
         /* --- PAGE CONTAINERS --- */
         .app-page {
             display: none; /* All pages hidden by default */
             padding: 20px;
+            padding-bottom: 110px; /* clearance for fixed bottom navbar */
             min-height: 100vh;
             flex-direction: column;
             align-items: center;
@@ -65,53 +83,83 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding-bottom: 20px;
+            background: linear-gradient(150deg, #072826 0%, #0B3D3B 55%, #145C57 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        #login-page::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle, rgba(201,154,46,0.35) 1.5px, transparent 1.6px);
+            background-size: 26px 26px;
+            opacity: 0.25;
+            pointer-events: none;
         }
 
         .login-card {
             background: var(--panel-bg);
             padding: 40px 30px;
-            border-radius: 15px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            border-radius: 18px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.35);
             width: 100%;
             max-width: 400px;
             text-align: center;
+            position: relative;
+            z-index: 1;
+            border-top: 5px solid var(--accent-gold);
         }
 
-        .login-card h1 { font-size: 1.8rem; margin-bottom: 10px; }
-        .login-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 30px; }
+        .login-brand-icon {
+            width: 56px; height: 56px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--text-main), var(--text-deep));
+            color: var(--accent-gold);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem;
+            margin: 0 auto 16px;
+            box-shadow: 0 8px 18px rgba(11,61,59,0.35);
+        }
+
+        .login-card h1 { font-size: 1.7rem; margin-bottom: 8px; font-weight: 600; }
+        .login-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 28px; }
 
         .login-form-group { margin-bottom: 20px; text-align: left; }
-        .login-form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
+        .login-form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.85rem; color: var(--text-main); }
         .login-form-group input {
             width: 100%;
             padding: 12px 15px;
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
+            border: 1.5px solid var(--border-light);
+            border-radius: 10px;
             font-size: 1rem;
+            font-family: var(--font-body);
             transition: border-color 0.3s;
+            background: #F7FAF9;
         }
         .login-form-group input:focus {
             outline: none;
-            border-color: var(--btn-neutral);
-            box-shadow: 0 0 0 3px rgba(3, 169, 244, 0.1);
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 0 3px rgba(201, 154, 46, 0.18);
         }
 
         .btn-login {
             width: 100%;
             padding: 14px;
-            background-color: var(--btn-neutral);
-            color: white;
+            background: linear-gradient(135deg, var(--text-main), var(--text-deep));
+            color: var(--accent-gold-soft);
             border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: bold;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            font-family: var(--font-body);
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s;
+            transition: transform 0.15s, box-shadow 0.2s;
+            box-shadow: 0 8px 18px rgba(11,61,59,0.28);
         }
-        .btn-login:hover { background-color: #0288d1; }
+        .btn-login:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(11,61,59,0.35); }
         .btn-login:active { transform: scale(0.98); }
-        .login-error { color: #e74c3c; font-size: 0.85rem; margin-top: 15px; min-height: 20px; font-weight: 600; }
+        .login-error { color: var(--btn-give); font-size: 0.85rem; margin-top: 15px; min-height: 20px; font-weight: 600; }
 
         /* --- MAIN MENU STYLES --- */
         .menu-header {
@@ -120,12 +168,29 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: var(--panel-bg);
-            padding: 20px 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            background: linear-gradient(120deg, var(--text-main), var(--text-deep));
+            color: #EAF2F0;
+            padding: 22px 30px;
+            border-radius: 18px;
+            box-shadow: 0 10px 25px rgba(11,61,59,0.18);
+            margin-bottom: 0;
+            margin-top: 6px;
+        }
+        .menu-header h1 { font-size: 1.5rem; font-weight: 600; }
+        .menu-header h1 span { color: var(--accent-gold); }
+
+        /* Signature element: perforated passbook edge */
+        .perforation-strip {
+            width: 100%;
+            max-width: 900px;
+            height: 16px;
+            background-color: var(--text-deep);
+            background-image: radial-gradient(circle, var(--bg-color) 4.5px, transparent 4.6px);
+            background-size: 24px 16px;
+            background-position: 12px center;
+            border-radius: 0 0 6px 6px;
             margin-bottom: 30px;
-            margin-top: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
         }
 
         .menu-grid {
@@ -139,31 +204,45 @@
         .menu-box {
             background: var(--panel-bg);
             border: 2px solid transparent;
-            border-radius: 15px;
-            padding: 40px 20px;
+            border-radius: 16px;
+            padding: 36px 20px;
             text-align: center;
             cursor: pointer;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+            box-shadow: 0 8px 20px rgba(11,61,59,0.08);
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
         .menu-box:hover {
             transform: translateY(-5px);
-            border-color: var(--btn-neutral);
-            box-shadow: 0 12px 24px rgba(3, 169, 244, 0.2);
+            border-color: var(--accent-gold);
+            box-shadow: 0 14px 28px rgba(201,154,46,0.22);
         }
 
-        .menu-box h3 { font-size: 1.4rem; color: var(--text-main); margin: 0;}
-        .menu-box p { color: var(--text-muted); font-size: 0.9rem; margin: 0;}
-        
+        .menu-box h3 { font-size: 1.3rem; color: var(--text-main); margin: 0; font-weight: 600;}
+        .menu-box p { color: var(--text-muted); font-size: 0.88rem; margin: 0;}
+       
         .menu-icon {
-            font-size: 3rem;
-            margin-bottom: 10px;
+            font-size: 2.6rem;
+            margin-bottom: 6px;
         }
+
+        .app-footer {
+            width: 100%;
+            max-width: 900px;
+            text-align: center;
+            padding: 22px 10px 4px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .app-footer .footer-icon { font-size: 1rem; }
 
         /* --- TOOL PAGES COMMON STYLES --- */
         .tool-container {
@@ -181,14 +260,14 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            margin-top: 10px;
+            margin-top: 6px;
         }
 
         .btn-back {
             background-color: var(--text-main);
-            color: white;
+            color: #EAF2F0;
             padding: 10px 20px;
-            border-radius: 8px;
+            border-radius: 10px;
             text-decoration: none;
             font-weight: 600;
             border: none;
@@ -197,34 +276,38 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            font-family: var(--font-body);
         }
-        .btn-back:hover { background-color: #333; }
+        .btn-back:hover { background-color: var(--text-deep); }
 
         .btn-logout {
             padding: 10px 20px;
-            background-color: var(--calc-key-action);
+            background-color: var(--btn-give);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
+            font-family: var(--font-body);
         }
         .btn-logout:hover { opacity: 0.9; }
 
         .panel {
             background: var(--panel-bg);
-            border-radius: 15px;
+            border-radius: 16px;
             padding: 25px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 20px rgba(11,61,59,0.08);
             width: 100%;
         }
 
         h2 {
             margin-top: 0;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
+            font-weight: 600;
             border-bottom: 2px solid var(--border-light);
             padding-bottom: 12px;
             margin-bottom: 15px;
+            color: var(--text-main);
         }
 
         /* --- DEBIT STYLES & ACCUMULATOR --- */
@@ -236,13 +319,14 @@
         }
         .summary-box {
             text-align: center;
-            border-radius: 8px;
-            padding: 15px 10px;
+            border-radius: 12px;
+            padding: 16px 10px;
             font-weight: bold;
+            font-family: var(--font-display);
         }
-        .summary-initial { background-color: #e3f2fd; color: #1565c0; font-size: 1.4rem; }
-        .summary-spent { background-color: #fff3e0; color: var(--btn-give); font-size: 1.4rem; }
-        .summary-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 5px; }
+        .summary-initial { background-color: var(--btn-neutral-soft); color: var(--btn-neutral); font-size: 1.4rem; }
+        .summary-spent { background-color: var(--btn-give-soft); color: var(--btn-give); font-size: 1.4rem; }
+        .summary-label { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 5px; font-family: var(--font-body); }
 
         .clickable-box {
             cursor: pointer;
@@ -250,7 +334,7 @@
         }
         .clickable-box:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 16px rgba(214,69,80,0.18);
         }
 
         .input-group { display: flex; flex-direction: column; gap: 10px; width: 100%; }
@@ -258,59 +342,65 @@
         input[type="number"], input[type="text"], input[type="password"] {
             flex: 1 1 auto;
             padding: 12px;
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            font-size: 1.05rem;
+            border: 1.5px solid var(--border-light);
+            border-radius: 10px;
+            font-size: 1.02rem;
             min-width: 0;
+            font-family: var(--font-body);
+            background: #FBFDFC;
         }
 
         select.modern-select {
             flex: 1 1 auto;
             padding: 12px;
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            font-size: 1rem;
+            border: 1.5px solid var(--border-light);
+            border-radius: 10px;
+            font-size: 0.98rem;
             color: var(--text-main);
-            background-color: white;
+            background-color: #FBFDFC;
             cursor: pointer;
-            font-family: inherit;
+            font-family: var(--font-body);
             appearance: none;
         }
         select.modern-select:focus, input:focus {
-            outline: 2px solid var(--btn-neutral);
+            outline: 2px solid var(--accent-gold);
             border-color: transparent;
         }
 
         button {
             padding: 12px 18px;
             border: none;
-            border-radius: 8px;
-            font-weight: bold;
+            border-radius: 10px;
+            font-weight: 600;
             cursor: pointer;
             color: white;
             transition: transform 0.2s, opacity 0.2s;
             white-space: nowrap;
+            font-family: var(--font-body);
         }
-        button:hover { transform: scale(1.02); opacity: 0.9; }
+        button:hover { transform: scale(1.02); opacity: 0.92; }
         button:active { transform: scale(0.95); }
         .btn-add { background-color: var(--btn-neutral); flex: 1 1 auto; }
-        .btn-reset { background-color: var(--calc-key-action); flex: 0 0 auto; }
-        
+        .btn-reset { background-color: var(--btn-give); flex: 0 0 auto; }
+       
         .header-action-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
             border-bottom: 2px solid var(--border-light);
             padding-bottom: 12px;
             margin-bottom: 15px;
         }
         .header-action-row h2 { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+        .header-action-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
 
         .btn-export-excel {
             background-color: #107c41;
             color: #ffffff;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             padding: 8px 14px;
             font-size: 0.85rem;
             font-weight: 600;
@@ -322,21 +412,20 @@
         .btn-export-excel svg { width: 18px; height: 18px; fill: currentColor; }
 
         .btn-export-pdf {
-            background-color: #d32f2f;
+            background-color: var(--btn-give);
             color: #ffffff;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             padding: 8px 14px;
             font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
-            margin-right: 10px;
         }
-        .btn-export-pdf:hover { background-color: #b71c1c; }
+        .btn-export-pdf:hover { background-color: #b8323d; }
 
         .debit-history-scroll {
-            background-color: #f4f6f8;
-            border-radius: 8px;
+            background-color: #F3F8F6;
+            border-radius: 10px;
             max-height: 400px;
             overflow-y: auto;
             padding: 15px 20px;
@@ -351,16 +440,16 @@
             margin-left: 15px;
         }
         .btn-edit-inline {
-            background-color: #ff9800;
+            background-color: var(--accent-gold);
             padding: 4px 8px;
             font-size: 0.75rem;
-            border-radius: 4px;
+            border-radius: 6px;
         }
         .btn-delete-inline {
-            background-color: #e74c3c;
+            background-color: var(--btn-give);
             padding: 4px 8px;
             font-size: 0.75rem;
-            border-radius: 4px;
+            border-radius: 6px;
         }
 
         /* --- SAVINGS CASH COUNTER STYLES --- */
@@ -375,29 +464,30 @@
             border-bottom: 1px solid var(--border-light);
         }
         .savings-table th {
-            background-color: #f4f6f8;
+            background-color: #F3F8F6;
             font-weight: 600;
             color: var(--text-muted);
         }
         .savings-table input[type="number"] {
             width: 100px;
             padding: 8px;
-            border: 1px solid var(--border-light);
-            border-radius: 6px;
+            border: 1.5px solid var(--border-light);
+            border-radius: 8px;
             text-align: center;
             font-size: 1rem;
         }
         .savings-table .grand-total {
             font-size: 1.4rem;
             font-weight: bold;
-            color: #2e7d32;
+            color: var(--btn-receive);
+            font-family: var(--font-display);
         }
         .savings-table .row-total {
             font-weight: 600;
             font-size: 1.1rem;
         }
         .savings-table tr:hover {
-            background-color: #f9fafb;
+            background-color: #F7FBFA;
         }
 
         /* --- COHORT LEDGER STYLES --- */
@@ -408,7 +498,7 @@
             padding: 18px 0;
         }
         .ledger-item-container:last-child { border-bottom: none; }
-        
+       
         .ledger-row {
             display: grid;
             grid-template-columns: 120px 2fr 1fr;
@@ -417,23 +507,23 @@
         }
 
         .peer-info { display: flex; flex-direction: column; gap: 6px; }
-        .peer-name { font-weight: 600; text-transform: capitalize; font-size: 1.05rem; }
-        
+        .peer-name { font-weight: 600; text-transform: capitalize; font-size: 1.05rem; font-family: var(--font-display); }
+       
         .btn-history-toggle {
             padding: 5px 8px;
             font-size: 0.72rem;
             background-color: var(--text-muted);
-            border-radius: 4px;
+            border-radius: 6px;
             align-self: flex-start;
         }
-        
+       
         .ledger-controls { display: flex; flex-direction: column; gap: 8px; }
         .ledger-inputs { display: flex; gap: 6px; width: 100%; }
         .ledger-inputs input[type="number"] { width: 90px; padding: 8px; }
         .ledger-inputs select, .ledger-inputs input[type="text"] { flex: 1; padding: 8px; }
-        
+       
         .ledger-buttons { display: flex; gap: 6px; width: 100%; }
-        .ledger-buttons button { flex: 1; padding: 8px 10px; font-size: 0.78rem; border-radius: 6px; }
+        .ledger-buttons button { flex: 1; padding: 8px 10px; font-size: 0.78rem; border-radius: 8px; }
         .btn-give { background-color: var(--btn-give); }
         .btn-receive { background-color: var(--btn-receive); }
 
@@ -450,8 +540,9 @@
             font-weight: bold;
             font-size: 0.9rem;
             padding: 10px 12px;
-            border-radius: 6px;
+            border-radius: 8px;
             flex-grow: 1;
+            font-family: var(--font-display);
         }
 
         .btn-share-wa {
@@ -468,16 +559,16 @@
         }
         .btn-share-wa svg { width: 18px; height: 18px; fill: currentColor; }
 
-        .balance-positive { color: #2e7d32; background-color: #e8f5e9; }
-        .balance-negative { color: #c62828; background-color: #ffebee; }
-        .balance-neutral { color: var(--text-main); background-color: #f5f5f5; }
+        .balance-positive { color: var(--btn-receive); background-color: var(--btn-receive-soft); }
+        .balance-negative { color: var(--btn-give); background-color: var(--btn-give-soft); }
+        .balance-neutral { color: var(--text-main); background-color: #F0F4F3; }
 
         .history-panel {
             display: none;
             margin-top: 15px;
             padding: 15px 20px;
-            background-color: #f4f6f8;
-            border-radius: 8px;
+            background-color: #F3F8F6;
+            border-radius: 10px;
             max-height: 320px;
             overflow-y: auto;
             border: 1px solid var(--border-light);
@@ -520,41 +611,42 @@
         .timeline-desc { font-weight: 600; color: var(--text-main); }
         .timeline-category-tag {
             font-size: 0.7rem;
-            background-color: #e2e8f0;
-            color: #475569;
+            background-color: var(--btn-neutral-soft);
+            color: var(--btn-neutral);
             padding: 2px 6px;
             border-radius: 4px;
             display: inline-block;
         }
         .timeline-date { font-size: 0.7rem; color: var(--text-muted); }
-        .timeline-amount { font-weight: bold; font-size: 0.95rem; }
+        .timeline-amount { font-weight: bold; font-size: 0.95rem; font-family: var(--font-display); }
         .timeline-item.give .timeline-amount { color: var(--btn-give); }
         .timeline-item.receive .timeline-amount { color: var(--btn-receive); }
         .no-history-msg { font-size: 0.85rem; color: var(--text-muted); font-style: italic; text-align: center; }
 
         /* Progress Bar */
         .progress-module { width: 100%; margin-top: 12px; display: flex; flex-direction: column; gap: 4px; }
-        .progress-container { width: 100%; height: 12px; background-color: var(--bg-color); border-radius: 6px; overflow: hidden; position: relative; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #03a9f4, #288cfa); border-radius: 6px; transform-origin: left; transition: transform 0.6s; transform: scaleX(0); }
-        .progress-fill.settled { background: linear-gradient(90deg, #7cb342, #8bc34a); }
+        .progress-container { width: 100%; height: 12px; background-color: var(--bg-color-deep); border-radius: 6px; overflow: hidden; position: relative; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--btn-neutral), #1c5f7d); border-radius: 6px; transform-origin: left; transition: transform 0.6s; transform: scaleX(0); }
+        .progress-fill.settled { background: linear-gradient(90deg, var(--btn-receive), #237a54); }
         .progress-label-text { font-size: 0.72rem; color: var(--text-muted); text-align: right; font-weight: 600; }
 
         /* --- CALCULATOR STYLES --- */
-        .calculator { background-color: var(--calc-bg); border-radius: 15px; padding: 20px; max-width: 450px; margin: 0 auto; width: 100%; }
+        .calculator { background-color: var(--calc-bg); border-radius: 18px; padding: 20px; max-width: 450px; margin: 0 auto; width: 100%; }
         .calculator__display {
-            background-color: #ffeb3b;
-            color: var(--text-main);
+            background-color: var(--accent-gold-soft);
+            color: var(--text-deep);
+            font-family: var(--font-display);
             font-size: 2.2rem;
             text-align: right;
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 10px;
             margin-bottom: 20px;
             overflow-x: auto;
         }
         .calculator__keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
         .calculator__keys button {
             background-color: var(--calc-key); color: var(--text-main);
-            font-size: 1.4rem; padding: 18px 0; border-radius: 10px; font-weight: bold;
+            font-size: 1.4rem; padding: 18px 0; border-radius: 12px; font-weight: bold;
         }
         .calculator__keys button[data-action="add"],
         .calculator__keys button[data-action="subtract"],
@@ -587,8 +679,9 @@
             background: var(--btn-neutral);
             padding: 8px 16px;
             font-size: 1.2rem;
+            border-radius: 10px;
         }
-        
+       
         .budget-control {
             display: flex;
             justify-content: flex-end;
@@ -617,9 +710,9 @@
             padding-bottom: 5px;
         }
         .calendar-cell {
-            background: #f8f9fa;
+            background: #F3F8F6;
             border: 1px solid var(--border-light);
-            border-radius: 8px;
+            border-radius: 10px;
             min-height: 80px;
             padding: 8px;
             display: flex;
@@ -652,15 +745,15 @@
         }
 
         /* Heatmap colors */
-        .bg-low { background-color: #e8f5e9; border-color: #a5d6a7; }
-        .bg-high { background-color: #ffebee; border-color: #ef9a9a; }
+        .bg-low { background-color: var(--btn-receive-soft); border-color: #a9dcc4; }
+        .bg-high { background-color: var(--btn-give-soft); border-color: #eeb3b0; }
 
         /* --- MODAL STYLES --- */
         .modal-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(7,40,38,0.55);
             z-index: 1000;
             justify-content: center;
             align-items: center;
@@ -670,13 +763,14 @@
             background: var(--panel-bg);
             width: 90%;
             max-width: 500px;
-            border-radius: 15px;
+            border-radius: 16px;
             padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             position: relative;
             max-height: 80vh;
             display: flex;
             flex-direction: column;
+            border-top: 4px solid var(--accent-gold);
         }
         .modal-close {
             position: absolute;
@@ -693,6 +787,41 @@
             padding-right: 5px;
         }
 
+        /* --- FIXED BOTTOM NAVBAR --- */
+        .bottom-navbar {
+            display: none;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: linear-gradient(180deg, #0D4744, var(--text-deep));
+            padding: 10px 6px calc(8px + env(safe-area-inset-bottom, 0px));
+            z-index: 900;
+            box-shadow: 0 -8px 20px rgba(0,0,0,0.2);
+            justify-content: space-between;
+            gap: 2px;
+            overflow-x: auto;
+        }
+        .nav-tab {
+            background: transparent;
+            border: none;
+            color: #9FC2BC;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            flex: 1 1 0;
+            min-width: 52px;
+            padding: 6px 2px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .nav-tab:hover { transform: none; opacity: 1; background: rgba(255,255,255,0.06); }
+        .nav-tab .nav-icon { font-size: 1.25rem; line-height: 1; }
+        .nav-tab .nav-label { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.01em; }
+        .nav-tab.active { color: var(--accent-gold); background: rgba(201,154,46,0.14); }
+        .nav-tab.active .nav-icon { transform: translateY(-1px); }
+
         @media (max-width: 850px) {
             .ledger-row { grid-template-columns: 1fr; gap: 14px; }
             .peer-info { align-items: center; border-bottom: 1px dashed var(--border-light); padding-bottom: 10px; }
@@ -704,13 +833,14 @@
             .balance-display { text-align: center; }
             .input-row { flex-direction: column; }
             .account-summary-grid { grid-template-columns: 1fr; gap: 10px; }
-            
+           
             .calendar-cell { min-height: 60px; padding: 4px; }
             .cell-date { font-size: 0.8rem; }
             .cell-amount { font-size: 0.75rem; }
             .calendar-header h2 { font-size: 1.1rem; }
             .timeline-item { flex-direction: column; align-items: flex-start; gap: 10px; }
             .history-action-btns { margin-left: 0; margin-top: 5px; }
+            .nav-tab .nav-label { display: none; }
         }
     </style>
 </head>
@@ -718,6 +848,7 @@
 
     <div id="login-page" class="app-page" style="display: flex;">
         <div class="login-card">
+            <div class="login-brand-icon">📖</div>
             <h1>Shivadut's Secure Ledger</h1>
             <p>Access your financial dashboard & timelines.</p>
             <div class="login-form-group">
@@ -738,6 +869,7 @@
             <h1>Welcome, <span id="display-username">User</span>!</h1>
             <button class="btn-logout" onclick="logout()">Sign Out</button>
         </div>
+        <div class="perforation-strip"></div>
 
         <div class="menu-grid">
             <div class="menu-box" onclick="openPage('debit-page')">
@@ -771,6 +903,8 @@
                 <p>Visual data analysis of your daily debits.</p>
             </div>
         </div>
+
+        <div class="app-footer"><span class="footer-icon">🪙</span> Shivadut's Ledger — track every rupee, settle every macha</div>
     </div>
 
     <div id="savings-page" class="app-page">
@@ -781,7 +915,7 @@
         
         <div class="tool-container">
             <div class="panel">
-                <h2>Savings Cash Counter</h2>
+                <h2>🏦 Savings Cash Counter</h2>
                 <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Enter the number of notes you have for each denomination to calculate your total savings.</p>
                 <table class="savings-table">
                     <thead>
@@ -831,6 +965,7 @@
                     </tfoot>
                 </table>
             </div>
+            <div class="app-footer"><span class="footer-icon">🪙</span> Every note counted is a rupee accounted for.</div>
         </div>
     </div>
 
@@ -841,7 +976,7 @@
         </div>
         <div class="tool-container">
             <div class="panel">
-                <h2>Personal Daily Debit Accumulator</h2>
+                <h2>🧾 Personal Daily Debit Accumulator</h2>
                 <div class="account-summary-grid">
                     <div class="summary-box summary-initial" id="total-spent-box">
                         <span class="summary-label">Total Spent (All Time)</span>
@@ -850,7 +985,7 @@
                     <div class="summary-box summary-spent clickable-box" onclick="openMonthlyBreakdownModal()" title="Click to view previous months">
                         <span class="summary-label">Monthly Spent (Current)</span>
                         ₹<span id="current-month-val">0.00</span>
-                        <div style="font-size: 0.65rem; color: #d84315; margin-top: 4px;">Click for history 👆</div>
+                        <div style="font-size: 0.65rem; color: #a53039; margin-top: 4px; font-family: var(--font-body); font-weight: 600;">Click for history 👆</div>
                     </div>
                 </div>
 
@@ -883,7 +1018,7 @@
             <div class="panel">
                 <div class="header-action-row">
                     <h2>Personal Spending Log</h2>
-                    <div style="display: flex;">
+                    <div class="header-action-buttons">
                         <button class="btn-export-pdf" onclick="exportHistoryToPDF()">Export PDF</button>
                         <button class="btn-export-excel" onclick="exportHistoryToExcel()">
                             <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
@@ -895,6 +1030,7 @@
                     <ul class="timeline" id="debit-history-list"></ul>
                 </div>
             </div>
+            <div class="app-footer"><span class="footer-icon">📖</span> Log it now, thank yourself later.</div>
         </div>
     </div>
 
@@ -927,6 +1063,7 @@
                 </div>
                 <div class="calendar-grid" id="calendar-grid"></div>
             </div>
+            <div class="app-footer"><span class="footer-icon">📅</span> Green days are on-budget, red days need a look.</div>
         </div>
     </div>
 
@@ -938,11 +1075,19 @@
         <div class="tool-container">
             <div class="panel">
                 <div class="header-action-row">
-                    <h2>Cohort Ledger & History</h2>
-                    <button class="btn-reset" onclick="resetAllCohortHistories()">Reset All Timelines</button>
+                    <h2>🤝 Cohort Ledger & History</h2>
+                    <div class="header-action-buttons">
+                        <button class="btn-export-pdf" onclick="exportCohortToPDF()">Export PDF</button>
+                        <button class="btn-export-excel" onclick="exportCohortToExcel()">
+                            <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                            Export Excel
+                        </button>
+                        <button class="btn-reset" onclick="resetAllCohortHistories()">Reset All</button>
+                    </div>
                 </div>
                 <div id="ledger-container"></div>
             </div>
+            <div class="app-footer"><span class="footer-icon">🤝</span> Clear accounts, clearer friendships.</div>
         </div>
     </div>
 
@@ -984,17 +1129,18 @@
         </div>
         <div class="tool-container">
             <div class="panel">
-                <h2>Debit Analysis (Pie Chart)</h2>
+                <h2>📊 Debit Analysis (Pie Chart)</h2>
                 <div class="chart-wrapper">
                     <canvas id="pieChart"></canvas>
                 </div>
             </div>
             <div class="panel">
-                <h2>Spending Timeline Trends</h2>
+                <h2>📈 Spending Timeline Trends</h2>
                 <div class="chart-wrapper">
                     <canvas id="lineChart"></canvas>
                 </div>
             </div>
+            <div class="app-footer"><span class="footer-icon">📊</span> Numbers tell the story before you feel it.</div>
         </div>
     </div>
 
@@ -1007,6 +1153,31 @@
             </div>
         </div>
     </div>
+
+    <!-- Fixed bottom icon navbar -->
+    <nav class="bottom-navbar" id="bottom-navbar">
+        <button class="nav-tab" data-page="menu-page" onclick="openPage('menu-page')">
+            <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
+        </button>
+        <button class="nav-tab" data-page="debit-page" onclick="openPage('debit-page')">
+            <span class="nav-icon">🧾</span><span class="nav-label">Debit</span>
+        </button>
+        <button class="nav-tab" data-page="calendar-page" onclick="openPage('calendar-page')">
+            <span class="nav-icon">📅</span><span class="nav-label">Calendar</span>
+        </button>
+        <button class="nav-tab" data-page="cohort-page" onclick="openPage('cohort-page')">
+            <span class="nav-icon">🤝</span><span class="nav-label">Cohort</span>
+        </button>
+        <button class="nav-tab" data-page="savings-page" onclick="openPage('savings-page')">
+            <span class="nav-icon">🏦</span><span class="nav-label">Savings</span>
+        </button>
+        <button class="nav-tab" data-page="calculator-page" onclick="openPage('calculator-page')">
+            <span class="nav-icon">🧮</span><span class="nav-label">Calc</span>
+        </button>
+        <button class="nav-tab" data-page="analytics-page" onclick="openPage('analytics-page')">
+            <span class="nav-icon">📊</span><span class="nav-label">Stats</span>
+        </button>
+    </nav>
 
 <script>
     function attemptLogin() {
@@ -1044,6 +1215,17 @@
             if (pageId === 'cohort-page') renderLedger();
             if (pageId === 'calendar-page') renderCalendar();
             if (pageId === 'analytics-page') renderCharts();
+        }
+
+        // Sync the fixed bottom navbar visibility + active tab
+        const navbar = document.getElementById('bottom-navbar');
+        if (pageId === 'login-page') {
+            navbar.style.display = 'none';
+        } else {
+            navbar.style.display = 'flex';
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-page') === pageId);
+            });
         }
     }
 
@@ -1307,7 +1489,7 @@
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        doc.setFillColor(0, 14, 26);
+        doc.setFillColor(11, 61, 59);
         doc.rect(0, 0, 210, 40, 'F');
         
         doc.setFont("Helvetica", "bold");
@@ -1319,7 +1501,7 @@
 
         doc.setFontSize(10);
         doc.setFont("Helvetica", "normal");
-        doc.setTextColor(100);
+        doc.setTextColor(220, 220, 220);
         doc.text(`Generated on: ${new Date().toLocaleString('en-IN')}`, 14, 26);
         doc.text(`Total Spent (All Time): INR ${totalSpent.toFixed(2)}`, 14, 32);
 
@@ -1330,11 +1512,12 @@
         });
 
         doc.autoTable({
-            startY: 42,
+            startY: 46,
             head: [['#', 'Date & Time', 'Category/Description', 'Amount']],
             body: tableRows,
             theme: 'striped',
-            headStyles: { fillColor: [0, 14, 26], textColor: [255, 255, 255] },
+            headStyles: { fillColor: [11, 61, 59], textColor: [255, 255, 255] },
+            alternateRowStyles: { fillColor: [233, 242, 239] },
             styles: { font: "Helvetica", fontSize: 9 }
         });
 
@@ -1525,6 +1708,101 @@
         }
     }
 
+    // --- Cohort Ledger Export (PDF / Excel) ---
+    function getAllCohortRows() {
+        // Flattens every peer's transaction history into a single, date-sorted list of rows
+        const rows = [];
+        sortedFriends.forEach(peer => {
+            ledgerState[peer].transactions.forEach(tx => {
+                rows.push({
+                    peer: peer,
+                    type: tx.type === 'give' ? 'You Advanced' : 'Received From Peer',
+                    category: tx.category,
+                    amount: tx.amount,
+                    timestamp: tx.timestamp
+                });
+            });
+        });
+        rows.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        return rows;
+    }
+
+    function exportCohortToPDF() {
+        const rows = getAllCohortRows();
+        if (rows.length === 0) {
+            alert("Export panna cohort transactions ethuvum illai!");
+            return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        doc.setFillColor(11, 61, 59);
+        doc.rect(0, 0, 210, 40, 'F');
+
+        doc.setFont("Helvetica", "bold");
+        doc.setFontSize(22);
+        doc.setTextColor(255, 255, 255);
+        doc.text("Shivadut's Cohort Ledger Report", 14, 20);
+
+        doc.setFontSize(10);
+        doc.setFont("Helvetica", "normal");
+        doc.setTextColor(220, 220, 220);
+        doc.text(`Generated on: ${new Date().toLocaleString('en-IN')}`, 14, 26);
+
+        let summaryLine = sortedFriends.map(peer => {
+            const bal = ledgerState[peer].balance;
+            const tag = bal > 0 ? `Owes You Rs.${bal.toFixed(2)}` : bal < 0 ? `You Owe Rs.${Math.abs(bal).toFixed(2)}` : `Settled`;
+            return `${peer}: ${tag}`;
+        }).join('   |   ');
+        doc.setFontSize(8.5);
+        const wrapped = doc.splitTextToSize(summaryLine, 180);
+        doc.text(wrapped, 14, 32);
+
+        const tableRows = rows.map((row, index) => {
+            const dateStr = dateFormatter.format(new Date(row.timestamp));
+            return [index + 1, row.peer, row.type, row.category, `Rs. ${row.amount.toFixed(2)}`, dateStr];
+        });
+
+        doc.autoTable({
+            startY: 40 + (wrapped.length * 4),
+            head: [['#', 'Friend', 'Direction', 'Reason / Category', 'Amount', 'Date & Time']],
+            body: tableRows,
+            theme: 'striped',
+            headStyles: { fillColor: [11, 61, 59], textColor: [255, 255, 255] },
+            alternateRowStyles: { fillColor: [233, 242, 239] },
+            styles: { font: "Helvetica", fontSize: 8.5 }
+        });
+
+        doc.save(`Cohort_Ledger_${new Date().toISOString().slice(0,10)}.pdf`);
+    }
+
+    function exportCohortToExcel() {
+        const rows = getAllCohortRows();
+        if (rows.length === 0) {
+            alert("Export panna cohort transactions ethuvum illai!");
+            return;
+        }
+
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Serial No,Friend,Direction,Reason/Category,Amount (INR),Date and Time,Current Balance (INR)\n";
+
+        rows.forEach((row, index) => {
+            const dateStr = dateFormatter.format(new Date(row.timestamp)).replace(/,/g, '');
+            const categoryStr = row.category.replace(/"/g, '""');
+            const currentBal = ledgerState[row.peer].balance.toFixed(2);
+            csvContent += `${index + 1},"${row.peer}","${row.type}","${categoryStr}",${row.amount.toFixed(2)},"${dateStr}",${currentBal}\n`;
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `Cohort_Ledger_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
     // --- Calculator Engine ---
     const display = document.querySelector('#calc-display');
     const keys = document.querySelector('#calc-keys');
@@ -1598,7 +1876,7 @@
                 labels: pieLabels,
                 datasets: [{
                     data: pieData,
-                    backgroundColor: ['#ff5722', '#8bc34a', '#03a9f4', '#e91e63', '#9c27b0', '#ffeb3b', '#009688', '#795548']
+                    backgroundColor: ['#D64550', '#2F9E6E', '#2C7DA0', '#C99A2E', '#7A5FB0', '#E8895C', '#3AA0A0', '#8D6E63']
                 }]
             },
             plugins: [ChartDataLabels],
@@ -1637,8 +1915,8 @@
                 datasets: [{
                     label: 'Daily personal Expense Trend (INR)',
                     data: lineData,
-                    borderColor: '#03a9f4',
-                    backgroundColor: 'rgba(3, 169, 244, 0.1)',
+                    borderColor: '#2C7DA0',
+                    backgroundColor: 'rgba(44, 125, 160, 0.12)',
                     fill: true,
                     tension: 0.2
                 }]
