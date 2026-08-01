@@ -17,24 +17,24 @@
             --text-main: #000e1a;
             --text-muted: #6c7a89;
             --border-light: #cccccc;
-           
+            
             /* Semantic Financial Action Colors */
             --btn-give: #ff5722;
             --btn-receive: #8bc34a;
             --btn-neutral: #03a9f4;
             --btn-whatsapp: #25D366;
-           
+            
             /* Calculator Module Colors */
             --calc-bg: #2c3e50;
             --calc-key: #eee;
             --calc-key-op: #ff9800;
             --calc-key-action: #e74c3c;
-           
+            
             /* Timeline Specific Variables */
             --timeline-spine: #d2d7d3;
             --timeline-node-bg: #ffffff;
         }
-       
+        
         /* Global Reset */
         * {
             box-sizing: border-box;
@@ -159,7 +159,7 @@
 
         .menu-box h3 { font-size: 1.4rem; color: var(--text-main); margin: 0;}
         .menu-box p { color: var(--text-muted); font-size: 0.9rem; margin: 0;}
-       
+        
         .menu-icon {
             font-size: 3rem;
             margin-bottom: 10px;
@@ -230,7 +230,7 @@
         /* --- DEBIT STYLES & ACCUMULATOR --- */
         .account-summary-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 15px;
             margin: 20px 0;
         }
@@ -242,8 +242,16 @@
         }
         .summary-initial { background-color: #e3f2fd; color: #1565c0; font-size: 1.4rem; }
         .summary-spent { background-color: #fff3e0; color: var(--btn-give); font-size: 1.4rem; }
-        .summary-remaining { background-color: #e8f5e9; color: #2e7d32; font-size: 1.4rem; }
         .summary-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 5px; }
+
+        .clickable-box {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .clickable-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
 
         .input-group { display: flex; flex-direction: column; gap: 10px; width: 100%; }
         .input-row { display: flex; gap: 10px; width: 100%; }
@@ -287,7 +295,7 @@
         button:active { transform: scale(0.95); }
         .btn-add { background-color: var(--btn-neutral); flex: 1 1 auto; }
         .btn-reset { background-color: var(--calc-key-action); flex: 0 0 auto; }
-       
+        
         .header-action-row {
             display: flex;
             justify-content: space-between;
@@ -400,7 +408,7 @@
             padding: 18px 0;
         }
         .ledger-item-container:last-child { border-bottom: none; }
-       
+        
         .ledger-row {
             display: grid;
             grid-template-columns: 120px 2fr 1fr;
@@ -410,7 +418,7 @@
 
         .peer-info { display: flex; flex-direction: column; gap: 6px; }
         .peer-name { font-weight: 600; text-transform: capitalize; font-size: 1.05rem; }
-       
+        
         .btn-history-toggle {
             padding: 5px 8px;
             font-size: 0.72rem;
@@ -418,12 +426,12 @@
             border-radius: 4px;
             align-self: flex-start;
         }
-       
+        
         .ledger-controls { display: flex; flex-direction: column; gap: 8px; }
         .ledger-inputs { display: flex; gap: 6px; width: 100%; }
         .ledger-inputs input[type="number"] { width: 90px; padding: 8px; }
         .ledger-inputs select, .ledger-inputs input[type="text"] { flex: 1; padding: 8px; }
-       
+        
         .ledger-buttons { display: flex; gap: 6px; width: 100%; }
         .ledger-buttons button { flex: 1; padding: 8px 10px; font-size: 0.78rem; border-radius: 6px; }
         .btn-give { background-color: var(--btn-give); }
@@ -580,7 +588,7 @@
             padding: 8px 16px;
             font-size: 1.2rem;
         }
-       
+        
         .budget-control {
             display: flex;
             justify-content: flex-end;
@@ -696,7 +704,7 @@
             .balance-display { text-align: center; }
             .input-row { flex-direction: column; }
             .account-summary-grid { grid-template-columns: 1fr; gap: 10px; }
-           
+            
             .calendar-cell { min-height: 60px; padding: 4px; }
             .cell-date { font-size: 0.8rem; }
             .cell-amount { font-size: 0.75rem; }
@@ -710,7 +718,7 @@
 
     <div id="login-page" class="app-page" style="display: flex;">
         <div class="login-card">
-            <h1>Aravindh's Secure Ledger</h1>
+            <h1>Shivadut's Secure Ledger</h1>
             <p>Access your financial dashboard & timelines.</p>
             <div class="login-form-group">
                 <label for="username">Username</label>
@@ -770,7 +778,7 @@
             <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
             <button class="btn-logout" onclick="logout()">Sign Out</button>
         </div>
-       
+        
         <div class="tool-container">
             <div class="panel">
                 <h2>Savings Cash Counter</h2>
@@ -835,25 +843,18 @@
             <div class="panel">
                 <h2>Personal Daily Debit Accumulator</h2>
                 <div class="account-summary-grid">
-                    <div class="summary-box summary-initial">
-                        <span class="summary-label">Account Balance</span>
-                        ₹<span id="initial-balance-val">0.00</span>
+                    <div class="summary-box summary-initial" id="total-spent-box">
+                        <span class="summary-label">Total Spent (All Time)</span>
+                        ₹<span id="total-spent-val">0.00</span>
                     </div>
-                    <div class="summary-box summary-spent">
-                        <span class="summary-label">Monthly Spent</span>
-                        ₹<span id="total-debit-val">0.00</span>
-                    </div>
-                    <div class="summary-box summary-remaining">
-                        <span class="summary-label">Remaining Balance</span>
-                        ₹<span id="remaining-balance-val">0.00</span>
+                    <div class="summary-box summary-spent clickable-box" onclick="openMonthlyBreakdownModal()" title="Click to view previous months">
+                        <span class="summary-label">Monthly Spent (Current)</span>
+                        ₹<span id="current-month-val">0.00</span>
+                        <div style="font-size: 0.65rem; color: #d84315; margin-top: 4px;">Click for history 👆</div>
                     </div>
                 </div>
 
                 <div class="input-group">
-                    <div class="input-row" style="margin-bottom: 10px;">
-                        <input type="number" id="account-initial-input" placeholder="Set/Update Account Balance (₹)" step="0.01" min="0">
-                        <button class="btn-add" style="background-color: var(--btn-receive); flex: 0 0 auto;" onclick="updateInitialBalance()">Save Balance</button>
-                    </div>
                     <div class="input-row">
                         <input type="number" id="daily-debit-input" placeholder="Amount spent (₹)" step="0.01" min="0">
                         <select id="daily-debit-category" class="modern-select" onchange="toggleCustomInput('daily-debit-category', 'daily-debit-custom')">
@@ -893,6 +894,17 @@
                 <div class="debit-history-scroll">
                     <ul class="timeline" id="debit-history-list"></ul>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monthly Breakdown Modal -->
+    <div id="monthly-breakdown-modal" class="modal-overlay">
+        <div class="modal-box">
+            <span class="modal-close" onclick="closeMonthlyBreakdownModal()">&times;</span>
+            <h2 style="border-bottom: 2px solid var(--border-light); padding-bottom: 10px;">Historical Monthly Spent</h2>
+            <div class="modal-content-scroll">
+                <ul class="timeline" id="monthly-breakdown-list"></ul>
             </div>
         </div>
     </div>
@@ -1005,7 +1017,7 @@
             err.textContent = "";
             sessionStorage.setItem('ledgerAuthenticated', 'true');
             sessionStorage.setItem('ledgerUser', "Shivadut");
-            document.getElementById('display-username').textContent = "SHhivadut";
+            document.getElementById('display-username').textContent = "Shivadut";
             openPage('menu-page');
         } else {
             err.textContent = "Thappana Credentials! Correct numeric User & Pass enter pannunga.";
@@ -1039,7 +1051,7 @@
         let grandTotal = 0;
         const noteInputs = document.querySelectorAll('.note-input');
         const savingsData = {};
-       
+        
         noteInputs.forEach(input => {
             const denom = parseInt(input.getAttribute('data-denom'));
             const count = parseInt(input.value) || 0;
@@ -1057,8 +1069,6 @@
     const rawFriendsArray = ["Aravindh", "Gojo", "Mowlish", "Soukar","Gowtham","Thiwakar"];
     const sortedFriends = rawFriendsArray.sort();
 
-    let personalTotalDebit = parseFloat(localStorage.getItem('personalTotalDebit')) || 0;
-    let initialAccountBalance = parseFloat(localStorage.getItem('initialAccountBalance')) || 0;
     let ledgerState = JSON.parse(localStorage.getItem('ledgerState')) || {};
     let debitHistoryState = JSON.parse(localStorage.getItem('debitHistoryState')) || [];
     let currentEditingId = null;
@@ -1092,26 +1102,67 @@
         }
     }
 
-    function updateInitialBalance() {
-        const inputEl = document.getElementById('account-initial-input');
-        const value = parseFloat(inputEl.value);
-        if (!isNaN(value) && value >= 0) {
-            initialAccountBalance = value;
-            localStorage.setItem('initialAccountBalance', initialAccountBalance);
-            updateBalancesUI();
-            inputEl.value = '';
-        } else {
-            alert("Valid initial balance steady amount enter pannunga!");
-        }
+    function updateBalancesUI() {
+        // Calculate Total Spent (all time)
+        const totalSpent = debitHistoryState.reduce((sum, item) => sum + item.amount, 0);
+
+        // Calculate Current Month Spent (resets automatically when system month changes)
+        const now = new Date();
+        const currentMonthSpent = debitHistoryState.reduce((sum, item) => {
+            const d = new Date(item.timestamp);
+            if (d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth()) {
+                return sum + item.amount;
+            }
+            return sum;
+        }, 0);
+
+        document.getElementById('total-spent-val').textContent = totalSpent.toFixed(2);
+        document.getElementById('current-month-val').textContent = currentMonthSpent.toFixed(2);
     }
 
-    function updateBalancesUI() {
-        personalTotalDebit = debitHistoryState.reduce((sum, item) => sum + item.amount, 0);
-        localStorage.setItem('personalTotalDebit', personalTotalDebit);
-        document.getElementById('initial-balance-val').textContent = initialAccountBalance.toFixed(2);
-        document.getElementById('total-debit-val').textContent = personalTotalDebit.toFixed(2);
-        const remainingBalance = initialAccountBalance - personalTotalDebit;
-        document.getElementById('remaining-balance-val').textContent = remainingBalance.toFixed(2);
+    function openMonthlyBreakdownModal() {
+        const listEl = document.getElementById('monthly-breakdown-list');
+        if (debitHistoryState.length === 0) {
+            listEl.innerHTML = `<li class="no-history-msg">No expenditure history found yet.</li>`;
+            document.getElementById('monthly-breakdown-modal').style.display = 'flex';
+            return;
+        }
+
+        const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+        // Group past history records by formatted Month & Year
+        const groupedData = debitHistoryState.reduce((acc, item) => {
+            const d = new Date(item.timestamp);
+            const key = `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+            if (!acc[key]) {
+                acc[key] = { amount: 0, year: d.getFullYear(), monthIdx: d.getMonth(), label: key };
+            }
+            acc[key].amount += item.amount;
+            return acc;
+        }, {});
+
+        // Sort chronologically (most recent month at the top)
+        const sortedGroups = Object.values(groupedData).sort((a, b) => {
+            if (a.year !== b.year) return b.year - a.year;
+            return b.monthIdx - a.monthIdx;
+        });
+
+        listEl.innerHTML = sortedGroups.map(group => {
+            return `
+                <li class="timeline-item give" style="padding-bottom:15px;">
+                    <div class="timeline-meta" style="max-width: 60%;">
+                        <span class="timeline-desc">${group.label}</span>
+                    </div>
+                    <div class="timeline-amount">₹${group.amount.toFixed(2)}</div>
+                </li>
+            `;
+        }).join('');
+
+        document.getElementById('monthly-breakdown-modal').style.display = 'flex';
+    }
+
+    function closeMonthlyBreakdownModal() {
+        document.getElementById('monthly-breakdown-modal').style.display = 'none';
     }
 
     function resolveCategoryValue(selectId, inputId) {
@@ -1216,12 +1267,8 @@
 
     function resetDailyDebit() {
         if (confirm("Moththa history matrum Spent balances reset seiya venduma?")) {
-            personalTotalDebit = 0;
-            initialAccountBalance = 0;
             debitHistoryState = [];
             currentEditingId = null;
-            localStorage.setItem('personalTotalDebit', personalTotalDebit);
-            localStorage.setItem('initialAccountBalance', initialAccountBalance);
             localStorage.setItem('debitHistoryState', JSON.stringify(debitHistoryState));
             updateBalancesUI();
             renderDebitHistory();
@@ -1259,22 +1306,22 @@
     function exportHistoryToPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-       
+        
         doc.setFillColor(0, 14, 26);
         doc.rect(0, 0, 210, 40, 'F');
-       
+        
         doc.setFont("Helvetica", "bold");
         doc.setFontSize(22);
         doc.setTextColor(255, 255, 255);
         doc.text("Shivadut's Personal Ledger Report", 14, 20);
-       
+        
+        const totalSpent = debitHistoryState.reduce((sum, item) => sum + item.amount, 0);
+
         doc.setFontSize(10);
         doc.setFont("Helvetica", "normal");
         doc.setTextColor(100);
         doc.text(`Generated on: ${new Date().toLocaleString('en-IN')}`, 14, 26);
-        doc.text(`Initial Account Balance: INR ${initialAccountBalance.toFixed(2)}`, 14, 32);
-        doc.text(`Total Monthly Spent: INR ${personalTotalDebit.toFixed(2)}`, 14, 38);
-        doc.text(`Remaining Balance: INR ${(initialAccountBalance - personalTotalDebit).toFixed(2)}`, 14, 44);
+        doc.text(`Total Spent (All Time): INR ${totalSpent.toFixed(2)}`, 14, 32);
 
         const tableRows = [];
         debitHistoryState.forEach((item, index) => {
@@ -1283,7 +1330,7 @@
         });
 
         doc.autoTable({
-            startY: 50,
+            startY: 42,
             head: [['#', 'Date & Time', 'Category/Description', 'Amount']],
             body: tableRows,
             theme: 'striped',
@@ -1294,7 +1341,6 @@
         doc.save(`Debit_Ledger_${new Date().toISOString().slice(0,10)}.pdf`);
     }
 
-    // Fixed Export to Excel / CSV Functionality
     function exportHistoryToExcel() {
         if (debitHistoryState.length === 0) {
             alert("Export panna entries ethuvum illai!");
@@ -1635,7 +1681,7 @@
         for (let day = 1; day <= totalDays; day++) {
             const cell = document.createElement('div');
             cell.className = 'calendar-cell';
-           
+            
             const dSpan = document.createElement('span');
             dSpan.className = 'cell-date';
             dSpan.textContent = day;
@@ -1669,7 +1715,7 @@
         const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
         document.getElementById('calendar-modal-title').textContent = `${day} ${monthNames[month]} ${year} - Spent Details`;
         const listEl = document.getElementById('calendar-modal-list');
-       
+        
         const dayTransactions = debitHistoryState.filter(entry => {
             const d = new Date(entry.timestamp);
             return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day;
@@ -1702,12 +1748,19 @@
 
     function closeCalendarModal() { document.getElementById('calendar-modal').style.display = 'none'; }
 
+    // Control all modal closes dynamically
     window.onclick = function(event) {
-        const modal = document.getElementById('calendar-modal');
-        if (event.target == modal) closeCalendarModal();
+        const calModal = document.getElementById('calendar-modal');
+        const breakdownModal = document.getElementById('monthly-breakdown-modal');
+        if (event.target == calModal) closeCalendarModal();
+        if (event.target == breakdownModal) closeMonthlyBreakdownModal();
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+        // Clean out legacy balances from older versions to prevent bloat
+        localStorage.removeItem('initialAccountBalance');
+        localStorage.removeItem('personalTotalDebit');
+
         loadSavingsData();
         updateBalancesUI();
     });
