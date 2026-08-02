@@ -391,8 +391,8 @@
         }
 
         .input-group { display: flex; flex-direction: column; gap: 10px; width: 100%; }
-        .input-row { display: flex; gap: 10px; width: 100%; }
-        input[type="number"], input[type="text"], input[type="password"] {
+        .input-row { display: flex; gap: 10px; width: 100%; align-items: center; }
+        input[type="number"], input[type="text"], input[type="password"], input[type="date"] {
             flex: 1 1 auto;
             padding: 12px;
             border: 1.5px solid var(--border-light);
@@ -435,7 +435,7 @@
         }
         button:hover { transform: scale(1.02); opacity: 0.92; }
         button:active { transform: scale(0.95); }
-        .btn-add { background-color: var(--btn-neutral); flex: 1 1 auto; }
+        .btn-add { background-color: var(--btn-neutral); flex: 1 1 auto; justify-content: center; display: flex; align-items: center;}
         .btn-reset { background-color: var(--btn-give); flex: 0 0 auto; }
 
         .header-action-row {
@@ -875,11 +875,11 @@
             .peer-info { align-items: center; border-bottom: 1px dashed var(--border-light); padding-bottom: 10px; }
             .peer-name { text-align: center; font-size: 1.25rem; }
             .ledger-inputs { flex-direction: column; }
-            .ledger-inputs input[type="number"], .ledger-inputs select, .ledger-inputs input[type="text"] { width: 100%; height: 46px; }
+            .ledger-inputs input[type="number"], .ledger-inputs select, .ledger-inputs input[type="text"], .ledger-inputs input[type="date"] { width: 100%; height: 46px; }
             .ledger-buttons button { height: 46px; }
             .action-container { flex-direction: row; }
             .balance-display { text-align: center; }
-            .input-row { flex-direction: column; }
+            .input-row { flex-direction: column; align-items: stretch; }
             .account-summary-grid { grid-template-columns: 1fr; gap: 10px; }
 
             .calendar-cell { min-height: 60px; padding: 4px; }
@@ -1122,6 +1122,7 @@
                         <option value="Shopping & Clothes">Shopping &amp; Clothes</option>
                         <option value="Rent & Bills">Rent &amp; Bills</option>
                         <option value="Juice">Juice</option>
+                        <option value="Xerox">Xerox</option>
                         <option value="Snacks">Snacks</option>
                         <option value="Entertainment & Movies">Entertainment &amp; Movies</option>
                         <option value="Other">Other (Type Custom)</option>
@@ -1139,8 +1140,8 @@
             <div class="header-action-row">
                 <h2>Personal Spending Log</h2>
                 <div class="header-action-buttons">
-                    <button class="btn-export-pdf" onclick="exportHistoryToPDF()">Export PDF</button>
-                    <button class="btn-export-excel" onclick="exportHistoryToExcel()">
+                    <button class="btn-export-pdf" onclick="openExportModal('debit', 'pdf')">Export PDF</button>
+                    <button class="btn-export-excel" onclick="openExportModal('debit', 'excel')">
                         <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
                         Export Excel
                     </button>
@@ -1197,8 +1198,8 @@
             <div class="header-action-row">
                 <h2>🤝 Cohort Ledger &amp; History</h2>
                 <div class="header-action-buttons">
-                    <button class="btn-export-pdf" onclick="exportCohortToPDF()">Export PDF</button>
-                    <button class="btn-export-excel" onclick="exportCohortToExcel()">
+                    <button class="btn-export-pdf" onclick="openExportModal('cohort', 'pdf')">Export PDF</button>
+                    <button class="btn-export-excel" onclick="openExportModal('cohort', 'excel')">
                         <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
                         Export Excel
                     </button>
@@ -1218,7 +1219,11 @@
     </div>
     <div class="tool-container">
         <div class="panel">
-            <h2>📊 Debit Analysis (Pie Chart)</h2>
+            <div class="header-action-row">
+                <h2>📊 Debit Analysis (Pie Chart)</h2>
+                <!-- New toggle button for Chart Reset -->
+                <button class="btn-dash" id="chart-toggle-btn" onclick="toggleChartView()" style="margin: 0; padding: 8px 12px; font-size: 0.85rem;">📅 View: Current Month</button>
+            </div>
             <div class="chart-wrapper">
                 <canvas id="pieChart"></canvas>
             </div>
@@ -1233,6 +1238,7 @@
     </div>
 </div>
 
+<!-- Modal for Calendar Detailed Day View -->
 <div id="calendar-modal" class="modal-overlay">
     <div class="modal-box">
         <span class="modal-close" onclick="closeCalendarModal()">&times;</span>
@@ -1242,6 +1248,62 @@
         </div>
     </div>
 </div>
+
+<!-- NEW Modal for Export Settings -->
+<div id="export-modal" class="modal-overlay">
+    <div class="modal-box">
+        <span class="modal-close" onclick="closeExportModal()">&times;</span>
+        <h2 style="border-bottom: 2px solid var(--border-light); padding-bottom: 10px;">Export Settings</h2>
+
+        <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 10px;">
+            <label style="font-size: 1rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <input type="radio" name="export_range" value="all" checked onchange="toggleDateInputs(false)" style="transform: scale(1.2);">
+                All Transactions
+            </label>
+            <label style="font-size: 1rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <input type="radio" name="export_range" value="custom" onchange="toggleDateInputs(true)" style="transform: scale(1.2);">
+                Custom Date Range (Month-wise)
+            </label>
+        </div>
+
+        <div id="export-date-inputs" style="display: none; flex-direction: column; gap: 15px; margin-top: 20px;">
+            <div class="input-row">
+                <label style="width: 80px; font-weight: 600;">Start Date:</label>
+                <input type="date" id="export-start-date">
+            </div>
+            <div class="input-row">
+                <label style="width: 80px; font-weight: 600;">End Date:</label>
+                <input type="date" id="export-end-date">
+            </div>
+        </div>
+
+        <!-- NEW: Cohort Specific Filters -->
+        <div id="export-cohort-filters" style="display: none; flex-direction: column; gap: 15px; margin-top: 20px; border-top: 1px solid var(--border-light); padding-top: 15px;">
+            <h3 style="font-size: 1rem; margin-bottom: 0;">Cohort Filters</h3>
+            <div class="input-row">
+                <label style="width: 80px; font-weight: 600;">Friend:</label>
+                <select id="export-friend-filter" class="modern-select" style="padding: 8px;">
+                    <option value="all">All Friends</option>
+                    <option value="Aravindh">Aravindh</option>
+                    <option value="Gojo">Gojo</option>
+                    <option value="Gowtham">Gowtham</option>
+                    <option value="Mowlish">Mowlish</option>
+                    <option value="Soukar">Soukar</option>
+                    <option value="Thiwakar">Thiwakar</option>
+                </select>
+            </div>
+            <div class="input-row">
+                <label style="width: 80px; font-weight: 600;">Category:</label>
+                <select id="export-category-filter" class="modern-select" style="padding: 8px;">
+                    <option value="all">All Categories</option>
+                </select>
+            </div>
+        </div>
+
+        <button class="btn-add" style="margin-top: 25px;" onclick="executeExport()">Download File</button>
+    </div>
+</div>
+
 
 <!-- Fixed bottom icon navbar -->
 <nav class="bottom-navbar" id="bottom-navbar">
@@ -1273,7 +1335,7 @@
         const u = document.getElementById('username').value.trim();
         const p = document.getElementById('password').value.trim();
         const err = document.getElementById('login-error-msg');
-        if (u === "4" && p === "4") {
+        if (u === "123456" && p === "857447") {
             err.textContent = "";
             sessionStorage.setItem('ledgerAuthenticated', 'true');
             sessionStorage.setItem('ledgerUser', "Shivadut");
@@ -1570,9 +1632,118 @@
         }
     }
 
-    // --- Web Share API Export Functions ---
+    // --- Web Share API & Export Settings Logic ---
 
-    function exportHistoryToPDF() {
+    let currentExportSource = '';
+    let currentExportType = '';
+
+    function openExportModal(source, type) {
+        currentExportSource = source;
+        currentExportType = type;
+
+        // Reset defaults
+        document.querySelector('input[name="export_range"][value="all"]').checked = true;
+        toggleDateInputs(false);
+        document.getElementById('export-start-date').value = '';
+        document.getElementById('export-end-date').value = '';
+
+        const cohortFilters = document.getElementById('export-cohort-filters');
+        if (source === 'cohort') {
+            cohortFilters.style.display = 'flex';
+            populateCohortCategoryFilter();
+        } else {
+            cohortFilters.style.display = 'none';
+        }
+
+        document.getElementById('export-modal').style.display = 'flex';
+    }
+
+    function populateCohortCategoryFilter() {
+        const catSelect = document.getElementById('export-category-filter');
+        catSelect.innerHTML = '<option value="all">All Categories</option>';
+        const uniqueCats = new Set();
+        sortedFriends.forEach(peer => {
+            ledgerState[peer].transactions.forEach(tx => uniqueCats.add(tx.category));
+        });
+        Array.from(uniqueCats).sort().forEach(cat => {
+            const opt = document.createElement('option');
+            opt.value = cat;
+            opt.textContent = cat;
+            catSelect.appendChild(opt);
+        });
+    }
+
+    function closeExportModal() {
+        document.getElementById('export-modal').style.display = 'none';
+    }
+
+    function toggleDateInputs(show) {
+        document.getElementById('export-date-inputs').style.display = show ? 'flex' : 'none';
+    }
+
+    function executeExport() {
+        const rangeMode = document.querySelector('input[name="export_range"]:checked').value;
+        let startDate, endDate;
+
+        if (rangeMode === 'custom') {
+            const startVal = document.getElementById('export-start-date').value;
+            const endVal = document.getElementById('export-end-date').value;
+            if (!startVal || !endVal) {
+                alert("Please select both a start date and an end date.");
+                return;
+            }
+            startDate = new Date(startVal);
+            startDate.setHours(0, 0, 0, 0); // Start of day
+
+            endDate = new Date(endVal);
+            endDate.setHours(23, 59, 59, 999); // End of day
+
+            if (startDate > endDate) {
+                alert("Start date cannot be after the end date.");
+                return;
+            }
+        }
+
+        let dataToExport = currentExportSource === 'debit' ? [...debitHistoryState] : getAllCohortRows();
+
+        if (rangeMode === 'custom') {
+            dataToExport = dataToExport.filter(item => {
+                const d = new Date(item.timestamp);
+                return d >= startDate && d <= endDate;
+            });
+        }
+
+        let selectedFriend = 'all';
+        if (currentExportSource === 'cohort') {
+            selectedFriend = document.getElementById('export-friend-filter').value;
+            const categoryFilter = document.getElementById('export-category-filter').value;
+
+            if (selectedFriend !== 'all') {
+                dataToExport = dataToExport.filter(item => item.peer === selectedFriend);
+            }
+            if (categoryFilter !== 'all') {
+                dataToExport = dataToExport.filter(item => item.category === categoryFilter);
+            }
+        }
+
+        if (dataToExport.length === 0) {
+            alert("No transactions found for the selected filters/time range!");
+            return;
+        }
+
+        if (currentExportSource === 'debit') {
+            if (currentExportType === 'pdf') exportHistoryToPDF(dataToExport);
+            else exportHistoryToExcel(dataToExport);
+        } else {
+            if (currentExportType === 'pdf') exportCohortToPDF(dataToExport, selectedFriend);
+            else exportCohortToExcel(dataToExport, selectedFriend);
+        }
+
+        closeExportModal();
+    }
+
+    // Export PDF/Excel functions updated to accept filtered `data` parameter
+    function exportHistoryToPDF(data) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         doc.setFillColor(11, 61, 59);
@@ -1581,17 +1752,21 @@
         doc.setFontSize(22);
         doc.setTextColor(255, 255, 255);
         doc.text("Shivadut's Personal Ledger Report", 14, 20);
-        const totalSpent = debitHistoryState.reduce((sum, item) => sum + item.amount, 0);
+
+        const totalSpent = data.reduce((sum, item) => sum + item.amount, 0);
+
         doc.setFontSize(10);
         doc.setFont("Helvetica", "normal");
         doc.setTextColor(220, 220, 220);
         doc.text(`Generated on: ${new Date().toLocaleString('en-IN')}`, 14, 26);
-        doc.text(`Total Spent (All Time): INR ${totalSpent.toFixed(2)}`, 14, 32);
+        doc.text(`Total Spent (In range): INR ${totalSpent.toFixed(2)}`, 14, 32);
+
         const tableRows = [];
-        debitHistoryState.forEach((item, index) => {
+        data.forEach((item, index) => {
             const dateStr = dateFormatter.format(new Date(item.timestamp));
             tableRows.push([index + 1, dateStr, item.category, `Rs. ${item.amount.toFixed(2)}`]);
         });
+
         doc.autoTable({
             startY: 46,
             head: [['#', 'Date & Time', 'Category/Description', 'Amount']],
@@ -1605,18 +1780,14 @@
         const filename = `Debit_Ledger_${new Date().toISOString().slice(0,10)}.pdf`;
 
         if (window.AndroidDownloader) {
-            // 1. Android App: Convert PDF to Base64 and send to Java Bridge
             const base64Data = doc.output('datauristring').split(',')[1];
             window.AndroidDownloader.downloadBase64(base64Data, filename);
         } else {
-            // 2. Standard Web Browser: Download normally
             doc.save(filename);
         }
     }
 
-    function exportCohortToPDF() {
-        const rows = getAllCohortRows();
-        if (rows.length === 0) { alert("Export panna cohort transactions ethuvum illai!"); return; }
+    function exportCohortToPDF(data, selectedFriend) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         doc.setFillColor(11, 61, 59);
@@ -1625,22 +1796,34 @@
         doc.setFontSize(22);
         doc.setTextColor(255, 255, 255);
         doc.text("Shivadut's Cohort Ledger Report", 14, 20);
+
         doc.setFontSize(10);
         doc.setFont("Helvetica", "normal");
         doc.setTextColor(220, 220, 220);
         doc.text(`Generated on: ${new Date().toLocaleString('en-IN')}`, 14, 26);
-        let summaryLine = sortedFriends.map(peer => {
-            const bal = ledgerState[peer].balance;
+
+        let summaryLine = "";
+        if (selectedFriend !== 'all') {
+            const bal = ledgerState[selectedFriend].balance;
             const tag = bal > 0 ? `Owes You Rs.${bal.toFixed(2)}` : bal < 0 ? `You Owe Rs.${Math.abs(bal).toFixed(2)}` : `Settled`;
-            return `${peer}: ${tag}`;
-        }).join('   |   ');
+            summaryLine = `${selectedFriend}: ${tag}`;
+        } else {
+            summaryLine = sortedFriends.map(peer => {
+                const bal = ledgerState[peer].balance;
+                const tag = bal > 0 ? `Owes You Rs.${bal.toFixed(2)}` : bal < 0 ? `You Owe Rs.${Math.abs(bal).toFixed(2)}` : `Settled`;
+                return `${peer}: ${tag}`;
+            }).join('   |   ');
+        }
+
         doc.setFontSize(8.5);
         const wrapped = doc.splitTextToSize(summaryLine, 180);
         doc.text(wrapped, 14, 32);
-        const tableRows = rows.map((row, index) => {
+
+        const tableRows = data.map((row, index) => {
             const dateStr = dateFormatter.format(new Date(row.timestamp));
             return [index + 1, row.peer, row.type, row.category, `Rs. ${row.amount.toFixed(2)}`, dateStr];
         });
+
         doc.autoTable({
             startY: 40 + (wrapped.length * 4),
             head: [['#', 'Friend', 'Direction', 'Reason / Category', 'Amount', 'Date & Time']],
@@ -1654,23 +1837,18 @@
         const filename = `Cohort_Ledger_${new Date().toISOString().slice(0,10)}.pdf`;
 
         if (window.AndroidDownloader) {
-            // 1. Android App: Convert PDF to Base64 and send to Java Bridge
             const base64Data = doc.output('datauristring').split(',')[1];
             window.AndroidDownloader.downloadBase64(base64Data, filename);
         } else {
-            // 2. Standard Web Browser: Download normally
             doc.save(filename);
         }
     }
 
-    // --- NEW BRIDGE FUNCTION TO TALK TO ANDROID ---
     function triggerExcelDownload(content, filename) {
         if (window.AndroidDownloader) {
-            // 1. If running inside your Android App, send data to Java
             const base64Data = btoa(unescape(encodeURIComponent(content)));
             window.AndroidDownloader.downloadBase64(base64Data, filename);
         } else {
-            // 2. If running on a PC/Laptop Browser, use standard download
             const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
@@ -1682,13 +1860,9 @@
         }
     }
 
-    function exportHistoryToExcel() {
-        if (debitHistoryState.length === 0) {
-            alert("Export panna entries ethuvum illai!");
-            return;
-        }
+    function exportHistoryToExcel(data) {
         let csvContent = "Serial No,Date and Time,Category/Description,Amount (INR)\n";
-        debitHistoryState.forEach((item, index) => {
+        data.forEach((item, index) => {
             const dateStr = dateFormatter.format(new Date(item.timestamp)).replace(/,/g, '');
             const categoryStr = item.category.replace(/"/g, '""');
             csvContent += `${index + 1},"${dateStr}","${categoryStr}",${item.amount.toFixed(2)}\n`;
@@ -1697,20 +1871,36 @@
         triggerExcelDownload(csvContent, `Debit_Ledger_${new Date().toISOString().slice(0,10)}.csv`);
     }
 
-    function exportCohortToExcel() {
-        const rows = getAllCohortRows();
-        if (rows.length === 0) { alert("Export panna cohort transactions ethuvum illai!"); return; }
+    function exportCohortToExcel(data, selectedFriend) {
+        let csvContent = "SHIVADUT'S COHORT LEDGER & HISTORY\n";
+        csvContent += "Document Type,Shared Expenses and Cash Settlements Record\n";
+        csvContent += `Generated On,${new Date().toLocaleString('en-IN').replace(/,/g, '')}\n\n`;
 
-        let csvContent = "Serial No,Friend,Direction,Reason/Category,Amount (INR),Date and Time,Current Balance (INR)\n";
-        rows.forEach((row, index) => {
+        csvContent += "--- BALANCE SUMMARY ---\n";
+        csvContent += "Friend,Settlement Status,Amount (INR)\n";
+
+        const friendsToSummary = selectedFriend === 'all' ? sortedFriends : [selectedFriend];
+        friendsToSummary.forEach(peer => {
+            const bal = ledgerState[peer].balance;
+            let status = "Settled Up / Clear";
+            let amt = "0.00";
+            if (bal > 0) { status = "Owes You (Receivable)"; amt = bal.toFixed(2); }
+            else if (bal < 0) { status = "You Owe (Payable)"; amt = Math.abs(bal).toFixed(2); }
+            csvContent += `"${peer}","${status}",${amt}\n`;
+        });
+
+        csvContent += "\n--- DETAILED TRANSACTION LOG ---\n";
+        csvContent += "Serial No,Friend,Direction,Reason/Category,Amount (INR),Date and Time\n";
+
+        data.forEach((row, index) => {
             const dateStr = dateFormatter.format(new Date(row.timestamp)).replace(/,/g, '');
             const categoryStr = row.category.replace(/"/g, '""');
-            const currentBal = ledgerState[row.peer].balance.toFixed(2);
-            csvContent += `${index + 1},"${row.peer}","${row.type}","${categoryStr}",${row.amount.toFixed(2)},"${dateStr}",${currentBal}\n`;
+            csvContent += `${index + 1},"${row.peer}","${row.type}","${categoryStr}",${row.amount.toFixed(2)},"${dateStr}"\n`;
         });
 
         triggerExcelDownload(csvContent, `Cohort_Ledger_${new Date().toISOString().slice(0,10)}.csv`);
     }
+
 
     // --- Cohort Ledger ---
     function renderLedger() {
@@ -1743,7 +1933,9 @@
                                     <option value="" disabled selected>Select reason</option>
                                     <option value="Tea & Snacks">Tea &amp; Snacks</option>
                                     <option value="Lunch">Lunch</option>
-                                    <option value="Food">Food</option>
+                                    <option value="Breakfast">Breakfast</option>
+                                    <option value="Dinner">Dinner</option>
+                                    <option value="Snacks">Snacks</option>
                                     <option value="Movie Ticket">Movie Ticket</option>
                                     <option value="Room Rent Share">Room Rent Share</option>
                                     <option value="Fuel / Travel Split">Fuel / Travel Split</option>
@@ -1867,99 +2059,35 @@
         return rows;
     }
 
-    function exportCohortToPDF() {
-        const rows = getAllCohortRows();
-        if (rows.length === 0) { alert("Export panna cohort transactions ethuvum illai!"); return; }
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        doc.setFillColor(11, 61, 59);
-        doc.rect(0, 0, 210, 40, 'F');
-        doc.setFont("Helvetica", "bold");
-        doc.setFontSize(22);
-        doc.setTextColor(255, 255, 255);
-        doc.text("Shivadut's Cohort Ledger Report", 14, 20);
-        doc.setFontSize(10);
-        doc.setFont("Helvetica", "normal");
-        doc.setTextColor(220, 220, 220);
-        doc.text(`Generated on: ${new Date().toLocaleString('en-IN')}`, 14, 26);
-        let summaryLine = sortedFriends.map(peer => {
-            const bal = ledgerState[peer].balance;
-            const tag = bal > 0 ? `Owes You Rs.${bal.toFixed(2)}` : bal < 0 ? `You Owe Rs.${Math.abs(bal).toFixed(2)}` : `Settled`;
-            return `${peer}: ${tag}`;
-        }).join('   |   ');
-        doc.setFontSize(8.5);
-        const wrapped = doc.splitTextToSize(summaryLine, 180);
-        doc.text(wrapped, 14, 32);
-        const tableRows = rows.map((row, index) => {
-            const dateStr = dateFormatter.format(new Date(row.timestamp));
-            return [index + 1, row.peer, row.type, row.category, `Rs. ${row.amount.toFixed(2)}`, dateStr];
-        });
-        doc.autoTable({
-            startY: 40 + (wrapped.length * 4),
-            head: [['#', 'Friend', 'Direction', 'Reason / Category', 'Amount', 'Date & Time']],
-            body: tableRows,
-            theme: 'striped',
-            headStyles: { fillColor: [11, 61, 59], textColor: [255, 255, 255] },
-            alternateRowStyles: { fillColor: [233, 242, 239] },
-            styles: { font: "Helvetica", fontSize: 8.5 }
-        });
-
-        const filename = `Cohort_Ledger_${new Date().toISOString().slice(0,10)}.pdf`;
-        const blob = doc.output('blob');
-        const file = new File([blob], filename, { type: 'application/pdf' });
-
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            navigator.share({
-                files: [file],
-                title: 'Cohort Ledger PDF',
-                text: 'Here is my shared friends ledger report.'
-            }).catch(console.error);
-        } else {
-            doc.save(filename);
-        }
-    }
-
-    function exportCohortToExcel() {
-        const rows = getAllCohortRows();
-        if (rows.length === 0) { alert("Export panna cohort transactions ethuvum illai!"); return; }
-
-        let csvContent = "Serial No,Friend,Direction,Reason/Category,Amount (INR),Date and Time,Current Balance (INR)\n";
-        rows.forEach((row, index) => {
-            const dateStr = dateFormatter.format(new Date(row.timestamp)).replace(/,/g, '');
-            const categoryStr = row.category.replace(/"/g, '""');
-            const currentBal = ledgerState[row.peer].balance.toFixed(2);
-            csvContent += `${index + 1},"${row.peer}","${row.type}","${categoryStr}",${row.amount.toFixed(2)},"${dateStr}",${currentBal}\n`;
-        });
-
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const filename = `Cohort_Ledger_${new Date().toISOString().slice(0,10)}.csv`;
-        const file = new File([blob], filename, { type: 'text/csv' });
-
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            navigator.share({
-                files: [file],
-                title: 'Cohort Ledger Excel/CSV',
-                text: 'Here is my friends shared ledger export.'
-            }).catch(console.error);
-        } else {
-            const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", filename);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    }
-
     // --- Analytics ---
     let pieInstance = null;
     let lineInstance = null;
+    let chartViewAllTime = false; // False = Current month, True = All Time
+
+    function toggleChartView() {
+        chartViewAllTime = !chartViewAllTime;
+        const btn = document.getElementById('chart-toggle-btn');
+        btn.textContent = chartViewAllTime ? "♾️ View: All Time" : "📅 View: Current Month";
+        renderCharts();
+    }
 
     function renderCharts() {
+        let chartDataTarget = [...debitHistoryState];
+
+        // Filter for Current Month if chartViewAllTime is false
+        if (!chartViewAllTime) {
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            chartDataTarget = chartDataTarget.filter(item => {
+                const itemDate = new Date(item.timestamp);
+                return itemDate.getMonth() === currentMonth && itemDate.getFullYear() === currentYear;
+            });
+        }
+
         const catMap = {};
         const dailyMap = {};
-        const sortedHistory = [...debitHistoryState].reverse();
+        const sortedHistory = chartDataTarget.reverse();
+
         sortedHistory.forEach(item => {
             catMap[item.category] = (catMap[item.category] || 0) + item.amount;
             const dateKey = new Date(item.timestamp).toLocaleDateString('en-IN', {day:'2-digit', month:'short'});
@@ -1989,6 +2117,11 @@
                     legend: { position: 'bottom' },
                     datalabels: {
                         display: false // Hide data labels from slices as requested
+                    },
+                    title: {
+                        display: chartDataTarget.length === 0,
+                        text: 'No expenses logged for this period.',
+                        position: 'bottom'
                     }
                 }
             }
@@ -2014,7 +2147,9 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { datalabels: { display: false } },
+                plugins: {
+                    datalabels: { display: false }
+                },
                 scales: { y: { beginAtZero: true } }
             }
         });
@@ -2119,8 +2254,11 @@
     window.onclick = function(event) {
         const calModal = document.getElementById('calendar-modal');
         const breakdownModal = document.getElementById('monthly-breakdown-modal');
+        const exportModal = document.getElementById('export-modal');
+
         if (event.target == calModal) closeCalendarModal();
         if (event.target == breakdownModal) closeMonthlyBreakdownModal();
+        if (event.target == exportModal) closeExportModal();
     }
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -2138,3 +2276,4 @@
 </script>
 </body>
 </html>
+
