@@ -72,7 +72,7 @@
         .app-page {
             display: none;
             padding: 20px;
-            padding-bottom: 110px;
+            padding-bottom: 130px; /* Increased padding to accommodate taller bottom navbar */
             min-height: 100vh;
             flex-direction: column;
             align-items: center;
@@ -211,6 +211,7 @@
             flex-direction: column;
             gap: 15px;
             border-top: 4px solid var(--accent-gold);
+            height: 100%;
         }
 
         .dashboard-card h3 { font-size: 1.3rem; color: var(--text-main); margin-bottom: 5px; display: flex; align-items: center; gap: 8px;}
@@ -255,6 +256,35 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             border-color: var(--accent-gold);
         }
+
+        .hub-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .hub-btn {
+            background: #F8FBFA;
+            border: 1px solid var(--border-light);
+            padding: 18px 10px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+        }
+        .hub-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(11,61,59,0.08);
+            border-color: var(--accent-gold);
+        }
+        .hub-btn .hub-icon { font-size: 1.8rem; }
+        .hub-btn .hub-label { font-size: 0.85rem; text-align: center; }
 
         .app-footer {
             width: 100%;
@@ -831,18 +861,22 @@
             padding-right: 5px;
         }
 
-        /* --- BOTTOM NAVBAR --- */
+        /* --- REDESIGNED BOTTOM NAVBAR --- */
         .bottom-navbar {
             display: none;
             position: fixed;
             bottom: 0; left: 0; right: 0;
-            background: linear-gradient(180deg, #0D4744, var(--text-deep));
-            padding: 10px 6px calc(8px + env(safe-area-inset-bottom, 0px));
+            background: linear-gradient(180deg, rgba(13, 71, 68, 0.96), rgba(7, 40, 38, 0.99));
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            /* Increased padding for larger footprint and better touch areas */
+            padding: 14px 10px calc(14px + env(safe-area-inset-bottom, 0px));
             z-index: 900;
-            box-shadow: 0 -8px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
             justify-content: space-between;
-            gap: 2px;
+            gap: 6px;
             overflow-x: auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
         .nav-tab {
             background: transparent;
@@ -852,19 +886,116 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 3px;
+            gap: 5px;
             flex: 1 1 0;
-            min-width: 52px;
-            padding: 6px 2px;
-            border-radius: 10px;
+            min-width: 56px;
+            /* Taller touch target */
+            padding: 10px 4px;
+            border-radius: 14px;
             cursor: pointer;
-            transition: background 0.2s, color 0.2s;
+            transition: background 0.3s, color 0.3s;
         }
-        .nav-tab:hover { transform: none; opacity: 1; background: rgba(255,255,255,0.06); }
-        .nav-tab .nav-icon { font-size: 1.25rem; line-height: 1; }
-        .nav-tab .nav-label { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.01em; }
-        .nav-tab.active { color: var(--accent-gold); background: rgba(201,154,46,0.14); }
-        .nav-tab.active .nav-icon { transform: translateY(-1px); }
+        .nav-tab:hover { opacity: 1; background: rgba(255,255,255,0.06); }
+        .nav-tab .nav-icon {
+            font-size: 1.6rem; /* Bigger icons */
+            line-height: 1;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .nav-tab .nav-label {
+            font-size: 0.68rem; /* Slightly larger text */
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+        .nav-tab.active {
+            color: var(--accent-gold);
+            background: rgba(201,154,46,0.12);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+        /* Smoother, bouncier pop effect for active icon */
+        .nav-tab.active .nav-icon { transform: translateY(-4px) scale(1.15); }
+
+        /* --- NEW COHORT DASHBOARD ADDONS CSS --- */
+        .cohort-dashboard {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-light);
+        }
+        .cohort-summary-cards {
+            display: flex;
+            gap: 15px;
+        }
+        .summary-card {
+            flex: 1;
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .summary-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        .receive-card { background: var(--btn-receive-soft); border: 1px solid #a9dcc4; }
+        .pay-card { background: var(--btn-give-soft); border: 1px solid #eeb3b0; }
+        .sc-label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; }
+        .sc-value { font-size: 1.5rem; font-weight: bold; font-family: var(--font-display); }
+        .receive-card .sc-value { color: var(--btn-receive); }
+        .pay-card .sc-value { color: var(--btn-give); }
+
+        .cohort-search-bar input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1.5px solid var(--border-light);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: var(--font-body);
+            background: #FBFDFC;
+            color: var(--text-deep);
+        }
+        .cohort-search-bar input:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 0 3px rgba(201, 154, 46, 0.15);
+        }
+
+        .peer-avatar {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, var(--text-main), var(--text-deep));
+            color: var(--accent-gold-soft);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            font-family: var(--font-display);
+            margin-right: 10px;
+        }
+        .peer-name-container {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        .travel-badge {
+            font-size: 0.72rem;
+            background: var(--btn-neutral-soft);
+            color: var(--btn-neutral);
+            padding: 3px 8px;
+            border-radius: 6px;
+            margin-left: 8px;
+            white-space: nowrap;
+            font-family: var(--font-body);
+            font-weight: 600;
+        }
 
         /* ============================
            MOBILE RESPONSIVE FIXES
@@ -874,6 +1005,7 @@
             .ledger-row { grid-template-columns: 1fr; gap: 14px; }
             .peer-info { align-items: center; border-bottom: 1px dashed var(--border-light); padding-bottom: 10px; }
             .peer-name { text-align: center; font-size: 1.25rem; }
+            .peer-name-container { justify-content: center; }
             .ledger-inputs { flex-direction: column; }
             .ledger-inputs input[type="number"], .ledger-inputs select, .ledger-inputs input[type="text"], .ledger-inputs input[type="date"] { width: 100%; height: 46px; }
             .ledger-buttons button { height: 46px; }
@@ -888,54 +1020,48 @@
             .calendar-header h2 { font-size: 1.1rem; }
             .timeline-item { flex-direction: column; align-items: flex-start; gap: 10px; }
             .history-action-btns { margin-left: 0; margin-top: 5px; }
-            .nav-tab .nav-label { display: none; }
+
+            /* Enhanced Mobile Nav handling */
+            .nav-tab .nav-label { display: block; font-size: 0.65rem; margin-top: 2px; }
+            .nav-tab { min-width: 48px; padding: 8px 2px; }
+
+            .cohort-summary-cards { flex-direction: column; }
         }
 
         @media (max-width: 640px) {
-            .app-page { padding: 14px; padding-bottom: 100px; }
+            .app-page { padding: 14px; padding-bottom: 120px; }
 
-            /* Menu header on mobile */
-            .menu-header {
-                padding: 18px 18px;
-                border-radius: 14px;
-            }
+            .menu-header { padding: 18px 18px; border-radius: 14px; }
             .menu-header h1 { font-size: 1.15rem; }
             .btn-logout { padding: 8px 14px; font-size: 0.82rem; }
 
             .perforation-strip { margin-bottom: 22px; }
-
-            /* Dashboard cards on mobile */
             .dashboard-card { padding: 20px; border-radius: 14px; }
             .dashboard-card h3 { font-size: 1.15rem; }
             .stat-value { font-size: 1.8rem; }
 
-            /* Tool nav bar on mobile */
             .tool-nav-bar { gap: 8px; }
             .btn-back { padding: 9px 14px; font-size: 0.85rem; }
-
-            /* Panels */
             .panel { padding: 18px; border-radius: 14px; }
             h2 { font-size: 1.15rem; }
 
-            /* Header action row */
             .header-action-row { flex-direction: column; align-items: stretch; }
             .header-action-row h2 { text-align: left; }
             .header-action-buttons { justify-content: flex-start; }
             .header-action-buttons button { flex: 1 1 auto; justify-content: center; }
 
-            /* Savings table on mobile - make responsive */
             .savings-table th, .savings-table td { padding: 12px 6px; font-size: 0.9rem; }
             .savings-table input[type="number"] { width: 80px; padding: 8px 4px; font-size: 0.95rem; }
             .savings-table .grand-total { font-size: 1.15rem; }
             .savings-table .row-total { font-size: 1rem; }
 
-            /* Summary boxes */
             .summary-box { padding: 14px 10px; font-size: 1.2rem; }
-
-            /* Calendar */
             .calendar-header button { padding: 6px 12px; font-size: 1rem; }
             .calendar-day-header { font-size: 0.72rem; }
             .budget-control { justify-content: center; }
+
+            /* Remove label on very small screens to fit the larger icons */
+            .nav-tab .nav-label { display: none; }
         }
 
         @media (max-width: 400px) {
@@ -984,6 +1110,40 @@
             <p class="card-desc">Your overall personal expenses.</p>
             <div class="stat-value" id="dash-total-spent">₹0.00</div>
             <button class="btn-dash" onclick="openPage('debit-page')">Log Expense &amp; View History</button>
+        </div>
+
+        <!-- NEW: Quick Actions Widget -->
+        <div class="dashboard-card">
+            <h3>⚡ Quick Actions</h3>
+            <p class="card-desc">Fast-track your regular entries.</p>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button class="btn-dash" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:5px; padding:15px 5px;" onclick="openPage('debit-page')">
+                    <span style="font-size: 1.5rem;">💸</span> Add Expense
+                </button>
+                <button class="btn-dash" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:5px; padding:15px 5px;" onclick="openPage('cohort-page')">
+                    <span style="font-size: 1.5rem;">🤝</span> Split Bill
+                </button>
+            </div>
+        </div>
+
+        <!-- NEW: Personalized Quick Hub -->
+        <div class="dashboard-card">
+            <h3>🚀 Your Quick Hub</h3>
+            <p class="card-desc">Shortcuts to your frequent digital spaces.</p>
+            <div class="hub-grid">
+                <a href="https://github.com" target="_blank" class="hub-btn">
+                    <span class="hub-icon">👨‍💻</span><span class="hub-label">GitHub</span>
+                </a>
+                <a href="https://www.irctc.co.in" target="_blank" class="hub-btn">
+                    <span class="hub-icon">🚂</span><span class="hub-label">IRCTC Transit</span>
+                </a>
+                <a href="https://in.bookmyshow.com" target="_blank" class="hub-btn">
+                    <span class="hub-icon">🍿</span><span class="hub-label">BookMyShow</span>
+                </a>
+                <a href="https://open.spotify.com" target="_blank" class="hub-btn">
+                    <span class="hub-icon">🎧</span><span class="hub-label">Spotify</span>
+                </a>
+            </div>
         </div>
 
         <!-- World News Portal -->
@@ -1206,6 +1366,26 @@
                     <button class="btn-reset" onclick="resetAllCohortHistories()">Reset All</button>
                 </div>
             </div>
+
+            <!-- NEW: Cohort Dashboard Addons (Summary Cards & Search Bar) -->
+            <div class="cohort-dashboard">
+                <div class="cohort-summary-cards">
+                    <div class="summary-card receive-card" onclick="openCohortSummaryModal('receive')">
+                        <span class="sc-label">Total to Receive 💰</span>
+                        <span class="sc-value" id="cohort-total-receive">₹0.00</span>
+                        <div style="font-size: 0.65rem; color: #237a54; margin-top: 6px; font-weight: 600;">Click to view list 👆</div>
+                    </div>
+                    <div class="summary-card pay-card" onclick="openCohortSummaryModal('pay')">
+                        <span class="sc-label">Total to Pay 💸</span>
+                        <span class="sc-value" id="cohort-total-pay">₹0.00</span>
+                        <div style="font-size: 0.65rem; color: #a53039; margin-top: 6px; font-weight: 600;">Click to view list 👆</div>
+                    </div>
+                </div>
+                <div class="cohort-search-bar">
+                    <input type="text" id="cohort-search-input" placeholder="🔍 Find friend by name..." onkeyup="filterCohortLedger()">
+                </div>
+            </div>
+
             <div id="ledger-container"></div>
         </div>
         <div class="app-footer"><span class="footer-icon">🤝</span> Clear accounts, clearer friendships.</div>
@@ -1301,6 +1481,17 @@
         </div>
 
         <button class="btn-add" style="margin-top: 25px;" onclick="executeExport()">Download File</button>
+    </div>
+</div>
+
+<!-- NEW Modal for Cohort Balance Summary Details -->
+<div id="cohort-summary-modal" class="modal-overlay">
+    <div class="modal-box">
+        <span class="modal-close" onclick="closeCohortSummaryModal()">&times;</span>
+        <h2 id="cohort-summary-title" style="border-bottom: 2px solid var(--border-light); padding-bottom: 10px;">Details</h2>
+        <div class="modal-content-scroll">
+            <ul class="timeline" id="cohort-summary-list"></ul>
+        </div>
     </div>
 </div>
 
@@ -2251,14 +2442,63 @@
 
     function closeCalendarModal() { document.getElementById('calendar-modal').style.display = 'none'; }
 
+    // --- COHORT SUMMARY MODAL LOGIC ---
+    function openCohortSummaryModal(type) {
+        const titleEl = document.getElementById('cohort-summary-title');
+        const listEl = document.getElementById('cohort-summary-list');
+        listEl.innerHTML = '';
+
+        let items = [];
+        for(let peer in ledgerState) {
+            let bal = ledgerState[peer].balance;
+            if(type === 'receive' && bal > 0) {
+                items.push({ name: peer, amount: bal });
+            } else if(type === 'pay' && bal < 0) {
+                items.push({ name: peer, amount: Math.abs(bal) });
+            }
+        }
+
+        if (type === 'receive') {
+            titleEl.textContent = 'Friends Who Owe You';
+        } else {
+            titleEl.textContent = 'Friends You Owe';
+        }
+
+        if (items.length === 0) {
+            listEl.innerHTML = `<li class="no-history-msg">No pending balances in this category.</li>`;
+        } else {
+            // Sort by amount descending
+            items.sort((a, b) => b.amount - a.amount);
+            listEl.innerHTML = items.map(item => {
+                const amountColor = type === 'receive' ? 'var(--btn-receive)' : 'var(--btn-give)';
+                return `
+                    <li class="timeline-item ${type === 'receive' ? 'receive' : 'give'}" style="padding-bottom:15px;">
+                        <div class="timeline-meta" style="max-width: 60%;">
+                            <span class="timeline-desc" style="font-size: 1.05rem;">${item.name}</span>
+                        </div>
+                        <div class="timeline-amount" style="color: ${amountColor};">₹${item.amount.toFixed(2)}</div>
+                    </li>
+                `;
+            }).join('');
+        }
+
+        document.getElementById('cohort-summary-modal').style.display = 'flex';
+    }
+
+    function closeCohortSummaryModal() {
+        document.getElementById('cohort-summary-modal').style.display = 'none';
+    }
+
     window.onclick = function(event) {
         const calModal = document.getElementById('calendar-modal');
         const breakdownModal = document.getElementById('monthly-breakdown-modal');
         const exportModal = document.getElementById('export-modal');
+        const cohortSummaryModal = document.getElementById('cohort-summary-modal');
 
         if (event.target == calModal) closeCalendarModal();
         if (event.target == breakdownModal) closeMonthlyBreakdownModal();
         if (event.target == exportModal) closeExportModal();
+        if (event.target == cohortSummaryModal) closeCohortSummaryModal();
     }
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -2273,7 +2513,85 @@
             openPage('menu-page');
         }
     });
+
+    /* =========================================================================
+       NEW: COHORT CUSTOMIZATION LOGIC
+       Uses MutationObserver to add UI elements WITHOUT modifying existing functions
+       ========================================================================= */
+
+    const cohortObserver = new MutationObserver(() => {
+        updateCohortDashboard();
+        injectAvatarsAndBadges();
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const container = document.getElementById('ledger-container');
+        if(container) {
+            // Watch for changes in the ledger container (which happens on renderLedger())
+            cohortObserver.observe(container, { childList: true });
+        }
+    });
+
+    // Calculates and displays the total amount to receive and pay across all friends
+    function updateCohortDashboard() {
+        let totalReceive = 0;
+        let totalPay = 0;
+        for(let peer in ledgerState) {
+            let bal = ledgerState[peer].balance;
+            if(bal > 0) totalReceive += bal;
+            if(bal < 0) totalPay += Math.abs(bal);
+        }
+        const recEl = document.getElementById('cohort-total-receive');
+        const payEl = document.getElementById('cohort-total-pay');
+        if(recEl) recEl.innerText = '₹' + totalReceive.toFixed(2);
+        if(payEl) payEl.innerText = '₹' + totalPay.toFixed(2);
+    }
+
+    // Handles the live filtering functionality
+    function filterCohortLedger() {
+        const query = document.getElementById('cohort-search-input').value.toLowerCase();
+        const items = document.querySelectorAll('.ledger-item-container');
+        items.forEach(item => {
+            const name = item.querySelector('.peer-name').innerText.toLowerCase();
+            if(name.includes(query)) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    // Injects generated avatars and situational badges into the DOM dynamically
+    function injectAvatarsAndBadges() {
+        const peerInfos = document.querySelectorAll('.peer-info');
+        peerInfos.forEach(infoBox => {
+            const nameEl = infoBox.querySelector('.peer-name');
+            // Check if we haven't already wrapped the name to avoid infinite loops
+            if (nameEl && !infoBox.querySelector('.peer-name-container')) {
+                const nameContainer = document.createElement('div');
+                nameContainer.className = 'peer-name-container';
+
+                const avatar = document.createElement('div');
+                avatar.className = 'peer-avatar';
+                // Use the first letter of the friend's name
+                avatar.innerText = nameEl.innerText.charAt(0).toUpperCase();
+
+                // Group the avatar and original name element together
+                nameContainer.appendChild(avatar);
+                nameEl.parentNode.insertBefore(nameContainer, nameEl);
+                nameContainer.appendChild(nameEl);
+
+                // Smart Tag Integration
+                if (nameEl.innerText.trim().toLowerCase() === 'mowlish') {
+                    const badge = document.createElement('span');
+                    badge.className = 'travel-badge';
+                    badge.innerText = '✈️ Travel Buddy';
+                    badge.title = 'Frequent Travel Companion';
+                    nameContainer.appendChild(badge);
+                }
+            }
+        });
+    }
 </script>
 </body>
 </html>
-
