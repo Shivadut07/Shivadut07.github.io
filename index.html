@@ -1570,6 +1570,8 @@
         }
     }
 
+    // --- Web Share API Export Functions ---
+
     function exportHistoryToPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
@@ -1599,7 +1601,20 @@
             alternateRowStyles: { fillColor: [233, 242, 239] },
             styles: { font: "Helvetica", fontSize: 9 }
         });
-        doc.save(`Debit_Ledger_${new Date().toISOString().slice(0,10)}.pdf`);
+
+        const filename = `Debit_Ledger_${new Date().toISOString().slice(0,10)}.pdf`;
+        const blob = doc.output('blob');
+        const file = new File([blob], filename, { type: 'application/pdf' });
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            navigator.share({
+                files: [file],
+                title: 'Debit Ledger PDF',
+                text: 'Here is my personal debit ledger report.'
+            }).catch(console.error);
+        } else {
+            doc.save(filename);
+        }
     }
 
     function exportHistoryToExcel() {
@@ -1607,20 +1622,32 @@
             alert("Export panna entries ethuvum illai!");
             return;
         }
-        let csvContent = "data:text/csv;charset=utf-8,";
-        csvContent += "Serial No,Date and Time,Category/Description,Amount (INR)\n";
+        let csvContent = "Serial No,Date and Time,Category/Description,Amount (INR)\n";
         debitHistoryState.forEach((item, index) => {
             const dateStr = dateFormatter.format(new Date(item.timestamp)).replace(/,/g, '');
             const categoryStr = item.category.replace(/"/g, '""');
             csvContent += `${index + 1},"${dateStr}","${categoryStr}",${item.amount.toFixed(2)}\n`;
         });
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `Debit_Ledger_${new Date().toISOString().slice(0,10)}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const filename = `Debit_Ledger_${new Date().toISOString().slice(0,10)}.csv`;
+        const file = new File([blob], filename, { type: 'text/csv' });
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            navigator.share({
+                files: [file],
+                title: 'Debit Ledger Excel/CSV',
+                text: 'Here is my personal debit ledger export.'
+            }).catch(console.error);
+        } else {
+            const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
     }
 
     // --- Cohort Ledger ---
@@ -1814,27 +1841,53 @@
             alternateRowStyles: { fillColor: [233, 242, 239] },
             styles: { font: "Helvetica", fontSize: 8.5 }
         });
-        doc.save(`Cohort_Ledger_${new Date().toISOString().slice(0,10)}.pdf`);
+
+        const filename = `Cohort_Ledger_${new Date().toISOString().slice(0,10)}.pdf`;
+        const blob = doc.output('blob');
+        const file = new File([blob], filename, { type: 'application/pdf' });
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            navigator.share({
+                files: [file],
+                title: 'Cohort Ledger PDF',
+                text: 'Here is my shared friends ledger report.'
+            }).catch(console.error);
+        } else {
+            doc.save(filename);
+        }
     }
 
     function exportCohortToExcel() {
         const rows = getAllCohortRows();
         if (rows.length === 0) { alert("Export panna cohort transactions ethuvum illai!"); return; }
-        let csvContent = "data:text/csv;charset=utf-8,";
-        csvContent += "Serial No,Friend,Direction,Reason/Category,Amount (INR),Date and Time,Current Balance (INR)\n";
+        
+        let csvContent = "Serial No,Friend,Direction,Reason/Category,Amount (INR),Date and Time,Current Balance (INR)\n";
         rows.forEach((row, index) => {
             const dateStr = dateFormatter.format(new Date(row.timestamp)).replace(/,/g, '');
             const categoryStr = row.category.replace(/"/g, '""');
             const currentBal = ledgerState[row.peer].balance.toFixed(2);
             csvContent += `${index + 1},"${row.peer}","${row.type}","${categoryStr}",${row.amount.toFixed(2)},"${dateStr}",${currentBal}\n`;
         });
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `Cohort_Ledger_${new Date().toISOString().slice(0,10)}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const filename = `Cohort_Ledger_${new Date().toISOString().slice(0,10)}.csv`;
+        const file = new File([blob], filename, { type: 'text/csv' });
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            navigator.share({
+                files: [file],
+                title: 'Cohort Ledger Excel/CSV',
+                text: 'Here is my friends shared ledger export.'
+            }).catch(console.error);
+        } else {
+            const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
     }
 
     // --- Analytics ---
@@ -1850,8 +1903,11 @@
             const dateKey = new Date(item.timestamp).toLocaleDateString('en-IN', {day:'2-digit', month:'short'});
             dailyMap[dateKey] = (dailyMap[dateKey] || 0) + item.amount;
         });
-        const pieLabels = Object.keys(catMap);
+        
+        // Modifying Pie Labels to include the amount
+        const pieLabels = Object.keys(catMap).map(key => `${key} (₹${catMap[key].toFixed(0)})`);
         const pieData = Object.values(catMap);
+        
         const ctxPie = document.getElementById('pieChart').getContext('2d');
         if(pieInstance) pieInstance.destroy();
         pieInstance = new Chart(ctxPie, {
@@ -1870,16 +1926,12 @@
                 plugins: {
                     legend: { position: 'bottom' },
                     datalabels: {
-                        color: '#ffffff',
-                        font: { weight: 'bold', size: 12 },
-                        formatter: function(value) {
-                            if (value > 0) return '₹' + value.toFixed(0);
-                            return '';
-                        }
+                        display: false // Hide data labels from slices as requested
                     }
                 }
             }
         });
+        
         const lineLabels = Object.keys(dailyMap);
         const lineData = Object.values(dailyMap);
         const ctxLine = document.getElementById('lineChart').getContext('2d');
