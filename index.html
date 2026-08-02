@@ -893,7 +893,7 @@
 
         @media (max-width: 640px) {
             .app-page { padding: 14px; padding-bottom: 100px; }
-            
+
             /* Menu header on mobile */
             .menu-header {
                 padding: 18px 18px;
@@ -952,321 +952,321 @@
 </head>
 <body>
 
-    <div id="login-page" class="app-page" style="display: flex;">
-        <div class="login-card">
-            <div class="login-brand-icon">📖</div>
-            <h1>Shivadut's Secure Ledger</h1>
-            <p>Access your financial dashboard &amp; timelines.</p>
-            <div class="login-form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" placeholder="Enter numeric username" autocomplete="off" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+<div id="login-page" class="app-page" style="display: flex;">
+    <div class="login-card">
+        <div class="login-brand-icon">📖</div>
+        <h1>Shivadut's Secure Ledger</h1>
+        <p>Access your financial dashboard &amp; timelines.</p>
+        <div class="login-form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Enter numeric username" autocomplete="off" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        </div>
+        <div class="login-form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter numeric password" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        </div>
+        <button class="btn-login" onclick="attemptLogin()">Access Ledger</button>
+        <div class="login-error" id="login-error-msg"></div>
+    </div>
+</div>
+
+<div id="menu-page" class="app-page">
+    <div class="menu-header">
+        <h1>Welcome, <span id="display-username">User</span>!</h1>
+        <button class="btn-logout" onclick="logout()">Sign Out</button>
+    </div>
+    <div class="perforation-strip"></div>
+
+    <div class="dashboard-grid">
+        <!-- Personal Summary -->
+        <div class="dashboard-card">
+            <h3>🧾 Daily Debit Summary</h3>
+            <p class="card-desc">Your overall personal expenses.</p>
+            <div class="stat-value" id="dash-total-spent">₹0.00</div>
+            <button class="btn-dash" onclick="openPage('debit-page')">Log Expense &amp; View History</button>
+        </div>
+
+        <!-- World News Portal -->
+        <div class="dashboard-card">
+            <h3>🌍 World News Portal</h3>
+            <p class="card-desc">Top worldwide news via Google News.</p>
+            <div class="news-links">
+                <a href="https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx1YlY4U0FtVnVHZ0pWVXlnQVAB" target="_blank" class="news-btn">
+                    <span>Top Stories</span><span>📰</span>
+                </a>
+                <a href="https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtVnVHZ0pWVXlnQVAB" target="_blank" class="news-btn">
+                    <span>Business &amp; Finance</span><span>📈</span>
+                </a>
+                <a href="https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FtVnVHZ0pWVXlnQVAB" target="_blank" class="news-btn">
+                    <span>Technology</span><span>💻</span>
+                </a>
             </div>
-            <div class="login-form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" placeholder="Enter numeric password" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-            </div>
-            <button class="btn-login" onclick="attemptLogin()">Access Ledger</button>
-            <div class="login-error" id="login-error-msg"></div>
         </div>
     </div>
 
-    <div id="menu-page" class="app-page">
-        <div class="menu-header">
-            <h1>Welcome, <span id="display-username">User</span>!</h1>
-            <button class="btn-logout" onclick="logout()">Sign Out</button>
-        </div>
-        <div class="perforation-strip"></div>
+    <div class="app-footer" style="margin-top: 30px;"><span class="footer-icon">🪙</span> Shivadut's Ledger — track every rupee, settle every macha</div>
+</div>
 
-        <div class="dashboard-grid">
-            <!-- Personal Summary -->
-            <div class="dashboard-card">
-                <h3>🧾 Daily Debit Summary</h3>
-                <p class="card-desc">Your overall personal expenses.</p>
-                <div class="stat-value" id="dash-total-spent">₹0.00</div>
-                <button class="btn-dash" onclick="openPage('debit-page')">Log Expense &amp; View History</button>
+<div id="notes-page" class="app-page">
+    <div class="tool-nav-bar">
+        <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
+        <button class="btn-logout" onclick="logout()">Sign Out</button>
+    </div>
+    <div class="tool-container" style="flex: 1;">
+        <div class="panel" style="display: flex; flex-direction: column; flex: 1;">
+            <div class="header-action-row">
+                <h2>📝 Personal Notes</h2>
+                <span id="save-status" style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Saved</span>
             </div>
-
-            <!-- World News Portal -->
-            <div class="dashboard-card">
-                <h3>🌍 World News Portal</h3>
-                <p class="card-desc">Top worldwide news via Google News.</p>
-                <div class="news-links">
-                    <a href="https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx1YlY4U0FtVnVHZ0pWVXlnQVAB" target="_blank" class="news-btn">
-                        <span>Top Stories</span><span>📰</span>
-                    </a>
-                    <a href="https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtVnVHZ0pWVXlnQVAB" target="_blank" class="news-btn">
-                        <span>Business &amp; Finance</span><span>📈</span>
-                    </a>
-                    <a href="https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FtVnVHZ0pWVXlnQVAB" target="_blank" class="news-btn">
-                        <span>Technology</span><span>💻</span>
-                    </a>
-                </div>
-            </div>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Your notes are auto-saved directly to your browser.</p>
+            <textarea id="notes-area" placeholder="Start typing your notes, reminders, or thoughts here..." oninput="autoSaveNotes()"></textarea>
         </div>
+        <div class="app-footer"><span class="footer-icon">📝</span> Jot it down before you forget.</div>
+    </div>
+</div>
 
-        <div class="app-footer" style="margin-top: 30px;"><span class="footer-icon">🪙</span> Shivadut's Ledger — track every rupee, settle every macha</div>
+<div id="savings-page" class="app-page">
+    <div class="tool-nav-bar">
+        <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
+        <button class="btn-logout" onclick="logout()">Sign Out</button>
     </div>
 
-    <div id="notes-page" class="app-page">
-        <div class="tool-nav-bar">
-            <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
-            <button class="btn-logout" onclick="logout()">Sign Out</button>
-        </div>
-        <div class="tool-container" style="flex: 1;">
-            <div class="panel" style="display: flex; flex-direction: column; flex: 1;">
-                <div class="header-action-row">
-                    <h2>📝 Personal Notes</h2>
-                    <span id="save-status" style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Saved</span>
-                </div>
-                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Your notes are auto-saved directly to your browser.</p>
-                <textarea id="notes-area" placeholder="Start typing your notes, reminders, or thoughts here..." oninput="autoSaveNotes()"></textarea>
-            </div>
-            <div class="app-footer"><span class="footer-icon">📝</span> Jot it down before you forget.</div>
-        </div>
-    </div>
-
-    <div id="savings-page" class="app-page">
-        <div class="tool-nav-bar">
-            <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
-            <button class="btn-logout" onclick="logout()">Sign Out</button>
-        </div>
-
-        <div class="tool-container">
-            <div class="panel">
-                <h2>🏦 Savings Cash Counter</h2>
-                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Enter the number of notes you have for each denomination to calculate your total savings.</p>
-                <div class="savings-table-wrapper">
+    <div class="tool-container">
+        <div class="panel">
+            <h2>🏦 Savings Cash Counter</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Enter the number of notes you have for each denomination to calculate your total savings.</p>
+            <div class="savings-table-wrapper">
                 <table class="savings-table">
                     <thead>
-                        <tr>
-                            <th>Denomination (₹)</th>
-                            <th>No. of Notes</th>
-                            <th>Total Amount (₹)</th>
-                        </tr>
+                    <tr>
+                        <th>Denomination (₹)</th>
+                        <th>No. of Notes</th>
+                        <th>Total Amount (₹)</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>₹500</td>
-                            <td><input type="number" min="0" step="1" class="note-input" data-denom="500" oninput="calculateSavings()"></td>
-                            <td class="row-total" id="row-total-500">0.00</td>
-                        </tr>
-                        <tr>
-                            <td>₹200</td>
-                            <td><input type="number" min="0" step="1" class="note-input" data-denom="200" oninput="calculateSavings()"></td>
-                            <td class="row-total" id="row-total-200">0.00</td>
-                        </tr>
-                        <tr>
-                            <td>₹100</td>
-                            <td><input type="number" min="0" step="1" class="note-input" data-denom="100" oninput="calculateSavings()"></td>
-                            <td class="row-total" id="row-total-100">0.00</td>
-                        </tr>
-                        <tr>
-                            <td>₹50</td>
-                            <td><input type="number" min="0" step="1" class="note-input" data-denom="50" oninput="calculateSavings()"></td>
-                            <td class="row-total" id="row-total-50">0.00</td>
-                        </tr>
-                        <tr>
-                            <td>₹20</td>
-                            <td><input type="number" min="0" step="1" class="note-input" data-denom="20" oninput="calculateSavings()"></td>
-                            <td class="row-total" id="row-total-20">0.00</td>
-                        </tr>
-                        <tr>
-                            <td>₹10</td>
-                            <td><input type="number" min="0" step="1" class="note-input" data-denom="10" oninput="calculateSavings()"></td>
-                            <td class="row-total" id="row-total-10">0.00</td>
-                        </tr>
+                    <tr>
+                        <td>₹500</td>
+                        <td><input type="number" min="0" step="1" class="note-input" data-denom="500" oninput="calculateSavings()"></td>
+                        <td class="row-total" id="row-total-500">0.00</td>
+                    </tr>
+                    <tr>
+                        <td>₹200</td>
+                        <td><input type="number" min="0" step="1" class="note-input" data-denom="200" oninput="calculateSavings()"></td>
+                        <td class="row-total" id="row-total-200">0.00</td>
+                    </tr>
+                    <tr>
+                        <td>₹100</td>
+                        <td><input type="number" min="0" step="1" class="note-input" data-denom="100" oninput="calculateSavings()"></td>
+                        <td class="row-total" id="row-total-100">0.00</td>
+                    </tr>
+                    <tr>
+                        <td>₹50</td>
+                        <td><input type="number" min="0" step="1" class="note-input" data-denom="50" oninput="calculateSavings()"></td>
+                        <td class="row-total" id="row-total-50">0.00</td>
+                    </tr>
+                    <tr>
+                        <td>₹20</td>
+                        <td><input type="number" min="0" step="1" class="note-input" data-denom="20" oninput="calculateSavings()"></td>
+                        <td class="row-total" id="row-total-20">0.00</td>
+                    </tr>
+                    <tr>
+                        <td>₹10</td>
+                        <td><input type="number" min="0" step="1" class="note-input" data-denom="10" oninput="calculateSavings()"></td>
+                        <td class="row-total" id="row-total-10">0.00</td>
+                    </tr>
                     </tbody>
                     <tfoot>
-                        <tr>
-                            <th colspan="2" style="text-align: right; padding-right: 20px;">Grand Total</th>
-                            <th class="grand-total" id="savings-grand-total">₹0.00</th>
-                        </tr>
+                    <tr>
+                        <th colspan="2" style="text-align: right; padding-right: 20px;">Grand Total</th>
+                        <th class="grand-total" id="savings-grand-total">₹0.00</th>
+                    </tr>
                     </tfoot>
                 </table>
+            </div>
+        </div>
+        <div class="app-footer"><span class="footer-icon">🪙</span> Every note counted is a rupee accounted for.</div>
+    </div>
+</div>
+
+<div id="debit-page" class="app-page">
+    <div class="tool-nav-bar">
+        <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
+        <button class="btn-logout" onclick="logout()">Sign Out</button>
+    </div>
+    <div class="tool-container">
+        <div class="panel">
+            <h2>🧾 Personal Daily Debit Accumulator</h2>
+            <div class="account-summary-grid">
+                <div class="summary-box summary-initial" id="total-spent-box">
+                    <span class="summary-label">Total Spent (All Time)</span>
+                    ₹<span id="total-spent-val">0.00</span>
+                </div>
+                <div class="summary-box summary-spent clickable-box" onclick="openMonthlyBreakdownModal()" title="Click to view previous months">
+                    <span class="summary-label">Monthly Spent (Current)</span>
+                    ₹<span id="current-month-val">0.00</span>
+                    <div style="font-size: 0.65rem; color: #a53039; margin-top: 4px; font-family: var(--font-body); font-weight: 600;">Click for history 👆</div>
                 </div>
             </div>
-            <div class="app-footer"><span class="footer-icon">🪙</span> Every note counted is a rupee accounted for.</div>
+
+            <div class="input-group">
+                <div class="input-row">
+                    <input type="number" id="daily-debit-input" placeholder="Amount spent (₹)" step="0.01" min="0">
+                    <select id="daily-debit-category" class="modern-select" onchange="toggleCustomInput('daily-debit-category', 'daily-debit-custom')">
+                        <option value="" disabled selected>Choose Category</option>
+                        <option value="Breakfast">Breakfast</option>
+                        <option value="Lunch">Lunch</option>
+                        <option value="Dinner">Dinner</option>
+                        <option value="Tea & Coffee">Tea &amp; Coffee</option>
+                        <option value="Travel & Fuel">Travel &amp; Fuel</option>
+                        <option value="Shopping & Clothes">Shopping &amp; Clothes</option>
+                        <option value="Rent & Bills">Rent &amp; Bills</option>
+                        <option value="Juice">Juice</option>
+                        <option value="Snacks">Snacks</option>
+                        <option value="Entertainment & Movies">Entertainment &amp; Movies</option>
+                        <option value="Other">Other (Type Custom)</option>
+                    </select>
+                </div>
+                <input type="text" id="daily-debit-custom" placeholder="Type custom description/category" style="display: none;">
+                <div class="input-row">
+                    <button class="btn-add" id="debit-submit-btn" onclick="addDailyDebit()">Add to Total</button>
+                    <button class="btn-reset" id="debit-cancel-btn" onclick="resetDailyDebit()">Reset All</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="header-action-row">
+                <h2>Personal Spending Log</h2>
+                <div class="header-action-buttons">
+                    <button class="btn-export-pdf" onclick="exportHistoryToPDF()">Export PDF</button>
+                    <button class="btn-export-excel" onclick="exportHistoryToExcel()">
+                        <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                        Export Excel
+                    </button>
+                </div>
+            </div>
+            <div class="debit-history-scroll">
+                <ul class="timeline" id="debit-history-list"></ul>
+            </div>
+        </div>
+        <div class="app-footer"><span class="footer-icon">📖</span> Log it now, thank yourself later.</div>
+    </div>
+</div>
+
+<!-- Monthly Breakdown Modal -->
+<div id="monthly-breakdown-modal" class="modal-overlay">
+    <div class="modal-box">
+        <span class="modal-close" onclick="closeMonthlyBreakdownModal()">&times;</span>
+        <h2 style="border-bottom: 2px solid var(--border-light); padding-bottom: 10px;">Historical Monthly Spent</h2>
+        <div class="modal-content-scroll">
+            <ul class="timeline" id="monthly-breakdown-list"></ul>
         </div>
     </div>
+</div>
 
-    <div id="debit-page" class="app-page">
-        <div class="tool-nav-bar">
-            <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
-            <button class="btn-logout" onclick="logout()">Sign Out</button>
+<div id="calendar-page" class="app-page">
+    <div class="tool-nav-bar">
+        <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
+        <button class="btn-logout" onclick="logout()">Sign Out</button>
+    </div>
+    <div class="tool-container">
+        <div class="panel">
+            <div class="calendar-header">
+                <button onclick="changeMonth(-1)">&#10094;</button>
+                <h2 id="calendar-month-year">Month Year</h2>
+                <button onclick="changeMonth(1)">&#10095;</button>
+            </div>
+            <div class="budget-control">
+                <label for="calendar-budget-input">Daily Budget Threshold: ₹</label>
+                <input type="number" id="calendar-budget-input" value="250" step="10" min="0" onchange="renderCalendar()">
+            </div>
+            <div class="calendar-grid" id="calendar-grid"></div>
         </div>
-        <div class="tool-container">
-            <div class="panel">
-                <h2>🧾 Personal Daily Debit Accumulator</h2>
-                <div class="account-summary-grid">
-                    <div class="summary-box summary-initial" id="total-spent-box">
-                        <span class="summary-label">Total Spent (All Time)</span>
-                        ₹<span id="total-spent-val">0.00</span>
-                    </div>
-                    <div class="summary-box summary-spent clickable-box" onclick="openMonthlyBreakdownModal()" title="Click to view previous months">
-                        <span class="summary-label">Monthly Spent (Current)</span>
-                        ₹<span id="current-month-val">0.00</span>
-                        <div style="font-size: 0.65rem; color: #a53039; margin-top: 4px; font-family: var(--font-body); font-weight: 600;">Click for history 👆</div>
-                    </div>
-                </div>
+        <div class="app-footer"><span class="footer-icon">📅</span> Green days are on-budget, red days need a look.</div>
+    </div>
+</div>
 
-                <div class="input-group">
-                    <div class="input-row">
-                        <input type="number" id="daily-debit-input" placeholder="Amount spent (₹)" step="0.01" min="0">
-                        <select id="daily-debit-category" class="modern-select" onchange="toggleCustomInput('daily-debit-category', 'daily-debit-custom')">
-                            <option value="" disabled selected>Choose Category</option>
-                            <option value="Breakfast">Breakfast</option>
-                            <option value="Lunch">Lunch</option>
-                            <option value="Dinner">Dinner</option>
-                            <option value="Tea & Coffee">Tea &amp; Coffee</option>
-                            <option value="Travel & Fuel">Travel &amp; Fuel</option>
-                            <option value="Shopping & Clothes">Shopping &amp; Clothes</option>
-                            <option value="Rent & Bills">Rent &amp; Bills</option>
-                            <option value="Juice">Juice</option>
-                            <option value="Snacks">Snacks</option>
-                            <option value="Entertainment & Movies">Entertainment &amp; Movies</option>
-                            <option value="Other">Other (Type Custom)</option>
-                        </select>
-                    </div>
-                    <input type="text" id="daily-debit-custom" placeholder="Type custom description/category" style="display: none;">
-                    <div class="input-row">
-                        <button class="btn-add" id="debit-submit-btn" onclick="addDailyDebit()">Add to Total</button>
-                        <button class="btn-reset" id="debit-cancel-btn" onclick="resetDailyDebit()">Reset All</button>
-                    </div>
+<div id="cohort-page" class="app-page">
+    <div class="tool-nav-bar">
+        <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
+        <button class="btn-logout" onclick="logout()">Sign Out</button>
+    </div>
+    <div class="tool-container">
+        <div class="panel">
+            <div class="header-action-row">
+                <h2>🤝 Cohort Ledger &amp; History</h2>
+                <div class="header-action-buttons">
+                    <button class="btn-export-pdf" onclick="exportCohortToPDF()">Export PDF</button>
+                    <button class="btn-export-excel" onclick="exportCohortToExcel()">
+                        <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                        Export Excel
+                    </button>
+                    <button class="btn-reset" onclick="resetAllCohortHistories()">Reset All</button>
                 </div>
             </div>
+            <div id="ledger-container"></div>
+        </div>
+        <div class="app-footer"><span class="footer-icon">🤝</span> Clear accounts, clearer friendships.</div>
+    </div>
+</div>
 
-            <div class="panel">
-                <div class="header-action-row">
-                    <h2>Personal Spending Log</h2>
-                    <div class="header-action-buttons">
-                        <button class="btn-export-pdf" onclick="exportHistoryToPDF()">Export PDF</button>
-                        <button class="btn-export-excel" onclick="exportHistoryToExcel()">
-                            <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-                            Export Excel
-                        </button>
-                    </div>
-                </div>
-                <div class="debit-history-scroll">
-                    <ul class="timeline" id="debit-history-list"></ul>
-                </div>
+<div id="analytics-page" class="app-page">
+    <div class="tool-nav-bar">
+        <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
+        <button class="btn-logout" onclick="logout()">Sign Out</button>
+    </div>
+    <div class="tool-container">
+        <div class="panel">
+            <h2>📊 Debit Analysis (Pie Chart)</h2>
+            <div class="chart-wrapper">
+                <canvas id="pieChart"></canvas>
             </div>
-            <div class="app-footer"><span class="footer-icon">📖</span> Log it now, thank yourself later.</div>
+        </div>
+        <div class="panel">
+            <h2>📈 Spending Timeline Trends</h2>
+            <div class="chart-wrapper">
+                <canvas id="lineChart"></canvas>
+            </div>
+        </div>
+        <div class="app-footer"><span class="footer-icon">📊</span> Numbers tell the story before you feel it.</div>
+    </div>
+</div>
+
+<div id="calendar-modal" class="modal-overlay">
+    <div class="modal-box">
+        <span class="modal-close" onclick="closeCalendarModal()">&times;</span>
+        <h2 id="calendar-modal-title" style="border-bottom: 2px solid var(--border-light); padding-bottom: 10px;">Transactions</h2>
+        <div class="modal-content-scroll">
+            <ul class="timeline" id="calendar-modal-list"></ul>
         </div>
     </div>
+</div>
 
-    <!-- Monthly Breakdown Modal -->
-    <div id="monthly-breakdown-modal" class="modal-overlay">
-        <div class="modal-box">
-            <span class="modal-close" onclick="closeMonthlyBreakdownModal()">&times;</span>
-            <h2 style="border-bottom: 2px solid var(--border-light); padding-bottom: 10px;">Historical Monthly Spent</h2>
-            <div class="modal-content-scroll">
-                <ul class="timeline" id="monthly-breakdown-list"></ul>
-            </div>
-        </div>
-    </div>
-
-    <div id="calendar-page" class="app-page">
-        <div class="tool-nav-bar">
-            <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
-            <button class="btn-logout" onclick="logout()">Sign Out</button>
-        </div>
-        <div class="tool-container">
-            <div class="panel">
-                <div class="calendar-header">
-                    <button onclick="changeMonth(-1)">&#10094;</button>
-                    <h2 id="calendar-month-year">Month Year</h2>
-                    <button onclick="changeMonth(1)">&#10095;</button>
-                </div>
-                <div class="budget-control">
-                    <label for="calendar-budget-input">Daily Budget Threshold: ₹</label>
-                    <input type="number" id="calendar-budget-input" value="250" step="10" min="0" onchange="renderCalendar()">
-                </div>
-                <div class="calendar-grid" id="calendar-grid"></div>
-            </div>
-            <div class="app-footer"><span class="footer-icon">📅</span> Green days are on-budget, red days need a look.</div>
-        </div>
-    </div>
-
-    <div id="cohort-page" class="app-page">
-        <div class="tool-nav-bar">
-            <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
-            <button class="btn-logout" onclick="logout()">Sign Out</button>
-        </div>
-        <div class="tool-container">
-            <div class="panel">
-                <div class="header-action-row">
-                    <h2>🤝 Cohort Ledger &amp; History</h2>
-                    <div class="header-action-buttons">
-                        <button class="btn-export-pdf" onclick="exportCohortToPDF()">Export PDF</button>
-                        <button class="btn-export-excel" onclick="exportCohortToExcel()">
-                            <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-                            Export Excel
-                        </button>
-                        <button class="btn-reset" onclick="resetAllCohortHistories()">Reset All</button>
-                    </div>
-                </div>
-                <div id="ledger-container"></div>
-            </div>
-            <div class="app-footer"><span class="footer-icon">🤝</span> Clear accounts, clearer friendships.</div>
-        </div>
-    </div>
-
-    <div id="analytics-page" class="app-page">
-        <div class="tool-nav-bar">
-            <button class="btn-back" onclick="openPage('menu-page')">⬅ Back to Menu</button>
-            <button class="btn-logout" onclick="logout()">Sign Out</button>
-        </div>
-        <div class="tool-container">
-            <div class="panel">
-                <h2>📊 Debit Analysis (Pie Chart)</h2>
-                <div class="chart-wrapper">
-                    <canvas id="pieChart"></canvas>
-                </div>
-            </div>
-            <div class="panel">
-                <h2>📈 Spending Timeline Trends</h2>
-                <div class="chart-wrapper">
-                    <canvas id="lineChart"></canvas>
-                </div>
-            </div>
-            <div class="app-footer"><span class="footer-icon">📊</span> Numbers tell the story before you feel it.</div>
-        </div>
-    </div>
-
-    <div id="calendar-modal" class="modal-overlay">
-        <div class="modal-box">
-            <span class="modal-close" onclick="closeCalendarModal()">&times;</span>
-            <h2 id="calendar-modal-title" style="border-bottom: 2px solid var(--border-light); padding-bottom: 10px;">Transactions</h2>
-            <div class="modal-content-scroll">
-                <ul class="timeline" id="calendar-modal-list"></ul>
-            </div>
-        </div>
-    </div>
-
-    <!-- Fixed bottom icon navbar -->
-    <nav class="bottom-navbar" id="bottom-navbar">
-        <button class="nav-tab" data-page="menu-page" onclick="openPage('menu-page')">
-            <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
-        </button>
-        <button class="nav-tab" data-page="debit-page" onclick="openPage('debit-page')">
-            <span class="nav-icon">🧾</span><span class="nav-label">Debit</span>
-        </button>
-        <button class="nav-tab" data-page="calendar-page" onclick="openPage('calendar-page')">
-            <span class="nav-icon">📅</span><span class="nav-label">Calendar</span>
-        </button>
-        <button class="nav-tab" data-page="cohort-page" onclick="openPage('cohort-page')">
-            <span class="nav-icon">🤝</span><span class="nav-label">Cohort</span>
-        </button>
-        <button class="nav-tab" data-page="savings-page" onclick="openPage('savings-page')">
-            <span class="nav-icon">🏦</span><span class="nav-label">Savings</span>
-        </button>
-        <button class="nav-tab" data-page="notes-page" onclick="openPage('notes-page')">
-            <span class="nav-icon">📝</span><span class="nav-label">Notes</span>
-        </button>
-        <button class="nav-tab" data-page="analytics-page" onclick="openPage('analytics-page')">
-            <span class="nav-icon">📊</span><span class="nav-label">Stats</span>
-        </button>
-    </nav>
+<!-- Fixed bottom icon navbar -->
+<nav class="bottom-navbar" id="bottom-navbar">
+    <button class="nav-tab" data-page="menu-page" onclick="openPage('menu-page')">
+        <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
+    </button>
+    <button class="nav-tab" data-page="debit-page" onclick="openPage('debit-page')">
+        <span class="nav-icon">🧾</span><span class="nav-label">Debit</span>
+    </button>
+    <button class="nav-tab" data-page="calendar-page" onclick="openPage('calendar-page')">
+        <span class="nav-icon">📅</span><span class="nav-label">Calendar</span>
+    </button>
+    <button class="nav-tab" data-page="cohort-page" onclick="openPage('cohort-page')">
+        <span class="nav-icon">🤝</span><span class="nav-label">Cohort</span>
+    </button>
+    <button class="nav-tab" data-page="savings-page" onclick="openPage('savings-page')">
+        <span class="nav-icon">🏦</span><span class="nav-label">Savings</span>
+    </button>
+    <button class="nav-tab" data-page="notes-page" onclick="openPage('notes-page')">
+        <span class="nav-icon">📝</span><span class="nav-label">Notes</span>
+    </button>
+    <button class="nav-tab" data-page="analytics-page" onclick="openPage('analytics-page')">
+        <span class="nav-icon">📊</span><span class="nav-label">Stats</span>
+    </button>
+</nav>
 
 <script>
     function attemptLogin() {
@@ -1603,17 +1603,82 @@
         });
 
         const filename = `Debit_Ledger_${new Date().toISOString().slice(0,10)}.pdf`;
-        const blob = doc.output('blob');
-        const file = new File([blob], filename, { type: 'application/pdf' });
 
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            navigator.share({
-                files: [file],
-                title: 'Debit Ledger PDF',
-                text: 'Here is my personal debit ledger report.'
-            }).catch(console.error);
+        if (window.AndroidDownloader) {
+            // 1. Android App: Convert PDF to Base64 and send to Java Bridge
+            const base64Data = doc.output('datauristring').split(',')[1];
+            window.AndroidDownloader.downloadBase64(base64Data, filename);
         } else {
+            // 2. Standard Web Browser: Download normally
             doc.save(filename);
+        }
+    }
+
+    function exportCohortToPDF() {
+        const rows = getAllCohortRows();
+        if (rows.length === 0) { alert("Export panna cohort transactions ethuvum illai!"); return; }
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.setFillColor(11, 61, 59);
+        doc.rect(0, 0, 210, 40, 'F');
+        doc.setFont("Helvetica", "bold");
+        doc.setFontSize(22);
+        doc.setTextColor(255, 255, 255);
+        doc.text("Shivadut's Cohort Ledger Report", 14, 20);
+        doc.setFontSize(10);
+        doc.setFont("Helvetica", "normal");
+        doc.setTextColor(220, 220, 220);
+        doc.text(`Generated on: ${new Date().toLocaleString('en-IN')}`, 14, 26);
+        let summaryLine = sortedFriends.map(peer => {
+            const bal = ledgerState[peer].balance;
+            const tag = bal > 0 ? `Owes You Rs.${bal.toFixed(2)}` : bal < 0 ? `You Owe Rs.${Math.abs(bal).toFixed(2)}` : `Settled`;
+            return `${peer}: ${tag}`;
+        }).join('   |   ');
+        doc.setFontSize(8.5);
+        const wrapped = doc.splitTextToSize(summaryLine, 180);
+        doc.text(wrapped, 14, 32);
+        const tableRows = rows.map((row, index) => {
+            const dateStr = dateFormatter.format(new Date(row.timestamp));
+            return [index + 1, row.peer, row.type, row.category, `Rs. ${row.amount.toFixed(2)}`, dateStr];
+        });
+        doc.autoTable({
+            startY: 40 + (wrapped.length * 4),
+            head: [['#', 'Friend', 'Direction', 'Reason / Category', 'Amount', 'Date & Time']],
+            body: tableRows,
+            theme: 'striped',
+            headStyles: { fillColor: [11, 61, 59], textColor: [255, 255, 255] },
+            alternateRowStyles: { fillColor: [233, 242, 239] },
+            styles: { font: "Helvetica", fontSize: 8.5 }
+        });
+
+        const filename = `Cohort_Ledger_${new Date().toISOString().slice(0,10)}.pdf`;
+
+        if (window.AndroidDownloader) {
+            // 1. Android App: Convert PDF to Base64 and send to Java Bridge
+            const base64Data = doc.output('datauristring').split(',')[1];
+            window.AndroidDownloader.downloadBase64(base64Data, filename);
+        } else {
+            // 2. Standard Web Browser: Download normally
+            doc.save(filename);
+        }
+    }
+
+    // --- NEW BRIDGE FUNCTION TO TALK TO ANDROID ---
+    function triggerExcelDownload(content, filename) {
+        if (window.AndroidDownloader) {
+            // 1. If running inside your Android App, send data to Java
+            const base64Data = btoa(unescape(encodeURIComponent(content)));
+            window.AndroidDownloader.downloadBase64(base64Data, filename);
+        } else {
+            // 2. If running on a PC/Laptop Browser, use standard download
+            const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     }
 
@@ -1628,26 +1693,23 @@
             const categoryStr = item.category.replace(/"/g, '""');
             csvContent += `${index + 1},"${dateStr}","${categoryStr}",${item.amount.toFixed(2)}\n`;
         });
-        
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const filename = `Debit_Ledger_${new Date().toISOString().slice(0,10)}.csv`;
-        const file = new File([blob], filename, { type: 'text/csv' });
 
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            navigator.share({
-                files: [file],
-                title: 'Debit Ledger Excel/CSV',
-                text: 'Here is my personal debit ledger export.'
-            }).catch(console.error);
-        } else {
-            const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", filename);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
+        triggerExcelDownload(csvContent, `Debit_Ledger_${new Date().toISOString().slice(0,10)}.csv`);
+    }
+
+    function exportCohortToExcel() {
+        const rows = getAllCohortRows();
+        if (rows.length === 0) { alert("Export panna cohort transactions ethuvum illai!"); return; }
+
+        let csvContent = "Serial No,Friend,Direction,Reason/Category,Amount (INR),Date and Time,Current Balance (INR)\n";
+        rows.forEach((row, index) => {
+            const dateStr = dateFormatter.format(new Date(row.timestamp)).replace(/,/g, '');
+            const categoryStr = row.category.replace(/"/g, '""');
+            const currentBal = ledgerState[row.peer].balance.toFixed(2);
+            csvContent += `${index + 1},"${row.peer}","${row.type}","${categoryStr}",${row.amount.toFixed(2)},"${dateStr}",${currentBal}\n`;
+        });
+
+        triggerExcelDownload(csvContent, `Cohort_Ledger_${new Date().toISOString().slice(0,10)}.csv`);
     }
 
     // --- Cohort Ledger ---
@@ -1860,7 +1922,7 @@
     function exportCohortToExcel() {
         const rows = getAllCohortRows();
         if (rows.length === 0) { alert("Export panna cohort transactions ethuvum illai!"); return; }
-        
+
         let csvContent = "Serial No,Friend,Direction,Reason/Category,Amount (INR),Date and Time,Current Balance (INR)\n";
         rows.forEach((row, index) => {
             const dateStr = dateFormatter.format(new Date(row.timestamp)).replace(/,/g, '');
@@ -1868,7 +1930,7 @@
             const currentBal = ledgerState[row.peer].balance.toFixed(2);
             csvContent += `${index + 1},"${row.peer}","${row.type}","${categoryStr}",${row.amount.toFixed(2)},"${dateStr}",${currentBal}\n`;
         });
-        
+
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const filename = `Cohort_Ledger_${new Date().toISOString().slice(0,10)}.csv`;
         const file = new File([blob], filename, { type: 'text/csv' });
@@ -1903,11 +1965,11 @@
             const dateKey = new Date(item.timestamp).toLocaleDateString('en-IN', {day:'2-digit', month:'short'});
             dailyMap[dateKey] = (dailyMap[dateKey] || 0) + item.amount;
         });
-        
+
         // Modifying Pie Labels to include the amount
         const pieLabels = Object.keys(catMap).map(key => `${key} (₹${catMap[key].toFixed(0)})`);
         const pieData = Object.values(catMap);
-        
+
         const ctxPie = document.getElementById('pieChart').getContext('2d');
         if(pieInstance) pieInstance.destroy();
         pieInstance = new Chart(ctxPie, {
@@ -1931,7 +1993,7 @@
                 }
             }
         });
-        
+
         const lineLabels = Object.keys(dailyMap);
         const lineData = Object.values(dailyMap);
         const ctxLine = document.getElementById('lineChart').getContext('2d');
