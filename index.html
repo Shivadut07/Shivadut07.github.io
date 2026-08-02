@@ -1301,9 +1301,15 @@
         <div class="panel" style="display: flex; flex-direction: column; flex: 1;">
             <div class="header-action-row">
                 <h2>📝 Personal Notes</h2>
-                <span id="save-status" style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700;">Saved</span>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span id="save-status" style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700;">Saved</span>
+                    <button class="btn-dash" id="new-notepad-btn" onclick="createNewNotepad()" title="Save this notepad and start a new one" style="padding:8px 14px; margin:0;">➕ New Notepad</button>
+                </div>
             </div>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Your notes are auto-saved directly to your browser.</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px;">Your notes are auto-saved directly to your browser. Tap ➕ New Notepad to save this note under a topic name and start a fresh one.</p>
+
+            <!-- FEATURE: Notepad switcher -->
+            <div class="feature-toolbar" id="notepad-switcher-row"></div>
 
             <!-- FEATURE: Quick insert toolbar -->
             <div class="feature-toolbar">
@@ -1314,6 +1320,7 @@
                 <button class="chip-btn" onclick="clearNotes()">🗑️ Clear Notes</button>
             </div>
 
+            <div style="font-weight:700; font-size:0.85rem; color: var(--text-main); margin-bottom:6px;">Editing: <span id="current-notepad-title">Untitled Note</span></div>
             <textarea id="notes-area" placeholder="Start typing your notes, reminders, or thoughts here..." oninput="autoSaveNotes()"></textarea>
 
             <!-- FEATURE: word/char count + font size adjuster -->
@@ -1427,7 +1434,7 @@
             <!-- FEATURE: stat chips (average daily spend, highest expense) -->
             <div class="stat-chip-row">
                 <div class="stat-chip accent-give">
-                    <span class="stat-chip-label">Avg Daily Spend (Month)</span>
+                    <span class="stat-chip-label">Avg Daily Spend (Month, excl. Rent)</span>
                     <span class="stat-chip-value" id="stat-avg-daily">₹0</span>
                 </div>
                 <div class="stat-chip accent-gold">
@@ -1462,7 +1469,7 @@
                 <input type="text" id="daily-debit-custom" placeholder="Type custom description/category" style="display: none;">
                 <div class="input-row">
                     <button class="btn-add" id="debit-submit-btn" onclick="addDailyDebit()">Add to Total</button>
-                    <button class="btn-reset" id="debit-cancel-btn" onclick="resetDailyDebit()">Reset All</button>
+                    <button class="btn-reset" id="debit-cancel-btn" onclick="cancelDebitEdit()" style="display:none;">Cancel Edit</button>
                 </div>
             </div>
         </div>
@@ -1529,7 +1536,7 @@
                     <span class="stat-chip-value" id="cal-stat-total">₹0</span>
                 </div>
                 <div class="stat-chip accent-gold">
-                    <span class="stat-chip-label">Highest Day</span>
+                    <span class="stat-chip-label">Highest Day (excl. Rent)</span>
                     <span class="stat-chip-value" id="cal-stat-highest">–</span>
                 </div>
                 <div class="stat-chip">
@@ -1563,7 +1570,6 @@
                         <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
                         Export Excel
                     </button>
-                    <button class="btn-reset" onclick="resetAllCohortHistories()">Reset All</button>
                 </div>
             </div>
 
@@ -1634,9 +1640,13 @@
             </div>
 
             <!-- FEATURE: custom date range filter for analytics -->
-            <div class="input-row" style="margin-bottom: 10px; flex-wrap: wrap;">
-                <label style="font-weight: 700; font-size: 0.85rem; white-space:nowrap;">Custom Range:</label>
+            <div class="input-row" style="margin-bottom: 10px; flex-wrap: wrap; align-items:center;">
+                <button type="button" class="chip-btn" id="custom-range-display-btn" onclick="toggleCustomRangeInputs()" style="text-align:left;">📅 Custom Range — Viewing: Current Month</button>
+            </div>
+            <div class="input-row" id="custom-range-inputs-row" style="display:none; margin-bottom: 10px; flex-wrap: wrap;">
+                <label style="font-weight: 700; font-size: 0.85rem; white-space:nowrap;">From:</label>
                 <input type="date" id="analytics-start-date" onchange="applyAnalyticsCustomRange()">
+                <label style="font-weight: 700; font-size: 0.85rem; white-space:nowrap;">To:</label>
                 <input type="date" id="analytics-end-date" onchange="applyAnalyticsCustomRange()">
                 <button class="chip-btn" onclick="clearAnalyticsCustomRange()">✖ Clear Range</button>
             </div>
@@ -1644,7 +1654,7 @@
             <!-- FEATURE: stat chips for analytics -->
             <div class="stat-chip-row">
                 <div class="stat-chip accent-gold">
-                    <span class="stat-chip-label">Top Category</span>
+                    <span class="stat-chip-label">Top Category (excl. Rent)</span>
                     <span class="stat-chip-value" id="analytics-top-category" style="font-size:1.1rem;">–</span>
                 </div>
                 <div class="stat-chip accent-give">
@@ -1764,19 +1774,19 @@
         <span class="nav-icon">🧾</span><span class="nav-label">Debit</span>
     </button>
     <button class="nav-tab" data-page="calendar-page" onclick="openPage('calendar-page')">
-        <span class="nav-icon">📅</span><span class="nav-label">Calendar</span>
+        <span class="nav-icon">🗓️</span><span class="nav-label">Calendar</span>
     </button>
     <button class="nav-tab" data-page="cohort-page" onclick="openPage('cohort-page')">
-        <span class="nav-icon">🤝</span><span class="nav-label">Cohort</span>
+        <span class="nav-icon">👥</span><span class="nav-label">Cohort</span>
     </button>
     <button class="nav-tab" data-page="savings-page" onclick="openPage('savings-page')">
         <span class="nav-icon">🏦</span><span class="nav-label">Savings</span>
     </button>
     <button class="nav-tab" data-page="notes-page" onclick="openPage('notes-page')">
-        <span class="nav-icon">📝</span><span class="nav-label">Notes</span>
+        <span class="nav-icon">🖊️</span><span class="nav-label">Notes</span>
     </button>
     <button class="nav-tab" data-page="analytics-page" onclick="openPage('analytics-page')">
-        <span class="nav-icon">📊</span><span class="nav-label">Stats</span>
+        <span class="nav-icon">📈</span><span class="nav-label">Stats</span>
     </button>
 </nav>
 
@@ -1816,7 +1826,7 @@
             if (pageId === 'cohort-page') { renderLedger(); }
             if (pageId === 'calendar-page') { renderCalendar(); }
             if (pageId === 'analytics-page') { renderCharts(); }
-            if (pageId === 'notes-page') { updateNotesWordCount(); }
+            if (pageId === 'notes-page') { loadCurrentNotepadIntoTextarea(); }
         }
 
         const navbar = document.getElementById('bottom-navbar');
@@ -1849,10 +1859,91 @@
         document.getElementById('savings-grand-total').textContent = `₹${grandTotal.toFixed(2)}`;
     }
 
-    // --- Notes ---
+    // --- Notes (Multi-Notepad System) ---
+    let notepads = JSON.parse(localStorage.getItem('ledgerNotepads')) || null;
+    let currentNotepadId = localStorage.getItem('currentNotepadId') || null;
+
+    function initNotepads() {
+        if (!notepads || !Array.isArray(notepads) || notepads.length === 0) {
+            const legacyContent = localStorage.getItem('ledgerNotes') || '';
+            const firstId = 'note_' + Date.now();
+            notepads = [{ id: firstId, title: 'Note 1', content: legacyContent, updatedAt: new Date().toISOString() }];
+            currentNotepadId = firstId;
+            localStorage.setItem('ledgerNotepads', JSON.stringify(notepads));
+        }
+        if (!currentNotepadId || !notepads.find(n => n.id === currentNotepadId)) {
+            currentNotepadId = notepads[0].id;
+        }
+        localStorage.setItem('currentNotepadId', currentNotepadId);
+    }
+
+    function getCurrentNotepad() {
+        return notepads.find(n => n.id === currentNotepadId);
+    }
+
+    function loadCurrentNotepadIntoTextarea() {
+        const np = getCurrentNotepad();
+        const area = document.getElementById('notes-area');
+        if (area) area.value = np ? np.content : '';
+        const titleEl = document.getElementById('current-notepad-title');
+        if (titleEl) titleEl.textContent = np ? np.title : 'Untitled Note';
+        updateNotesWordCount();
+        renderNotepadSwitcher();
+    }
+
+    function renderNotepadSwitcher() {
+        const row = document.getElementById('notepad-switcher-row');
+        if (!row) return;
+        row.innerHTML = notepads.map(np => `
+            <button class="chip-btn ${np.id === currentNotepadId ? 'active-chip' : ''}" onclick="switchNotepad('${np.id}')">${np.title.replace(/'/g, "\\'")}</button>
+        `).join('');
+    }
+
+    function switchNotepad(id) {
+        if (id === currentNotepadId) return;
+        saveCurrentNotepadContent();
+        currentNotepadId = id;
+        localStorage.setItem('currentNotepadId', currentNotepadId);
+        loadCurrentNotepadIntoTextarea();
+    }
+
+    function saveCurrentNotepadContent() {
+        const np = getCurrentNotepad();
+        if (!np) return;
+        const area = document.getElementById('notes-area');
+        np.content = area ? area.value : np.content;
+        np.updatedAt = new Date().toISOString();
+        localStorage.setItem('ledgerNotepads', JSON.stringify(notepads));
+    }
+
+    function createNewNotepad() {
+        saveCurrentNotepadContent();
+        const prevNp = getCurrentNotepad();
+        const defaultTitle = prevNp ? prevNp.title : ('Note ' + notepads.length);
+        const title = prompt("Save this notepad with a topic name before starting a new one:", defaultTitle);
+        if (title === null) return; // user cancelled, don't create a new notepad
+        if (prevNp && title.trim() !== '') {
+            prevNp.title = title.trim();
+        }
+        localStorage.setItem('ledgerNotepads', JSON.stringify(notepads));
+
+        const newId = 'note_' + Date.now();
+        const newTitle = 'Untitled Note ' + (notepads.length + 1);
+        notepads.push({ id: newId, title: newTitle, content: '', updatedAt: new Date().toISOString() });
+        currentNotepadId = newId;
+        localStorage.setItem('ledgerNotepads', JSON.stringify(notepads));
+        localStorage.setItem('currentNotepadId', currentNotepadId);
+        loadCurrentNotepadIntoTextarea();
+    }
+
     function autoSaveNotes() {
         const content = document.getElementById('notes-area').value;
-        localStorage.setItem('ledgerNotes', content);
+        const np = getCurrentNotepad();
+        if (np) {
+            np.content = content;
+            np.updatedAt = new Date().toISOString();
+            localStorage.setItem('ledgerNotepads', JSON.stringify(notepads));
+        }
         const statusEl = document.getElementById('save-status');
         statusEl.textContent = "Saving...";
         statusEl.style.color = 'var(--text-main)';
@@ -1980,8 +2071,7 @@
                 }
                 currentEditingId = null;
                 document.getElementById('debit-submit-btn').textContent = "Add to Total";
-                document.getElementById('debit-cancel-btn').textContent = "Reset All";
-                document.getElementById('debit-cancel-btn').setAttribute("onclick", "resetDailyDebit()");
+                document.getElementById('debit-cancel-btn').style.display = "none";
             } else {
                 const newEntry = {
                     id: 'tx_' + Date.now() + '_' + Math.floor(Math.random()*1000),
@@ -2024,7 +2114,7 @@
         }
         document.getElementById('debit-submit-btn').textContent = "Update Amount";
         document.getElementById('debit-cancel-btn').textContent = "Cancel Edit";
-        document.getElementById('debit-cancel-btn').setAttribute("onclick", "cancelDebitEdit()");
+        document.getElementById('debit-cancel-btn').style.display = "inline-block";
         document.getElementById('daily-debit-input').scrollIntoView({ behavior: 'smooth' });
     }
 
@@ -2035,8 +2125,7 @@
         document.getElementById('daily-debit-custom').style.display = 'none';
         document.getElementById('daily-debit-custom').value = '';
         document.getElementById('debit-submit-btn').textContent = "Add to Total";
-        document.getElementById('debit-cancel-btn').textContent = "Reset All";
-        document.getElementById('debit-cancel-btn').setAttribute("onclick", "resetDailyDebit()");
+        document.getElementById('debit-cancel-btn').style.display = "none";
     }
 
     function deleteDebitTransaction(id) {
@@ -2049,17 +2138,6 @@
             renderDebitCategoryChips();
             const openModal = document.getElementById('calendar-modal').style.display === 'flex';
             if (openModal) closeCalendarModal();
-        }
-    }
-
-    function resetDailyDebit() {
-        if (confirm("Moththa history matrum Spent balances reset seiya venduma?")) {
-            debitHistoryState = [];
-            currentEditingId = null;
-            localStorage.setItem('debitHistoryState', JSON.stringify(debitHistoryState));
-            updateBalancesUI();
-            renderDebitHistory();
-            renderDebitCategoryChips();
         }
     }
 
@@ -2119,7 +2197,7 @@
         updateDebitFeatureStats();
     }
 
-    // FEATURE 2 & 3: Avg daily spend + highest expense + tx count (current month) + budget progress
+    // FEATURE 2 & 3: Avg daily spend (excludes Rent & Bills) + highest expense + tx count (current month) + budget progress
     function updateDebitFeatureStats() {
         const avgEl = document.getElementById('stat-avg-daily');
         const highEl = document.getElementById('stat-highest-expense');
@@ -2133,8 +2211,11 @@
         });
 
         const monthTotal = monthTx.reduce((sum, item) => sum + item.amount, 0);
+        const monthTotalExcRent = monthTx
+            .filter(item => item.category !== 'Rent & Bills')
+            .reduce((sum, item) => sum + item.amount, 0);
         const daysElapsed = now.getDate();
-        const avgDaily = daysElapsed > 0 ? monthTotal / daysElapsed : 0;
+        const avgDaily = daysElapsed > 0 ? monthTotalExcRent / daysElapsed : 0;
         const highest = monthTx.length > 0 ? Math.max(...monthTx.map(i => i.amount)) : 0;
 
         avgEl.textContent = `₹${avgDaily.toFixed(0)}`;
@@ -2207,11 +2288,13 @@
     function downloadNotes() {
         const content = document.getElementById('notes-area').value;
         if (content.trim() === '') { alert("Notes empty-a iruku, download panna onnum illa!"); return; }
+        const np = getCurrentNotepad();
+        const safeTitle = (np ? np.title : 'Notes').replace(/[^a-z0-9]/gi, '_');
         const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = `Shivadut_Notes_${new Date().toISOString().slice(0,10)}.txt`;
+        link.download = `Shivadut_${safeTitle}_${new Date().toISOString().slice(0,10)}.txt`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -2219,7 +2302,7 @@
     }
 
     function clearNotes() {
-        if (confirm("Ella notes-um permanent-aga clear seiya venduma?")) {
+        if (confirm("Intha notepad-oda content mattum clear seiya venduma?")) {
             document.getElementById('notes-area').value = '';
             autoSaveNotes();
         }
@@ -2668,16 +2751,6 @@
         window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
-    function resetAllCohortHistories() {
-        if (confirm("Ella cohort records matrum timelines structural-ah permanently clean seiya venduma?")) {
-            sortedFriends.forEach(peer => {
-                ledgerState[peer] = { balance: 0, baseline: 0, transactions: [] };
-            });
-            localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
-            renderLedger();
-        }
-    }
-
     function getAllCohortRows() {
         const rows = [];
         sortedFriends.forEach(peer => {
@@ -2753,6 +2826,21 @@
 
     /* ===================== NEW FEATURES: ANALYTICS PAGE (declared early for hoisting) ===================== */
     window.analyticsCustomRange = null;
+    function toggleCustomRangeInputs() {
+        const row = document.getElementById('custom-range-inputs-row');
+        if (!row) return;
+        row.style.display = (row.style.display === 'none' || row.style.display === '') ? 'flex' : 'none';
+    }
+    function updateCustomRangeDisplayText() {
+        const btn = document.getElementById('custom-range-display-btn');
+        if (!btn) return;
+        if (window.analyticsCustomRange) {
+            const fmt = (d) => d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
+            btn.textContent = `📅 Custom Range: ${fmt(window.analyticsCustomRange.start)} – ${fmt(window.analyticsCustomRange.end)}`;
+        } else {
+            btn.textContent = `📅 Custom Range — Viewing: ${chartViewAllTime ? 'All Time' : 'Current Month'}`;
+        }
+    }
     function applyAnalyticsCustomRange() {
         const startVal = document.getElementById('analytics-start-date').value;
         const endVal = document.getElementById('analytics-end-date').value;
@@ -2767,6 +2855,8 @@
         window.analyticsCustomRange = null;
         document.getElementById('analytics-start-date').value = '';
         document.getElementById('analytics-end-date').value = '';
+        const row = document.getElementById('custom-range-inputs-row');
+        if (row) row.style.display = 'none';
         renderCharts();
     }
     function printAnalyticsSummary() {
@@ -2803,12 +2893,18 @@
             });
         }
 
+        updateCustomRangeDisplayText();
+
         const catMap = {};
+        const catMapNoRent = {};
         const dailyMap = {};
         const sortedHistory = chartDataTarget.reverse();
 
         sortedHistory.forEach(item => {
             catMap[item.category] = (catMap[item.category] || 0) + item.amount;
+            if (item.category !== 'Rent & Bills') {
+                catMapNoRent[item.category] = (catMapNoRent[item.category] || 0) + item.amount;
+            }
             const dateKey = new Date(item.timestamp).toLocaleDateString('en-IN', {day:'2-digit', month:'short'});
             dailyMap[dateKey] = (dailyMap[dateKey] || 0) + item.amount;
         });
@@ -2898,7 +2994,7 @@
         const periodTotal = chartDataTarget.reduce((sum, i) => sum + i.amount, 0);
         let topCat = '–';
         let topCatAmt = 0;
-        Object.keys(catMap).forEach(cat => { if (catMap[cat] > topCatAmt) { topCatAmt = catMap[cat]; topCat = cat; } });
+        Object.keys(catMapNoRent).forEach(cat => { if (catMapNoRent[cat] > topCatAmt) { topCatAmt = catMapNoRent[cat]; topCat = cat; } });
         const uniqueDays = new Set(chartDataTarget.map(i => new Date(i.timestamp).toDateString())).size || 1;
         const avgDaily = periodTotal / uniqueDays;
 
@@ -2937,11 +3033,15 @@
             grid.appendChild(emptyCell);
         }
         const dayAmountMap = {};
+        const dayAmountMapNoRent = {};
         debitHistoryState.forEach(tx => {
             const txDate = new Date(tx.timestamp);
             if (txDate.getFullYear() === year && txDate.getMonth() === month) {
                 const dateNum = txDate.getDate();
                 dayAmountMap[dateNum] = (dayAmountMap[dateNum] || 0) + tx.amount;
+                if (tx.category !== 'Rent & Bills') {
+                    dayAmountMapNoRent[dateNum] = (dayAmountMapNoRent[dateNum] || 0) + tx.amount;
+                }
             }
         });
 
@@ -2963,7 +3063,8 @@
             if (dayAmountMap[day]) {
                 const totalSpent = dayAmountMap[day];
                 monthTotal += totalSpent;
-                if (totalSpent > highestAmt) { highestAmt = totalSpent; highestDay = day; }
+                const noRentSpent = dayAmountMapNoRent[day] || 0;
+                if (noRentSpent > highestAmt) { highestAmt = noRentSpent; highestDay = day; }
                 if (totalSpent > budgetThreshold) daysOverBudget++;
 
                 const amtSpan = document.createElement('span');
@@ -3109,8 +3210,9 @@
         localStorage.removeItem('initialAccountBalance');
         localStorage.removeItem('personalTotalDebit');
         loadSavingsData();
-        document.getElementById('notes-area').value = localStorage.getItem('ledgerNotes') || '';
+        initNotepads();
         document.getElementById('notes-area').style.fontSize = notesFontSizePx + 'px';
+        loadCurrentNotepadIntoTextarea();
         updateBalancesUI();
         updateNotesWordCount();
         // If user was previously authenticated in this tab session, jump to menu
