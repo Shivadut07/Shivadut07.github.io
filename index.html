@@ -6,7 +6,7 @@
     <meta name="color-scheme" content="light only">
     <title>Shivadut's Integrated Financial Ledger</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -14,31 +14,37 @@
     <style>
         :root {
             color-scheme: light only;
-            /* --- "Passbook" Palette --- */
-            --bg-color: #E9F2EF;
-            --bg-color-deep: #DCEAE5;
+            /* --- "Rupee Note" Palette: deep indigo ledger ink + marigold accent --- */
+            --bg-color: #EDF0F8;
+            --bg-color-deep: #DFE4F3;
             --panel-bg: #ffffff;
-            --text-main: #0B3D3B;
-            --text-deep: #072826;
-            --text-muted: #5E7370;
-            --border-light: #D5E4DF;
+            --text-main: #202C5C;
+            --text-deep: #12173A;
+            --text-muted: #6A7093;
+            --border-light: #DCE1F1;
 
-            --accent-gold: #C99A2E;
-            --accent-gold-soft: #F3E4BE;
+            --accent-gold: #E2A23B;
+            --accent-gold-soft: #FBECD3;
 
-            --btn-give: #D64550;
+            --btn-give: #C1443E;
             --btn-give-soft: #FBE3E1;
-            --btn-receive: #2F9E6E;
-            --btn-receive-soft: #E1F3E9;
-            --btn-neutral: #2C7DA0;
-            --btn-neutral-soft: #DDEEF5;
+            --btn-receive: #1E9D6E;
+            --btn-receive-soft: #DEF3EA;
+            --btn-neutral: #33549C;
+            --btn-neutral-soft: #E1E8F8;
             --btn-whatsapp: #25D366;
 
-            --timeline-spine: #CFE2DC;
+            --timeline-spine: #D4DAF0;
             --timeline-node-bg: #ffffff;
 
-            --font-display: 'Fraunces', Georgia, serif;
-            --font-body: 'Inter', Arial, sans-serif;
+            --font-display: 'Instrument Serif', Georgia, serif;
+            --font-body: 'Manrope', Arial, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --radius-lg: 22px;
+            --radius-md: 14px;
+            --radius-sm: 10px;
+            --radius-pill: 999px;
         }
 
         /* Force light theme even on dark-mode phones */
@@ -53,26 +59,27 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        html { scroll-behavior: smooth; background-color: #E9F2EF; }
+        html { scroll-behavior: smooth; background-color: #EDF0F8; }
 
         body {
             font-family: var(--font-body);
             background-color: var(--bg-color) !important;
             background-image:
-                radial-gradient(circle at 100% 0%, rgba(201,154,46,0.07), transparent 45%),
-                radial-gradient(circle at 0% 100%, rgba(11,61,59,0.06), transparent 40%);
+                radial-gradient(circle at 100% 0%, rgba(226,162,59,0.10), transparent 45%),
+                radial-gradient(circle at 0% 100%, rgba(32,44,92,0.08), transparent 40%),
+                repeating-linear-gradient(115deg, rgba(32,44,92,0.015) 0px, rgba(32,44,92,0.015) 1px, transparent 1px, transparent 26px);
             color: var(--text-main);
             min-height: 100vh;
             -webkit-font-smoothing: antialiased;
         }
 
-        h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.01em; }
+        h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.01em; }
 
         /* --- PAGE CONTAINERS --- */
         .app-page {
             display: none;
             padding: 20px;
-            padding-bottom: 130px; /* Increased padding to accommodate taller bottom navbar */
+            padding-bottom: 130px;
             min-height: 100vh;
             flex-direction: column;
             align-items: center;
@@ -84,7 +91,7 @@
             justify-content: center;
             align-items: center;
             padding-bottom: 20px;
-            background: linear-gradient(150deg, #072826 0%, #0B3D3B 55%, #145C57 100%);
+            background: linear-gradient(150deg, #12173A 0%, #202C5C 55%, #33549C 100%);
             position: relative;
             overflow: hidden;
         }
@@ -92,7 +99,7 @@
             content: "";
             position: absolute;
             inset: 0;
-            background-image: radial-gradient(circle, rgba(201,154,46,0.35) 1.5px, transparent 1.6px);
+            background-image: radial-gradient(circle, rgba(226,162,59,0.35) 1.5px, transparent 1.6px);
             background-size: 26px 26px;
             opacity: 0.25;
             pointer-events: none;
@@ -101,7 +108,7 @@
         .login-card {
             background: var(--panel-bg);
             padding: 40px 30px;
-            border-radius: 18px;
+            border-radius: var(--radius-lg);
             box-shadow: 0 25px 50px rgba(0,0,0,0.35);
             width: 100%;
             max-width: 400px;
@@ -113,54 +120,54 @@
 
         .login-brand-icon {
             width: 56px; height: 56px;
-            border-radius: 14px;
+            border-radius: 16px;
             background: linear-gradient(135deg, var(--text-main), var(--text-deep));
             color: var(--accent-gold);
             display: flex; align-items: center; justify-content: center;
             font-size: 1.8rem;
             margin: 0 auto 16px;
-            box-shadow: 0 8px 18px rgba(11,61,59,0.35);
+            box-shadow: 0 8px 18px rgba(32,44,92,0.35);
         }
 
-        .login-card h1 { font-size: 1.7rem; margin-bottom: 8px; font-weight: 600; color: var(--text-main); }
+        .login-card h1 { font-size: 2rem; margin-bottom: 8px; font-weight: 500; color: var(--text-main); }
         .login-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 28px; }
 
         .login-form-group { margin-bottom: 20px; text-align: left; }
-        .login-form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.85rem; color: var(--text-main); }
+        .login-form-group label { display: block; margin-bottom: 8px; font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-main); }
         .login-form-group input {
             width: 100%;
-            padding: 12px 15px;
+            padding: 13px 16px;
             border: 1.5px solid var(--border-light);
-            border-radius: 10px;
+            border-radius: var(--radius-sm);
             font-size: 1rem;
             font-family: var(--font-body);
-            transition: border-color 0.3s;
-            background: #F7FAF9;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background: #F7F8FC;
             color: var(--text-deep);
         }
         .login-form-group input:focus {
             outline: none;
             border-color: var(--accent-gold);
-            box-shadow: 0 0 0 3px rgba(201, 154, 46, 0.18);
+            box-shadow: 0 0 0 4px rgba(226, 162, 59, 0.18);
         }
 
         .btn-login {
             width: 100%;
-            padding: 14px;
+            padding: 15px;
             background: linear-gradient(135deg, var(--text-main), var(--text-deep));
             color: var(--accent-gold-soft);
             border: none;
-            border-radius: 10px;
+            border-radius: var(--radius-pill);
             font-size: 1.05rem;
-            font-weight: 600;
+            font-weight: 700;
             font-family: var(--font-body);
             cursor: pointer;
-            transition: transform 0.15s, box-shadow 0.2s;
-            box-shadow: 0 8px 18px rgba(11,61,59,0.28);
+            transition: transform 0.15s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s;
+            box-shadow: 0 8px 18px rgba(32,44,92,0.28);
         }
-        .btn-login:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(11,61,59,0.35); }
-        .btn-login:active { transform: scale(0.98); }
-        .login-error { color: var(--btn-give); font-size: 0.85rem; margin-top: 15px; min-height: 20px; font-weight: 600; }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(32,44,92,0.38); }
+        .btn-login:active { transform: scale(0.96); }
+        .login-error { color: var(--btn-give); font-size: 0.85rem; margin-top: 15px; min-height: 20px; font-weight: 700; }
 
         /* --- MENU HEADER --- */
         .menu-header {
@@ -171,15 +178,15 @@
             align-items: center;
             gap: 12px;
             background: linear-gradient(120deg, var(--text-main), var(--text-deep));
-            color: #EAF2F0;
+            color: #EDF0F8;
             padding: 22px 26px;
-            border-radius: 18px;
-            box-shadow: 0 10px 25px rgba(11,61,59,0.18);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 10px 25px rgba(32,44,92,0.18);
             margin-bottom: 0;
             margin-top: 6px;
         }
-        .menu-header h1 { font-size: 1.5rem; font-weight: 600; color: #EAF2F0; line-height: 1.2; }
-        .menu-header h1 span { color: var(--accent-gold); }
+        .menu-header h1 { font-size: 1.6rem; font-weight: 500; color: #EDF0F8; line-height: 1.2; }
+        .menu-header h1 span { color: var(--accent-gold); font-style: italic; }
 
         .perforation-strip {
             width: 100%;
@@ -189,7 +196,7 @@
             background-image: radial-gradient(circle, var(--bg-color) 4.5px, transparent 4.6px);
             background-size: 24px 16px;
             background-position: 12px center;
-            border-radius: 0 0 6px 6px;
+            border-radius: 0 0 8px 8px;
             margin-bottom: 30px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.08);
         }
@@ -204,55 +211,58 @@
 
         .dashboard-card {
             background: var(--panel-bg);
-            border-radius: 16px;
+            border-radius: var(--radius-lg);
             padding: 25px;
-            box-shadow: 0 8px 20px rgba(11,61,59,0.08);
+            box-shadow: 0 8px 20px rgba(32,44,92,0.08);
             display: flex;
             flex-direction: column;
             gap: 15px;
             border-top: 4px solid var(--accent-gold);
             height: 100%;
+            transition: transform 0.25s, box-shadow 0.25s;
         }
+        .dashboard-card:hover { transform: translateY(-3px); box-shadow: 0 14px 28px rgba(32,44,92,0.14); }
 
-        .dashboard-card h3 { font-size: 1.3rem; color: var(--text-main); margin-bottom: 5px; display: flex; align-items: center; gap: 8px;}
+        .dashboard-card h3 { font-size: 1.4rem; color: var(--text-main); margin-bottom: 5px; display: flex; align-items: center; gap: 8px;}
         .dashboard-card p.card-desc { color: var(--text-muted); font-size: 0.9rem; margin: 0; }
 
-        .stat-value { font-size: 2.2rem; font-weight: bold; font-family: var(--font-display); color: var(--btn-give); }
+        .stat-value { font-size: 2.3rem; font-weight: 500; font-family: var(--font-display); color: var(--btn-give); }
         .stat-value.positive { color: var(--btn-receive); }
 
         .btn-dash {
-            padding: 10px;
+            padding: 12px;
             background: var(--btn-neutral-soft);
             color: var(--btn-neutral);
-            border: 1px solid var(--btn-neutral);
-            border-radius: 8px;
-            font-weight: 600;
+            border: 1.5px solid var(--btn-neutral);
+            border-radius: var(--radius-pill);
+            font-weight: 700;
             text-align: center;
             text-decoration: none;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s cubic-bezier(.34,1.56,.64,1);
             margin-top: auto;
             font-family: var(--font-body);
             font-size: 0.95rem;
         }
-        .btn-dash:hover { background: var(--btn-neutral); color: white; }
+        .btn-dash:hover { background: var(--btn-neutral); color: white; transform: translateY(-2px); }
+        .btn-dash:active { transform: scale(0.95); }
 
         .news-links { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
         .news-btn {
-            background: #F8FBFA;
+            background: #F8F9FD;
             border: 1px solid var(--border-light);
             padding: 12px 15px;
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             text-decoration: none;
             color: var(--text-main);
-            font-weight: 500;
+            font-weight: 600;
             display: flex;
             justify-content: space-between;
             align-items: center;
             transition: transform 0.2s, box-shadow 0.2s;
         }
         .news-btn:hover {
-            transform: translateY(-2px);
+            transform: translateY(-2px) scale(1.01);
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             border-color: var(--accent-gold);
         }
@@ -264,25 +274,26 @@
             margin-top: 10px;
         }
         .hub-btn {
-            background: #F8FBFA;
+            background: #F8F9FD;
             border: 1px solid var(--border-light);
             padding: 18px 10px;
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             text-decoration: none;
             color: var(--text-main);
-            font-weight: 600;
+            font-weight: 700;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             gap: 8px;
-            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+            transition: transform 0.2s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s, border-color 0.2s;
         }
         .hub-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(11,61,59,0.08);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 6px 12px rgba(32,44,92,0.10);
             border-color: var(--accent-gold);
         }
+        .hub-btn:active { transform: scale(0.95); }
         .hub-btn .hub-icon { font-size: 1.8rem; }
         .hub-btn .hub-label { font-size: 0.85rem; text-align: center; }
 
@@ -322,14 +333,14 @@
 
         .btn-back {
             background-color: var(--text-main);
-            color: #EAF2F0;
-            padding: 10px 18px;
-            border-radius: 10px;
+            color: #EDF0F8;
+            padding: 11px 20px;
+            border-radius: var(--radius-pill);
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
             border: none;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.2s, transform 0.15s;
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -337,60 +348,121 @@
             font-size: 0.9rem;
             white-space: nowrap;
         }
-        .btn-back:hover { background-color: var(--text-deep); }
+        .btn-back:hover { background-color: var(--text-deep); transform: translateY(-1px); }
+        .btn-back:active { transform: scale(0.95); }
 
         .btn-logout {
-            padding: 10px 18px;
+            padding: 11px 20px;
             background-color: var(--btn-give);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: var(--radius-pill);
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
             font-family: var(--font-body);
             font-size: 0.9rem;
             white-space: nowrap;
+            transition: transform 0.15s, opacity 0.2s;
         }
-        .btn-logout:hover { opacity: 0.9; }
+        .btn-logout:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-logout:active { transform: scale(0.95); }
 
         .panel {
             background: var(--panel-bg) !important;
-            border-radius: 16px;
+            border-radius: var(--radius-lg);
             padding: 25px;
-            box-shadow: 0 8px 20px rgba(11,61,59,0.08);
+            box-shadow: 0 8px 20px rgba(32,44,92,0.08);
             width: 100%;
             color: var(--text-main);
         }
 
         h2 {
             margin-top: 0;
-            font-size: 1.3rem;
-            font-weight: 600;
+            font-size: 1.45rem;
+            font-weight: 500;
             border-bottom: 2px solid var(--border-light);
             padding-bottom: 12px;
             margin-bottom: 15px;
             color: var(--text-main);
         }
 
+        /* --- STAT CHIP ROW (new, reusable for feature stats) --- */
+        .stat-chip-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin: 18px 0;
+        }
+        .stat-chip {
+            background: #F7F9FD;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            text-align: center;
+        }
+        .stat-chip .stat-chip-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); display: block; margin-bottom: 6px; }
+        .stat-chip .stat-chip-value { font-family: var(--font-display); font-size: 1.5rem; color: var(--text-main); }
+        .stat-chip.accent-give .stat-chip-value { color: var(--btn-give); }
+        .stat-chip.accent-receive .stat-chip-value { color: var(--btn-receive); }
+        .stat-chip.accent-gold .stat-chip-value { color: var(--accent-gold); }
+
+        .feature-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .chip-btn {
+            background: var(--btn-neutral-soft);
+            color: var(--btn-neutral);
+            border: 1px solid var(--btn-neutral);
+            padding: 7px 13px;
+            border-radius: var(--radius-pill);
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.18s;
+        }
+        .chip-btn:hover { background: var(--btn-neutral); color: white; }
+        .chip-btn.active-chip { background: var(--text-main); color: white; border-color: var(--text-main); }
+
         /* --- NOTES --- */
         #notes-area {
             width: 100%;
             flex-grow: 1;
-            min-height: 400px;
+            min-height: 380px;
             border: 1.5px solid var(--border-light);
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             padding: 18px;
             font-size: 1.05rem;
             font-family: var(--font-body);
             color: var(--text-deep);
-            background-color: #FBFDFC;
+            background-color: #FBFCFE;
             resize: vertical;
             line-height: 1.6;
         }
         #notes-area:focus {
             outline: none;
             border-color: var(--accent-gold);
-            box-shadow: 0 0 0 3px rgba(201, 154, 46, 0.15);
+            box-shadow: 0 0 0 3px rgba(226, 162, 59, 0.15);
+        }
+        .notes-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .font-size-control { display: flex; align-items: center; gap: 6px; }
+        .font-size-control button {
+            width: 30px; height: 30px; padding: 0; border-radius: 50%;
+            background: var(--btn-neutral-soft); color: var(--btn-neutral); border: 1px solid var(--btn-neutral);
+            font-weight: 800; font-size: 0.95rem; display: flex; align-items:center; justify-content:center;
         }
 
         /* --- DEBIT --- */
@@ -402,14 +474,14 @@
         }
         .summary-box {
             text-align: center;
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             padding: 16px 10px;
-            font-weight: bold;
+            font-weight: 500;
             font-family: var(--font-display);
         }
-        .summary-initial { background-color: var(--btn-neutral-soft); color: var(--btn-neutral); font-size: 1.4rem; }
-        .summary-spent { background-color: var(--btn-give-soft); color: var(--btn-give); font-size: 1.4rem; }
-        .summary-label { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 5px; font-family: var(--font-body); }
+        .summary-initial { background-color: var(--btn-neutral-soft); color: var(--btn-neutral); font-size: 1.5rem; }
+        .summary-spent { background-color: var(--btn-give-soft); color: var(--btn-give); font-size: 1.5rem; }
+        .summary-label { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 5px; font-family: var(--font-body); text-transform: uppercase; letter-spacing: 0.03em; }
 
         .clickable-box {
             cursor: pointer;
@@ -417,8 +489,27 @@
         }
         .clickable-box:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 16px rgba(214,69,80,0.18);
+            box-shadow: 0 8px 16px rgba(193,68,62,0.18);
         }
+
+        .budget-goal-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            background: #F7F9FD;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+        }
+        .budget-goal-row label { font-size: 0.85rem; font-weight: 700; color: var(--text-main); white-space: nowrap; }
+        .budget-goal-row input { max-width: 130px; padding: 8px 10px; }
+        .budget-progress-wrap { flex: 1 1 220px; min-width: 180px; }
+        .budget-progress-track { width: 100%; height: 10px; background: var(--bg-color-deep); border-radius: 6px; overflow: hidden; }
+        .budget-progress-fill { height: 100%; background: linear-gradient(90deg, var(--btn-receive), #1c8a61); border-radius: 6px; transition: width 0.5s; }
+        .budget-progress-fill.over-budget { background: linear-gradient(90deg, var(--btn-give), #a53039); }
+        .budget-progress-text { font-size: 0.72rem; color: var(--text-muted); font-weight: 700; margin-top: 4px; }
 
         .input-group { display: flex; flex-direction: column; gap: 10px; width: 100%; }
         .input-row { display: flex; gap: 10px; width: 100%; align-items: center; }
@@ -426,11 +517,11 @@
             flex: 1 1 auto;
             padding: 12px;
             border: 1.5px solid var(--border-light);
-            border-radius: 10px;
+            border-radius: var(--radius-sm);
             font-size: 1.02rem;
             min-width: 0;
             font-family: var(--font-body);
-            background: #FBFDFC;
+            background: #FBFCFE;
             color: var(--text-deep);
         }
 
@@ -438,10 +529,10 @@
             flex: 1 1 auto;
             padding: 12px;
             border: 1.5px solid var(--border-light);
-            border-radius: 10px;
+            border-radius: var(--radius-sm);
             font-size: 0.98rem;
             color: var(--text-main);
-            background-color: #FBFDFC;
+            background-color: #FBFCFE;
             cursor: pointer;
             font-family: var(--font-body);
             appearance: none;
@@ -455,18 +546,18 @@
         button {
             padding: 12px 18px;
             border: none;
-            border-radius: 10px;
-            font-weight: 600;
+            border-radius: var(--radius-pill);
+            font-weight: 700;
             cursor: pointer;
             color: white;
-            transition: transform 0.2s, opacity 0.2s;
+            transition: transform 0.18s cubic-bezier(.34,1.56,.64,1), opacity 0.2s, box-shadow 0.2s;
             white-space: nowrap;
             font-family: var(--font-body);
         }
-        button:hover { transform: scale(1.02); opacity: 0.92; }
-        button:active { transform: scale(0.95); }
-        .btn-add { background-color: var(--btn-neutral); flex: 1 1 auto; justify-content: center; display: flex; align-items: center;}
-        .btn-reset { background-color: var(--btn-give); flex: 0 0 auto; }
+        button:hover { transform: translateY(-1px) scale(1.02); opacity: 0.94; box-shadow: 0 6px 14px rgba(32,44,92,0.16); }
+        button:active { transform: scale(0.94); box-shadow: none; }
+        .btn-add { background-color: var(--btn-neutral); flex: 1 1 auto; justify-content: center; display: flex; align-items: center; min-height: 46px; }
+        .btn-reset { background-color: var(--btn-give); flex: 0 0 auto; min-height: 46px; }
 
         .header-action-row {
             display: flex;
@@ -485,10 +576,10 @@
             background-color: #107c41;
             color: #ffffff;
             border: none;
-            border-radius: 8px;
-            padding: 8px 14px;
+            border-radius: var(--radius-pill);
+            padding: 9px 15px;
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -500,17 +591,31 @@
             background-color: var(--btn-give);
             color: #ffffff;
             border: none;
-            border-radius: 8px;
-            padding: 8px 14px;
+            border-radius: var(--radius-pill);
+            padding: 9px 15px;
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
         }
         .btn-export-pdf:hover { background-color: #b8323d; }
 
+        .btn-print {
+            background-color: var(--btn-neutral);
+            color: #ffffff;
+            border: none;
+            border-radius: var(--radius-pill);
+            padding: 9px 15px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .search-filter-row { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+        .search-filter-row input[type="text"] { flex: 1 1 220px; }
+
         .debit-history-scroll {
-            background-color: #F3F8F6;
-            border-radius: 10px;
+            background-color: #F5F7FC;
+            border-radius: var(--radius-md);
             max-height: 400px;
             overflow-y: auto;
             padding: 15px 20px;
@@ -527,13 +632,15 @@
             background-color: var(--accent-gold);
             padding: 4px 8px;
             font-size: 0.75rem;
-            border-radius: 6px;
+            border-radius: var(--radius-sm);
+            min-height: unset;
         }
         .btn-delete-inline {
             background-color: var(--btn-give);
             padding: 4px 8px;
             font-size: 0.75rem;
-            border-radius: 6px;
+            border-radius: var(--radius-sm);
+            min-height: unset;
         }
 
         /* --- SAVINGS TABLE --- */
@@ -554,8 +661,8 @@
             color: var(--text-main);
         }
         .savings-table th {
-            background-color: #F3F8F6;
-            font-weight: 600;
+            background-color: #F5F7FC;
+            font-weight: 700;
             color: var(--text-muted);
             font-size: 0.9rem;
         }
@@ -563,24 +670,25 @@
             width: 100px;
             padding: 8px;
             border: 1.5px solid var(--border-light);
-            border-radius: 8px;
+            border-radius: var(--radius-sm);
             text-align: center;
             font-size: 1rem;
-            background: #FBFDFC;
+            background: #FBFCFE;
             color: var(--text-deep);
         }
         .savings-table .grand-total {
-            font-size: 1.4rem;
-            font-weight: bold;
+            font-size: 1.5rem;
+            font-weight: 500;
             color: var(--btn-receive);
             font-family: var(--font-display);
         }
         .savings-table .row-total {
-            font-weight: 600;
+            font-weight: 700;
             font-size: 1.1rem;
+            font-family: var(--font-mono);
         }
         .savings-table tr:hover {
-            background-color: #F7FBFA;
+            background-color: #F7FAFF;
         }
 
         /* --- COHORT LEDGER --- */
@@ -600,14 +708,15 @@
         }
 
         .peer-info { display: flex; flex-direction: column; gap: 6px; }
-        .peer-name { font-weight: 600; text-transform: capitalize; font-size: 1.05rem; font-family: var(--font-display); color: var(--text-main); }
+        .peer-name { font-weight: 500; text-transform: capitalize; font-size: 1.15rem; font-family: var(--font-display); color: var(--text-main); }
 
         .btn-history-toggle {
-            padding: 5px 8px;
+            padding: 5px 10px;
             font-size: 0.72rem;
             background-color: var(--text-muted);
-            border-radius: 6px;
+            border-radius: var(--radius-pill);
             align-self: flex-start;
+            min-height: unset;
         }
 
         .ledger-controls { display: flex; flex-direction: column; gap: 8px; }
@@ -616,9 +725,10 @@
         .ledger-inputs select, .ledger-inputs input[type="text"] { flex: 1; padding: 8px; }
 
         .ledger-buttons { display: flex; gap: 6px; width: 100%; }
-        .ledger-buttons button { flex: 1; padding: 8px 10px; font-size: 0.78rem; border-radius: 8px; }
+        .ledger-buttons button { flex: 1; padding: 9px 10px; font-size: 0.78rem; border-radius: var(--radius-pill); min-height: 40px; }
         .btn-give { background-color: var(--btn-give); }
         .btn-receive { background-color: var(--btn-receive); }
+        .btn-settle-up { background-color: var(--accent-gold); color: var(--text-deep); padding: 6px 10px; font-size: 0.72rem; min-height: unset; border-radius: var(--radius-pill); }
 
         .action-container {
             display: flex;
@@ -630,12 +740,13 @@
 
         .balance-display {
             text-align: right;
-            font-weight: bold;
+            font-weight: 700;
             font-size: 0.9rem;
             padding: 10px 12px;
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             flex-grow: 1;
             font-family: var(--font-display);
+            font-size: 1.05rem;
         }
 
         .btn-share-wa {
@@ -645,6 +756,7 @@
             width: 36px;
             height: 36px;
             min-width: 36px;
+            min-height: 36px;
             background-color: var(--btn-whatsapp);
             color: white;
             border-radius: 50%;
@@ -655,14 +767,14 @@
 
         .balance-positive { color: var(--btn-receive); background-color: var(--btn-receive-soft); }
         .balance-negative { color: var(--btn-give); background-color: var(--btn-give-soft); }
-        .balance-neutral { color: var(--text-main); background-color: #F0F4F3; }
+        .balance-neutral { color: var(--text-main); background-color: #F0F3FA; }
 
         .history-panel {
             display: none;
             margin-top: 15px;
             padding: 15px 20px;
-            background-color: #F3F8F6;
-            border-radius: 10px;
+            background-color: #F5F7FC;
+            border-radius: var(--radius-md);
             max-height: 320px;
             overflow-y: auto;
             border: 1px solid var(--border-light);
@@ -702,17 +814,17 @@
         .timeline-item.give::before { border-color: var(--btn-give); }
         .timeline-item.receive::before { border-color: var(--btn-receive); }
         .timeline-meta { display: flex; flex-direction: column; gap: 2px; max-width: 65%; }
-        .timeline-desc { font-weight: 600; color: var(--text-main); }
+        .timeline-desc { font-weight: 700; color: var(--text-main); }
         .timeline-category-tag {
             font-size: 0.7rem;
             background-color: var(--btn-neutral-soft);
             color: var(--btn-neutral);
-            padding: 2px 6px;
-            border-radius: 4px;
+            padding: 2px 8px;
+            border-radius: var(--radius-pill);
             display: inline-block;
         }
         .timeline-date { font-size: 0.7rem; color: var(--text-muted); }
-        .timeline-amount { font-weight: bold; font-size: 0.95rem; font-family: var(--font-display); }
+        .timeline-amount { font-weight: 700; font-size: 1rem; font-family: var(--font-display); }
         .timeline-item.give .timeline-amount { color: var(--btn-give); }
         .timeline-item.receive .timeline-amount { color: var(--btn-receive); }
         .no-history-msg { font-size: 0.85rem; color: var(--text-muted); font-style: italic; text-align: center; }
@@ -720,9 +832,9 @@
         /* Progress Bar */
         .progress-module { width: 100%; margin-top: 12px; display: flex; flex-direction: column; gap: 4px; }
         .progress-container { width: 100%; height: 12px; background-color: var(--bg-color-deep); border-radius: 6px; overflow: hidden; position: relative; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--btn-neutral), #1c5f7d); border-radius: 6px; transform-origin: left; transition: transform 0.6s; transform: scaleX(0); }
-        .progress-fill.settled { background: linear-gradient(90deg, var(--btn-receive), #237a54); }
-        .progress-label-text { font-size: 0.72rem; color: var(--text-muted); text-align: right; font-weight: 600; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--btn-neutral), #1c3a7d); border-radius: 6px; transform-origin: left; transition: transform 0.6s; transform: scaleX(0); }
+        .progress-fill.settled { background: linear-gradient(90deg, var(--btn-receive), #167a53); }
+        .progress-label-text { font-size: 0.72rem; color: var(--text-muted); text-align: right; font-weight: 700; }
 
         /* --- CHARTS --- */
         .chart-wrapper {
@@ -751,7 +863,8 @@
             background: var(--btn-neutral);
             padding: 8px 16px;
             font-size: 1.2rem;
-            border-radius: 10px;
+            border-radius: var(--radius-pill);
+            min-height: unset;
         }
 
         .budget-control {
@@ -761,7 +874,7 @@
             gap: 10px;
             margin-bottom: 15px;
             font-size: 0.9rem;
-            font-weight: 600;
+            font-weight: 700;
             flex-wrap: wrap;
         }
         .budget-control input {
@@ -777,15 +890,15 @@
         }
         .calendar-day-header {
             text-align: center;
-            font-weight: bold;
+            font-weight: 700;
             font-size: 0.85rem;
             color: var(--text-muted);
             padding-bottom: 5px;
         }
         .calendar-cell {
-            background: #F3F8F6;
+            background: #F5F7FC;
             border: 1px solid var(--border-light);
-            border-radius: 10px;
+            border-radius: var(--radius-sm);
             min-height: 80px;
             padding: 8px;
             display: flex;
@@ -805,14 +918,15 @@
             background: transparent;
             border: none;
         }
+        .calendar-cell.is-today { border: 2px solid var(--accent-gold); box-shadow: 0 0 0 3px rgba(226,162,59,0.15); }
         .cell-date {
             font-size: 0.9rem;
-            font-weight: bold;
+            font-weight: 700;
             align-self: flex-start;
         }
         .cell-amount {
             font-size: 0.85rem;
-            font-weight: bold;
+            font-weight: 700;
             color: var(--btn-give);
             align-self: flex-end;
             margin-top: 10px;
@@ -826,7 +940,7 @@
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(7,40,38,0.55);
+            background: rgba(18,23,58,0.55);
             z-index: 1000;
             justify-content: center;
             align-items: center;
@@ -837,7 +951,7 @@
             background: var(--panel-bg);
             width: 100%;
             max-width: 500px;
-            border-radius: 16px;
+            border-radius: var(--radius-lg);
             padding: 25px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             position: relative;
@@ -866,10 +980,9 @@
             display: none;
             position: fixed;
             bottom: 0; left: 0; right: 0;
-            background: linear-gradient(180deg, rgba(13, 71, 68, 0.96), rgba(7, 40, 38, 0.99));
+            background: linear-gradient(180deg, rgba(24, 31, 74, 0.96), rgba(18, 23, 58, 0.99));
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            /* Increased padding for larger footprint and better touch areas */
             padding: 14px 10px calc(14px + env(safe-area-inset-bottom, 0px));
             z-index: 900;
             box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
@@ -881,7 +994,7 @@
         .nav-tab {
             background: transparent;
             border: none;
-            color: #9FC2BC;
+            color: #A6B0DA;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -889,32 +1002,31 @@
             gap: 5px;
             flex: 1 1 0;
             min-width: 56px;
-            /* Taller touch target */
             padding: 10px 4px;
-            border-radius: 14px;
+            border-radius: var(--radius-md);
             cursor: pointer;
-            transition: background 0.3s, color 0.3s;
+            transition: background 0.3s, color 0.3s, transform 0.15s;
         }
         .nav-tab:hover { opacity: 1; background: rgba(255,255,255,0.06); }
+        .nav-tab:active { transform: scale(0.92); }
         .nav-tab .nav-icon {
-            font-size: 1.6rem; /* Bigger icons */
+            font-size: 1.6rem;
             line-height: 1;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .nav-tab .nav-label {
-            font-size: 0.68rem; /* Slightly larger text */
-            font-weight: 600;
+            font-size: 0.68rem;
+            font-weight: 700;
             letter-spacing: 0.02em;
         }
         .nav-tab.active {
             color: var(--accent-gold);
-            background: rgba(201,154,46,0.12);
+            background: rgba(226,162,59,0.12);
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
         }
-        /* Smoother, bouncier pop effect for active icon */
         .nav-tab.active .nav-icon { transform: translateY(-4px) scale(1.15); }
 
-        /* --- NEW COHORT DASHBOARD ADDONS CSS --- */
+        /* --- COHORT DASHBOARD ADDONS --- */
         .cohort-dashboard {
             display: flex;
             flex-direction: column;
@@ -930,7 +1042,7 @@
         .summary-card {
             flex: 1;
             padding: 15px;
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -945,37 +1057,44 @@
         }
         .receive-card { background: var(--btn-receive-soft); border: 1px solid #a9dcc4; }
         .pay-card { background: var(--btn-give-soft); border: 1px solid #eeb3b0; }
-        .sc-label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; }
-        .sc-value { font-size: 1.5rem; font-weight: bold; font-family: var(--font-display); }
+        .net-card { background: var(--accent-gold-soft); border: 1px solid #f0d29a; }
+        .sc-label { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; }
+        .sc-value { font-size: 1.5rem; font-weight: 500; font-family: var(--font-display); }
         .receive-card .sc-value { color: var(--btn-receive); }
         .pay-card .sc-value { color: var(--btn-give); }
+        .net-card .sc-value { color: #a5761f; }
 
+        .cohort-toolbar-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .cohort-search-bar { flex: 1 1 220px; }
         .cohort-search-bar input {
             width: 100%;
             padding: 12px 15px;
             border: 1.5px solid var(--border-light);
-            border-radius: 10px;
+            border-radius: var(--radius-pill);
             font-size: 1rem;
             font-family: var(--font-body);
-            background: #FBFDFC;
+            background: #FBFCFE;
             color: var(--text-deep);
         }
         .cohort-search-bar input:focus {
             outline: none;
             border-color: var(--accent-gold);
-            box-shadow: 0 0 0 3px rgba(201, 154, 46, 0.15);
+            box-shadow: 0 0 0 3px rgba(226, 162, 59, 0.15);
         }
+        .cohort-sort-select { flex: 0 0 auto; padding: 12px 15px; min-width: 150px; }
+        .add-friend-row { display: flex; gap: 8px; margin-top: 4px; }
+        .add-friend-row input { flex: 1; }
 
         .peer-avatar {
-            width: 38px;
-            height: 38px;
+            width: 40px;
+            height: 40px;
             background: linear-gradient(135deg, var(--text-main), var(--text-deep));
             color: var(--accent-gold-soft);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
+            font-weight: 700;
             font-size: 1.1rem;
             font-family: var(--font-display);
             margin-right: 10px;
@@ -989,12 +1108,20 @@
             font-size: 0.72rem;
             background: var(--btn-neutral-soft);
             color: var(--btn-neutral);
-            padding: 3px 8px;
-            border-radius: 6px;
+            padding: 3px 10px;
+            border-radius: var(--radius-pill);
             margin-left: 8px;
             white-space: nowrap;
             font-family: var(--font-body);
-            font-weight: 600;
+            font-weight: 700;
+        }
+        .status-filter-badge {
+            font-size: 0.7rem;
+            padding: 3px 10px;
+            border-radius: var(--radius-pill);
+            margin-left: 8px;
+            white-space: nowrap;
+            font-weight: 700;
         }
 
         /* ============================
@@ -1021,7 +1148,6 @@
             .timeline-item { flex-direction: column; align-items: flex-start; gap: 10px; }
             .history-action-btns { margin-left: 0; margin-top: 5px; }
 
-            /* Enhanced Mobile Nav handling */
             .nav-tab .nav-label { display: block; font-size: 0.65rem; margin-top: 2px; }
             .nav-tab { min-width: 48px; padding: 8px 2px; }
 
@@ -1031,19 +1157,19 @@
         @media (max-width: 640px) {
             .app-page { padding: 14px; padding-bottom: 120px; }
 
-            .menu-header { padding: 18px 18px; border-radius: 14px; }
-            .menu-header h1 { font-size: 1.15rem; }
-            .btn-logout { padding: 8px 14px; font-size: 0.82rem; }
+            .menu-header { padding: 18px 18px; border-radius: 16px; }
+            .menu-header h1 { font-size: 1.2rem; }
+            .btn-logout { padding: 9px 15px; font-size: 0.82rem; }
 
             .perforation-strip { margin-bottom: 22px; }
-            .dashboard-card { padding: 20px; border-radius: 14px; }
-            .dashboard-card h3 { font-size: 1.15rem; }
-            .stat-value { font-size: 1.8rem; }
+            .dashboard-card { padding: 20px; border-radius: 16px; }
+            .dashboard-card h3 { font-size: 1.2rem; }
+            .stat-value { font-size: 1.9rem; }
 
             .tool-nav-bar { gap: 8px; }
-            .btn-back { padding: 9px 14px; font-size: 0.85rem; }
-            .panel { padding: 18px; border-radius: 14px; }
-            h2 { font-size: 1.15rem; }
+            .btn-back { padding: 10px 15px; font-size: 0.85rem; }
+            .panel { padding: 18px; border-radius: 16px; }
+            h2 { font-size: 1.2rem; }
 
             .header-action-row { flex-direction: column; align-items: stretch; }
             .header-action-row h2 { text-align: left; }
@@ -1052,7 +1178,7 @@
 
             .savings-table th, .savings-table td { padding: 12px 6px; font-size: 0.9rem; }
             .savings-table input[type="number"] { width: 80px; padding: 8px 4px; font-size: 0.95rem; }
-            .savings-table .grand-total { font-size: 1.15rem; }
+            .savings-table .grand-total { font-size: 1.2rem; }
             .savings-table .row-total { font-size: 1rem; }
 
             .summary-box { padding: 14px 10px; font-size: 1.2rem; }
@@ -1060,15 +1186,14 @@
             .calendar-day-header { font-size: 0.72rem; }
             .budget-control { justify-content: center; }
 
-            /* Remove label on very small screens to fit the larger icons */
             .nav-tab .nav-label { display: none; }
         }
 
         @media (max-width: 400px) {
             .menu-header { padding: 16px 14px; }
-            .menu-header h1 { font-size: 1rem; }
-            .btn-logout { padding: 7px 10px; font-size: 0.75rem; }
-            .btn-back { padding: 8px 10px; font-size: 0.8rem; }
+            .menu-header h1 { font-size: 1.05rem; }
+            .btn-logout { padding: 8px 11px; font-size: 0.75rem; }
+            .btn-back { padding: 9px 11px; font-size: 0.8rem; }
             .savings-table th, .savings-table td { padding: 10px 4px; font-size: 0.82rem; }
             .savings-table input[type="number"] { width: 62px; font-size: 0.9rem; }
             .dashboard-card { padding: 16px; }
@@ -1112,7 +1237,7 @@
             <button class="btn-dash" onclick="openPage('debit-page')">Log Expense &amp; View History</button>
         </div>
 
-        <!-- NEW: Quick Actions Widget -->
+        <!-- Quick Actions Widget -->
         <div class="dashboard-card">
             <h3>⚡ Quick Actions</h3>
             <p class="card-desc">Fast-track your regular entries.</p>
@@ -1126,7 +1251,7 @@
             </div>
         </div>
 
-        <!-- NEW: Personalized Quick Hub -->
+        <!-- Personalized Quick Hub -->
         <div class="dashboard-card">
             <h3>🚀 Your Quick Hub</h3>
             <p class="card-desc">Shortcuts to your frequent digital spaces.</p>
@@ -1176,10 +1301,30 @@
         <div class="panel" style="display: flex; flex-direction: column; flex: 1;">
             <div class="header-action-row">
                 <h2>📝 Personal Notes</h2>
-                <span id="save-status" style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Saved</span>
+                <span id="save-status" style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700;">Saved</span>
             </div>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Your notes are auto-saved directly to your browser.</p>
+
+            <!-- FEATURE: Quick insert toolbar -->
+            <div class="feature-toolbar">
+                <button class="chip-btn" onclick="insertNoteSnippet('• ')">➕ Bullet</button>
+                <button class="chip-btn" onclick="insertNoteSnippet('☐ ')">✅ Checkbox</button>
+                <button class="chip-btn" onclick="insertNoteTimestamp()">🕒 Timestamp</button>
+                <button class="chip-btn" onclick="downloadNotes()">⬇️ Download .txt</button>
+                <button class="chip-btn" onclick="clearNotes()">🗑️ Clear Notes</button>
+            </div>
+
             <textarea id="notes-area" placeholder="Start typing your notes, reminders, or thoughts here..." oninput="autoSaveNotes()"></textarea>
+
+            <!-- FEATURE: word/char count + font size adjuster -->
+            <div class="notes-meta-row">
+                <span id="notes-word-count">0 words · 0 characters</span>
+                <div class="font-size-control">
+                    <span>Text size:</span>
+                    <button onclick="adjustNotesFontSize(-1)">A−</button>
+                    <button onclick="adjustNotesFontSize(1)">A+</button>
+                </div>
+            </div>
         </div>
         <div class="app-footer"><span class="footer-icon">📝</span> Jot it down before you forget.</div>
     </div>
@@ -1265,7 +1410,33 @@
                 <div class="summary-box summary-spent clickable-box" onclick="openMonthlyBreakdownModal()" title="Click to view previous months">
                     <span class="summary-label">Monthly Spent (Current)</span>
                     ₹<span id="current-month-val">0.00</span>
-                    <div style="font-size: 0.65rem; color: #a53039; margin-top: 4px; font-family: var(--font-body); font-weight: 600;">Click for history 👆</div>
+                    <div style="font-size: 0.65rem; color: #a53039; margin-top: 4px; font-family: var(--font-body); font-weight: 700;">Click for history 👆</div>
+                </div>
+            </div>
+
+            <!-- FEATURE: Monthly budget goal + progress -->
+            <div class="budget-goal-row">
+                <label for="monthly-budget-goal">🎯 Monthly Budget Goal ₹</label>
+                <input type="number" id="monthly-budget-goal" placeholder="e.g. 5000" min="0" step="50" oninput="saveBudgetGoal()">
+                <div class="budget-progress-wrap">
+                    <div class="budget-progress-track"><div class="budget-progress-fill" id="budget-progress-fill" style="width:0%;"></div></div>
+                    <div class="budget-progress-text" id="budget-progress-text">Set a goal to track your monthly spend.</div>
+                </div>
+            </div>
+
+            <!-- FEATURE: stat chips (average daily spend, highest expense) -->
+            <div class="stat-chip-row">
+                <div class="stat-chip accent-give">
+                    <span class="stat-chip-label">Avg Daily Spend (Month)</span>
+                    <span class="stat-chip-value" id="stat-avg-daily">₹0</span>
+                </div>
+                <div class="stat-chip accent-gold">
+                    <span class="stat-chip-label">Highest Expense (Month)</span>
+                    <span class="stat-chip-value" id="stat-highest-expense">₹0</span>
+                </div>
+                <div class="stat-chip">
+                    <span class="stat-chip-label">Transactions (Month)</span>
+                    <span class="stat-chip-value" id="stat-tx-count">0</span>
                 </div>
             </div>
 
@@ -1307,6 +1478,13 @@
                     </button>
                 </div>
             </div>
+
+            <!-- FEATURE: search + category quick filter chips -->
+            <div class="search-filter-row">
+                <input type="text" id="debit-search-input" placeholder="🔍 Search by category or description..." onkeyup="renderDebitHistory()">
+            </div>
+            <div class="feature-toolbar" id="debit-category-chip-row"></div>
+
             <div class="debit-history-scroll">
                 <ul class="timeline" id="debit-history-list"></ul>
             </div>
@@ -1339,9 +1517,31 @@
                 <button onclick="changeMonth(1)">&#10095;</button>
             </div>
             <div class="budget-control">
+                <button class="chip-btn" onclick="jumpToToday()">📍 Jump to Today</button>
                 <label for="calendar-budget-input">Daily Budget Threshold: ₹</label>
                 <input type="number" id="calendar-budget-input" value="250" step="10" min="0" onchange="renderCalendar()">
             </div>
+
+            <!-- FEATURE: month stat chips -->
+            <div class="stat-chip-row">
+                <div class="stat-chip accent-give">
+                    <span class="stat-chip-label">Month Total</span>
+                    <span class="stat-chip-value" id="cal-stat-total">₹0</span>
+                </div>
+                <div class="stat-chip accent-gold">
+                    <span class="stat-chip-label">Highest Day</span>
+                    <span class="stat-chip-value" id="cal-stat-highest">–</span>
+                </div>
+                <div class="stat-chip">
+                    <span class="stat-chip-label">Avg Daily Spend</span>
+                    <span class="stat-chip-value" id="cal-stat-avg">₹0</span>
+                </div>
+                <div class="stat-chip accent-give">
+                    <span class="stat-chip-label">Days Over Budget</span>
+                    <span class="stat-chip-value" id="cal-stat-overbudget">0</span>
+                </div>
+            </div>
+
             <div class="calendar-grid" id="calendar-grid"></div>
         </div>
         <div class="app-footer"><span class="footer-icon">📅</span> Green days are on-budget, red days need a look.</div>
@@ -1367,22 +1567,51 @@
                 </div>
             </div>
 
-            <!-- NEW: Cohort Dashboard Addons (Summary Cards & Search Bar) -->
+            <!-- Cohort Dashboard Addons (Summary Cards & Search Bar) -->
             <div class="cohort-dashboard">
                 <div class="cohort-summary-cards">
                     <div class="summary-card receive-card" onclick="openCohortSummaryModal('receive')">
                         <span class="sc-label">Total to Receive 💰</span>
                         <span class="sc-value" id="cohort-total-receive">₹0.00</span>
-                        <div style="font-size: 0.65rem; color: #237a54; margin-top: 6px; font-weight: 600;">Click to view list 👆</div>
+                        <div style="font-size: 0.65rem; color: #237a54; margin-top: 6px; font-weight: 700;">Click to view list 👆</div>
                     </div>
                     <div class="summary-card pay-card" onclick="openCohortSummaryModal('pay')">
                         <span class="sc-label">Total to Pay 💸</span>
                         <span class="sc-value" id="cohort-total-pay">₹0.00</span>
-                        <div style="font-size: 0.65rem; color: #a53039; margin-top: 6px; font-weight: 600;">Click to view list 👆</div>
+                        <div style="font-size: 0.65rem; color: #a53039; margin-top: 6px; font-weight: 700;">Click to view list 👆</div>
+                    </div>
+                    <!-- FEATURE: Net balance card -->
+                    <div class="summary-card net-card" onclick="openCohortSummaryModal('net')">
+                        <span class="sc-label">Net Position ⚖️</span>
+                        <span class="sc-value" id="cohort-net-position">₹0.00</span>
+                        <div style="font-size: 0.65rem; color: #a5761f; margin-top: 6px; font-weight: 700;">Receivable − Payable</div>
                     </div>
                 </div>
-                <div class="cohort-search-bar">
-                    <input type="text" id="cohort-search-input" placeholder="🔍 Find friend by name..." onkeyup="filterCohortLedger()">
+
+                <div class="cohort-toolbar-row">
+                    <div class="cohort-search-bar">
+                        <input type="text" id="cohort-search-input" placeholder="🔍 Find friend by name..." onkeyup="filterCohortLedger()">
+                    </div>
+                    <!-- FEATURE: sort dropdown -->
+                    <select id="cohort-sort-select" class="modern-select cohort-sort-select" onchange="renderLedger()">
+                        <option value="name">Sort: Name (A–Z)</option>
+                        <option value="balance-desc">Sort: Owes You First</option>
+                        <option value="balance-asc">Sort: You Owe First</option>
+                    </select>
+                </div>
+
+                <!-- FEATURE: status filter chips -->
+                <div class="feature-toolbar" id="cohort-status-filter-row">
+                    <button class="chip-btn active-chip" data-status="all" onclick="setCohortStatusFilter('all')">All</button>
+                    <button class="chip-btn" data-status="owes" onclick="setCohortStatusFilter('owes')">Owes You</button>
+                    <button class="chip-btn" data-status="youowe" onclick="setCohortStatusFilter('youowe')">You Owe</button>
+                    <button class="chip-btn" data-status="settled" onclick="setCohortStatusFilter('settled')">Settled</button>
+                </div>
+
+                <!-- FEATURE: add new friend -->
+                <div class="add-friend-row">
+                    <input type="text" id="new-friend-name-input" placeholder="➕ Add a new friend to the ledger...">
+                    <button class="btn-add" style="flex: 0 0 auto;" onclick="addNewFriend()">Add Friend</button>
                 </div>
             </div>
 
@@ -1401,13 +1630,49 @@
         <div class="panel">
             <div class="header-action-row">
                 <h2>📊 Debit Analysis (Pie Chart)</h2>
-                <!-- New toggle button for Chart Reset -->
                 <button class="btn-dash" id="chart-toggle-btn" onclick="toggleChartView()" style="margin: 0; padding: 8px 12px; font-size: 0.85rem;">📅 View: Current Month</button>
             </div>
+
+            <!-- FEATURE: custom date range filter for analytics -->
+            <div class="input-row" style="margin-bottom: 10px; flex-wrap: wrap;">
+                <label style="font-weight: 700; font-size: 0.85rem; white-space:nowrap;">Custom Range:</label>
+                <input type="date" id="analytics-start-date" onchange="applyAnalyticsCustomRange()">
+                <input type="date" id="analytics-end-date" onchange="applyAnalyticsCustomRange()">
+                <button class="chip-btn" onclick="clearAnalyticsCustomRange()">✖ Clear Range</button>
+            </div>
+
+            <!-- FEATURE: stat chips for analytics -->
+            <div class="stat-chip-row">
+                <div class="stat-chip accent-gold">
+                    <span class="stat-chip-label">Top Category</span>
+                    <span class="stat-chip-value" id="analytics-top-category" style="font-size:1.1rem;">–</span>
+                </div>
+                <div class="stat-chip accent-give">
+                    <span class="stat-chip-label">Avg Daily Spend</span>
+                    <span class="stat-chip-value" id="analytics-avg-daily">₹0</span>
+                </div>
+                <div class="stat-chip">
+                    <span class="stat-chip-label">Period Total</span>
+                    <span class="stat-chip-value" id="analytics-period-total">₹0</span>
+                </div>
+            </div>
+
             <div class="chart-wrapper">
                 <canvas id="pieChart"></canvas>
             </div>
         </div>
+
+        <!-- FEATURE: category comparison bar chart -->
+        <div class="panel">
+            <div class="header-action-row">
+                <h2>📊 Category Comparison</h2>
+                <button class="btn-print" onclick="printAnalyticsSummary()">🖨️ Print Summary</button>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+
         <div class="panel">
             <h2>📈 Spending Timeline Trends</h2>
             <div class="chart-wrapper">
@@ -1429,7 +1694,7 @@
     </div>
 </div>
 
-<!-- NEW Modal for Export Settings -->
+<!-- Modal for Export Settings -->
 <div id="export-modal" class="modal-overlay">
     <div class="modal-box">
         <span class="modal-close" onclick="closeExportModal()">&times;</span>
@@ -1448,32 +1713,26 @@
 
         <div id="export-date-inputs" style="display: none; flex-direction: column; gap: 15px; margin-top: 20px;">
             <div class="input-row">
-                <label style="width: 80px; font-weight: 600;">Start Date:</label>
+                <label style="width: 80px; font-weight: 700;">Start Date:</label>
                 <input type="date" id="export-start-date">
             </div>
             <div class="input-row">
-                <label style="width: 80px; font-weight: 600;">End Date:</label>
+                <label style="width: 80px; font-weight: 700;">End Date:</label>
                 <input type="date" id="export-end-date">
             </div>
         </div>
 
-        <!-- NEW: Cohort Specific Filters -->
+        <!-- Cohort Specific Filters -->
         <div id="export-cohort-filters" style="display: none; flex-direction: column; gap: 15px; margin-top: 20px; border-top: 1px solid var(--border-light); padding-top: 15px;">
             <h3 style="font-size: 1rem; margin-bottom: 0;">Cohort Filters</h3>
             <div class="input-row">
-                <label style="width: 80px; font-weight: 600;">Friend:</label>
+                <label style="width: 80px; font-weight: 700;">Friend:</label>
                 <select id="export-friend-filter" class="modern-select" style="padding: 8px;">
                     <option value="all">All Friends</option>
-                    <option value="Aravindh">Aravindh</option>
-                    <option value="Gojo">Gojo</option>
-                    <option value="Gowtham">Gowtham</option>
-                    <option value="Mowlish">Mowlish</option>
-                    <option value="Soukar">Soukar</option>
-                    <option value="Thiwakar">Thiwakar</option>
                 </select>
             </div>
             <div class="input-row">
-                <label style="width: 80px; font-weight: 600;">Category:</label>
+                <label style="width: 80px; font-weight: 700;">Category:</label>
                 <select id="export-category-filter" class="modern-select" style="padding: 8px;">
                     <option value="all">All Categories</option>
                 </select>
@@ -1484,7 +1743,7 @@
     </div>
 </div>
 
-<!-- NEW Modal for Cohort Balance Summary Details -->
+<!-- Modal for Cohort Balance Summary Details -->
 <div id="cohort-summary-modal" class="modal-overlay">
     <div class="modal-box">
         <span class="modal-close" onclick="closeCohortSummaryModal()">&times;</span>
@@ -1553,10 +1812,11 @@
         const activePage = document.getElementById(pageId);
         if (activePage) {
             activePage.style.display = 'flex';
-            if (pageId === 'debit-page') renderDebitHistory();
-            if (pageId === 'cohort-page') renderLedger();
-            if (pageId === 'calendar-page') renderCalendar();
-            if (pageId === 'analytics-page') renderCharts();
+            if (pageId === 'debit-page') { renderDebitHistory(); updateDebitFeatureStats(); renderDebitCategoryChips(); loadBudgetGoal(); }
+            if (pageId === 'cohort-page') { renderLedger(); }
+            if (pageId === 'calendar-page') { renderCalendar(); }
+            if (pageId === 'analytics-page') { renderCharts(); }
+            if (pageId === 'notes-page') { updateNotesWordCount(); }
         }
 
         const navbar = document.getElementById('bottom-navbar');
@@ -1601,11 +1861,13 @@
             statusEl.textContent = "Saved";
             statusEl.style.color = 'var(--text-muted)';
         }, 600);
+        updateNotesWordCount();
     }
 
     // --- State ---
     const rawFriendsArray = ["Aravindh", "Gojo", "Mowlish", "Soukar","Gowtham","Thiwakar"];
-    const sortedFriends = rawFriendsArray.sort();
+    const customFriendsArray = JSON.parse(localStorage.getItem('customFriendsArray')) || [];
+    let sortedFriends = [...rawFriendsArray, ...customFriendsArray].sort();
 
     let ledgerState = JSON.parse(localStorage.getItem('ledgerState')) || {};
     let debitHistoryState = JSON.parse(localStorage.getItem('debitHistoryState')) || [];
@@ -1656,6 +1918,8 @@
 
         const dashTotalSpent = document.getElementById('dash-total-spent');
         if (dashTotalSpent) dashTotalSpent.textContent = `₹${totalSpent.toFixed(2)}`;
+
+        updateDebitFeatureStats();
     }
 
     function openMonthlyBreakdownModal() {
@@ -1730,6 +1994,7 @@
             localStorage.setItem('debitHistoryState', JSON.stringify(debitHistoryState));
             updateBalancesUI();
             renderDebitHistory();
+            renderDebitCategoryChips();
 
             inputEl.value = '';
             document.getElementById('daily-debit-category').value = '';
@@ -1781,6 +2046,7 @@
             localStorage.setItem('debitHistoryState', JSON.stringify(debitHistoryState));
             updateBalancesUI();
             renderDebitHistory();
+            renderDebitCategoryChips();
             const openModal = document.getElementById('calendar-modal').style.display === 'flex';
             if (openModal) closeCalendarModal();
         }
@@ -1793,16 +2059,31 @@
             localStorage.setItem('debitHistoryState', JSON.stringify(debitHistoryState));
             updateBalancesUI();
             renderDebitHistory();
+            renderDebitCategoryChips();
         }
     }
 
     function renderDebitHistory() {
         const listEl = document.getElementById('debit-history-list');
         if (!listEl) return;
-        if (debitHistoryState.length === 0) {
+
+        // FEATURE: apply search + category chip filter (additive, does not alter stored state)
+        const searchInput = document.getElementById('debit-search-input');
+        const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : '';
+        const activeChip = window.activeDebitCategoryFilter || 'all';
+
+        let filteredHistory = debitHistoryState;
+        if (searchTerm !== '') {
+            filteredHistory = filteredHistory.filter(item => item.category.toLowerCase().includes(searchTerm));
+        }
+        if (activeChip !== 'all') {
+            filteredHistory = filteredHistory.filter(item => item.category === activeChip);
+        }
+
+        if (filteredHistory.length === 0) {
             listEl.innerHTML = `<li class="no-history-msg">No personal expenditure logged yet.</li>`;
         } else {
-            listEl.innerHTML = debitHistoryState.map(entry => {
+            listEl.innerHTML = filteredHistory.map(entry => {
                 const formattedDate = dateFormatter.format(new Date(entry.timestamp));
                 return `
                     <li class="timeline-item give" style="padding-bottom:20px;">
@@ -1823,6 +2104,134 @@
         }
     }
 
+    /* ===================== NEW FEATURES: DEBIT PAGE ===================== */
+
+    // FEATURE 1: Monthly budget goal tracking
+    function saveBudgetGoal() {
+        const val = document.getElementById('monthly-budget-goal').value;
+        localStorage.setItem('monthlyBudgetGoal', val);
+        updateDebitFeatureStats();
+    }
+    function loadBudgetGoal() {
+        const val = localStorage.getItem('monthlyBudgetGoal');
+        const input = document.getElementById('monthly-budget-goal');
+        if (input && val !== null) input.value = val;
+        updateDebitFeatureStats();
+    }
+
+    // FEATURE 2 & 3: Avg daily spend + highest expense + tx count (current month) + budget progress
+    function updateDebitFeatureStats() {
+        const avgEl = document.getElementById('stat-avg-daily');
+        const highEl = document.getElementById('stat-highest-expense');
+        const countEl = document.getElementById('stat-tx-count');
+        if (!avgEl || !highEl || !countEl) return;
+
+        const now = new Date();
+        const monthTx = debitHistoryState.filter(item => {
+            const d = new Date(item.timestamp);
+            return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+        });
+
+        const monthTotal = monthTx.reduce((sum, item) => sum + item.amount, 0);
+        const daysElapsed = now.getDate();
+        const avgDaily = daysElapsed > 0 ? monthTotal / daysElapsed : 0;
+        const highest = monthTx.length > 0 ? Math.max(...monthTx.map(i => i.amount)) : 0;
+
+        avgEl.textContent = `₹${avgDaily.toFixed(0)}`;
+        highEl.textContent = `₹${highest.toFixed(0)}`;
+        countEl.textContent = monthTx.length;
+
+        const goal = parseFloat(localStorage.getItem('monthlyBudgetGoal'));
+        const fillEl = document.getElementById('budget-progress-fill');
+        const textEl = document.getElementById('budget-progress-text');
+        if (fillEl && textEl) {
+            if (!isNaN(goal) && goal > 0) {
+                const pct = Math.min((monthTotal / goal) * 100, 100);
+                fillEl.style.width = pct + '%';
+                fillEl.classList.toggle('over-budget', monthTotal > goal);
+                textEl.textContent = monthTotal > goal
+                    ? `⚠️ Over budget by ₹${(monthTotal - goal).toFixed(2)}`
+                    : `₹${monthTotal.toFixed(2)} of ₹${goal.toFixed(2)} used (${pct.toFixed(0)}%)`;
+            } else {
+                fillEl.style.width = '0%';
+                textEl.textContent = 'Set a goal to track your monthly spend.';
+            }
+        }
+    }
+
+    // FEATURE 4 & 5: category quick-filter chips + search (search handled inline in renderDebitHistory)
+    window.activeDebitCategoryFilter = 'all';
+    function renderDebitCategoryChips() {
+        const rowEl = document.getElementById('debit-category-chip-row');
+        if (!rowEl) return;
+        const uniqueCats = Array.from(new Set(debitHistoryState.map(i => i.category)));
+        let chipsHtml = `<button class="chip-btn ${window.activeDebitCategoryFilter === 'all' ? 'active-chip' : ''}" onclick="setDebitCategoryFilter('all')">All</button>`;
+        chipsHtml += uniqueCats.map(cat => `<button class="chip-btn ${window.activeDebitCategoryFilter === cat ? 'active-chip' : ''}" onclick="setDebitCategoryFilter('${cat.replace(/'/g, "\\'")}')">${cat}</button>`).join('');
+        rowEl.innerHTML = chipsHtml;
+    }
+    function setDebitCategoryFilter(cat) {
+        window.activeDebitCategoryFilter = cat;
+        renderDebitCategoryChips();
+        renderDebitHistory();
+    }
+
+    /* ===================== NEW FEATURES: NOTES PAGE ===================== */
+
+    function updateNotesWordCount() {
+        const area = document.getElementById('notes-area');
+        const countEl = document.getElementById('notes-word-count');
+        if (!area || !countEl) return;
+        const text = area.value.trim();
+        const words = text === '' ? 0 : text.split(/\s+/).length;
+        const chars = area.value.length;
+        countEl.textContent = `${words} words · ${chars} characters`;
+    }
+
+    function insertNoteSnippet(snippet) {
+        const area = document.getElementById('notes-area');
+        const start = area.selectionStart;
+        const end = area.selectionEnd;
+        const before = area.value.substring(0, start);
+        const after = area.value.substring(end);
+        area.value = before + snippet + after;
+        area.focus();
+        area.selectionStart = area.selectionEnd = start + snippet.length;
+        autoSaveNotes();
+    }
+
+    function insertNoteTimestamp() {
+        const stamp = `[${new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date())}] `;
+        insertNoteSnippet(stamp);
+    }
+
+    function downloadNotes() {
+        const content = document.getElementById('notes-area').value;
+        if (content.trim() === '') { alert("Notes empty-a iruku, download panna onnum illa!"); return; }
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `Shivadut_Notes_${new Date().toISOString().slice(0,10)}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    function clearNotes() {
+        if (confirm("Ella notes-um permanent-aga clear seiya venduma?")) {
+            document.getElementById('notes-area').value = '';
+            autoSaveNotes();
+        }
+    }
+
+    let notesFontSizePx = parseInt(localStorage.getItem('notesFontSize')) || 17;
+    function adjustNotesFontSize(delta) {
+        notesFontSizePx = Math.min(28, Math.max(12, notesFontSizePx + delta));
+        document.getElementById('notes-area').style.fontSize = notesFontSizePx + 'px';
+        localStorage.setItem('notesFontSize', notesFontSizePx);
+    }
+
     // --- Web Share API & Export Settings Logic ---
 
     let currentExportSource = '';
@@ -1841,12 +2250,24 @@
         const cohortFilters = document.getElementById('export-cohort-filters');
         if (source === 'cohort') {
             cohortFilters.style.display = 'flex';
+            populateCohortFriendFilter();
             populateCohortCategoryFilter();
         } else {
             cohortFilters.style.display = 'none';
         }
 
         document.getElementById('export-modal').style.display = 'flex';
+    }
+
+    function populateCohortFriendFilter() {
+        const friendSelect = document.getElementById('export-friend-filter');
+        friendSelect.innerHTML = '<option value="all">All Friends</option>';
+        sortedFriends.forEach(peer => {
+            const opt = document.createElement('option');
+            opt.value = peer;
+            opt.textContent = peer;
+            friendSelect.appendChild(opt);
+        });
     }
 
     function populateCohortCategoryFilter() {
@@ -1884,10 +2305,10 @@
                 return;
             }
             startDate = new Date(startVal);
-            startDate.setHours(0, 0, 0, 0); // Start of day
+            startDate.setHours(0, 0, 0, 0);
 
             endDate = new Date(endVal);
-            endDate.setHours(23, 59, 59, 999); // End of day
+            endDate.setHours(23, 59, 59, 999);
 
             if (startDate > endDate) {
                 alert("Start date cannot be after the end date.");
@@ -1933,11 +2354,10 @@
         closeExportModal();
     }
 
-    // Export PDF/Excel functions updated to accept filtered `data` parameter
     function exportHistoryToPDF(data) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.setFillColor(11, 61, 59);
+        doc.setFillColor(32, 44, 92);
         doc.rect(0, 0, 210, 40, 'F');
         doc.setFont("Helvetica", "bold");
         doc.setFontSize(22);
@@ -1963,8 +2383,8 @@
             head: [['#', 'Date & Time', 'Category/Description', 'Amount']],
             body: tableRows,
             theme: 'striped',
-            headStyles: { fillColor: [11, 61, 59], textColor: [255, 255, 255] },
-            alternateRowStyles: { fillColor: [233, 242, 239] },
+            headStyles: { fillColor: [32, 44, 92], textColor: [255, 255, 255] },
+            alternateRowStyles: { fillColor: [237, 240, 248] },
             styles: { font: "Helvetica", fontSize: 9 }
         });
 
@@ -1981,7 +2401,7 @@
     function exportCohortToPDF(data, selectedFriend) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.setFillColor(11, 61, 59);
+        doc.setFillColor(32, 44, 92);
         doc.rect(0, 0, 210, 40, 'F');
         doc.setFont("Helvetica", "bold");
         doc.setFontSize(22);
@@ -2020,8 +2440,8 @@
             head: [['#', 'Friend', 'Direction', 'Reason / Category', 'Amount', 'Date & Time']],
             body: tableRows,
             theme: 'striped',
-            headStyles: { fillColor: [11, 61, 59], textColor: [255, 255, 255] },
-            alternateRowStyles: { fillColor: [233, 242, 239] },
+            headStyles: { fillColor: [32, 44, 92], textColor: [255, 255, 255] },
+            alternateRowStyles: { fillColor: [237, 240, 248] },
             styles: { font: "Helvetica", fontSize: 8.5 }
         });
 
@@ -2094,10 +2514,26 @@
 
 
     // --- Cohort Ledger ---
+    window.cohortStatusFilter = 'all';
+
+    function getSortedFriendsForRender() {
+        const sortMode = document.getElementById('cohort-sort-select') ? document.getElementById('cohort-sort-select').value : 'name';
+        let arr = [...sortedFriends];
+        if (sortMode === 'balance-desc') {
+            arr.sort((a, b) => ledgerState[b].balance - ledgerState[a].balance);
+        } else if (sortMode === 'balance-asc') {
+            arr.sort((a, b) => ledgerState[a].balance - ledgerState[b].balance);
+        } else {
+            arr.sort();
+        }
+        return arr;
+    }
+
     function renderLedger() {
         const container = document.getElementById('ledger-container');
         if (!container) return;
-        container.innerHTML = sortedFriends.map(peer => {
+        const friendsToRender = getSortedFriendsForRender();
+        container.innerHTML = friendsToRender.map(peer => {
             const data = ledgerState[peer];
             const bal = data.balance;
             const absoluteBalance = Math.abs(bal).toFixed(2);
@@ -2111,7 +2547,7 @@
             else if (bal === 0) progressPercent = 100;
 
             return `
-                <div class="ledger-item-container">
+                <div class="ledger-item-container" data-status="${bal > 0 ? 'owes' : bal < 0 ? 'youowe' : 'settled'}">
                     <div class="ledger-row">
                         <div class="peer-info">
                             <span class="peer-name">${peer}</span>
@@ -2151,7 +2587,9 @@
                         <div class="progress-container">
                             <div class="progress-fill ${bal===0?'settled':''}" style="transform: scaleX(${progressPercent/100});"></div>
                         </div>
-                        <div class="progress-label-text">Settlement Progress: ${progressPercent.toFixed(0)}%</div>
+                        <div class="progress-label-text">Settlement Progress: ${progressPercent.toFixed(0)}%
+                            ${bal !== 0 ? `&nbsp;·&nbsp;<button class="btn-settle-up" onclick="quickSettleUp('${peer}')">⚡ Settle Up Now</button>` : ''}
+                        </div>
                     </div>
                     <div class="history-panel" id="history-box-${peer}">
                         <ul class="timeline" id="history-list-${peer}"></ul>
@@ -2159,6 +2597,13 @@
                 </div>
             `;
         }).join('');
+
+        updateCohortDashboard();
+        injectAvatarsAndBadges();
+        applyCohortStatusFilterToDOM();
+        if (document.getElementById('cohort-search-input') && document.getElementById('cohort-search-input').value) {
+            filterCohortLedger();
+        }
     }
 
     function toggleCohortHistory(peer) {
@@ -2250,9 +2695,88 @@
         return rows;
     }
 
+    /* ===================== NEW FEATURES: COHORT PAGE ===================== */
+
+    // FEATURE: add new friend dynamically
+    function addNewFriend() {
+        const input = document.getElementById('new-friend-name-input');
+        const name = input.value.trim();
+        if (name === '') { alert("Friend peru enter pannunga!"); return; }
+        const properCaseName = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+        if (sortedFriends.some(p => p.toLowerCase() === properCaseName.toLowerCase())) {
+            alert(`${properCaseName} already ledger-la irukanga!`);
+            return;
+        }
+        customFriendsArray.push(properCaseName);
+        localStorage.setItem('customFriendsArray', JSON.stringify(customFriendsArray));
+        sortedFriends.push(properCaseName);
+        sortedFriends.sort();
+        ledgerState[properCaseName] = { balance: 0, baseline: 0, transactions: [] };
+        localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
+        input.value = '';
+        renderLedger();
+    }
+
+    // FEATURE: quick settle up (logs a settlement transaction that zeros the balance)
+    function quickSettleUp(peer) {
+        const bal = ledgerState[peer].balance;
+        if (bal === 0) return;
+        if (!confirm(`${peer} kooda ₹${Math.abs(bal).toFixed(2)} fully settle pannitiya-nu confirm pannunga?`)) return;
+        const settleType = bal > 0 ? 'receive' : 'give';
+        ledgerState[peer].transactions.unshift({
+            type: settleType,
+            amount: Math.abs(bal),
+            category: 'Settlement Outright (Quick Settle)',
+            timestamp: new Date().toISOString()
+        });
+        ledgerState[peer].balance = 0;
+        ledgerState[peer].baseline = 0;
+        localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
+        renderLedger();
+    }
+
+    // FEATURE: status filter chips (Owes You / You Owe / Settled)
+    function setCohortStatusFilter(status) {
+        window.cohortStatusFilter = status;
+        document.querySelectorAll('#cohort-status-filter-row .chip-btn').forEach(btn => {
+            btn.classList.toggle('active-chip', btn.getAttribute('data-status') === status);
+        });
+        applyCohortStatusFilterToDOM();
+    }
+    function applyCohortStatusFilterToDOM() {
+        const status = window.cohortStatusFilter || 'all';
+        document.querySelectorAll('.ledger-item-container').forEach(item => {
+            const itemStatus = item.getAttribute('data-status');
+            item.style.display = (status === 'all' || status === itemStatus) ? 'flex' : 'none';
+        });
+    }
+
+    /* ===================== NEW FEATURES: ANALYTICS PAGE (declared early for hoisting) ===================== */
+    window.analyticsCustomRange = null;
+    function applyAnalyticsCustomRange() {
+        const startVal = document.getElementById('analytics-start-date').value;
+        const endVal = document.getElementById('analytics-end-date').value;
+        if (startVal && endVal) {
+            const s = new Date(startVal); s.setHours(0,0,0,0);
+            const e = new Date(endVal); e.setHours(23,59,59,999);
+            window.analyticsCustomRange = { start: s, end: e };
+            renderCharts();
+        }
+    }
+    function clearAnalyticsCustomRange() {
+        window.analyticsCustomRange = null;
+        document.getElementById('analytics-start-date').value = '';
+        document.getElementById('analytics-end-date').value = '';
+        renderCharts();
+    }
+    function printAnalyticsSummary() {
+        window.print();
+    }
+
     // --- Analytics ---
     let pieInstance = null;
     let lineInstance = null;
+    let barInstance = null;
     let chartViewAllTime = false; // False = Current month, True = All Time
 
     function toggleChartView() {
@@ -2265,8 +2789,12 @@
     function renderCharts() {
         let chartDataTarget = [...debitHistoryState];
 
-        // Filter for Current Month if chartViewAllTime is false
-        if (!chartViewAllTime) {
+        if (window.analyticsCustomRange) {
+            chartDataTarget = chartDataTarget.filter(item => {
+                const d = new Date(item.timestamp);
+                return d >= window.analyticsCustomRange.start && d <= window.analyticsCustomRange.end;
+            });
+        } else if (!chartViewAllTime) {
             const currentMonth = new Date().getMonth();
             const currentYear = new Date().getFullYear();
             chartDataTarget = chartDataTarget.filter(item => {
@@ -2285,7 +2813,6 @@
             dailyMap[dateKey] = (dailyMap[dateKey] || 0) + item.amount;
         });
 
-        // Modifying Pie Labels to include the amount
         const pieLabels = Object.keys(catMap).map(key => `${key} (₹${catMap[key].toFixed(0)})`);
         const pieData = Object.values(catMap);
 
@@ -2297,7 +2824,7 @@
                 labels: pieLabels,
                 datasets: [{
                     data: pieData,
-                    backgroundColor: ['#D64550', '#2F9E6E', '#2C7DA0', '#C99A2E', '#7A5FB0', '#E8895C', '#3AA0A0', '#8D6E63']
+                    backgroundColor: ['#C1443E', '#1E9D6E', '#33549C', '#E2A23B', '#7A5FB0', '#E8895C', '#3AA0A0', '#8D6E63']
                 }]
             },
             plugins: [ChartDataLabels],
@@ -2306,15 +2833,37 @@
                 maintainAspectRatio: false,
                 plugins: {
                     legend: { position: 'bottom' },
-                    datalabels: {
-                        display: false // Hide data labels from slices as requested
-                    },
+                    datalabels: { display: false },
                     title: {
                         display: chartDataTarget.length === 0,
                         text: 'No expenses logged for this period.',
                         position: 'bottom'
                     }
                 }
+            }
+        });
+
+        // FEATURE: category comparison bar chart
+        const barLabels = Object.keys(catMap);
+        const barData = Object.values(catMap);
+        const ctxBar = document.getElementById('barChart').getContext('2d');
+        if (barInstance) barInstance.destroy();
+        barInstance = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: barLabels,
+                datasets: [{
+                    label: 'Spend by Category (INR)',
+                    data: barData,
+                    backgroundColor: '#33549C',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false }, datalabels: { display: false } },
+                scales: { y: { beginAtZero: true } }
             }
         });
 
@@ -2329,8 +2878,8 @@
                 datasets: [{
                     label: 'Daily personal Expense Trend (INR)',
                     data: lineData,
-                    borderColor: '#2C7DA0',
-                    backgroundColor: 'rgba(44, 125, 160, 0.12)',
+                    borderColor: '#33549C',
+                    backgroundColor: 'rgba(51, 84, 156, 0.12)',
                     fill: true,
                     tension: 0.2
                 }]
@@ -2344,6 +2893,21 @@
                 scales: { y: { beginAtZero: true } }
             }
         });
+
+        // FEATURE: analytics stat chips
+        const periodTotal = chartDataTarget.reduce((sum, i) => sum + i.amount, 0);
+        let topCat = '–';
+        let topCatAmt = 0;
+        Object.keys(catMap).forEach(cat => { if (catMap[cat] > topCatAmt) { topCatAmt = catMap[cat]; topCat = cat; } });
+        const uniqueDays = new Set(chartDataTarget.map(i => new Date(i.timestamp).toDateString())).size || 1;
+        const avgDaily = periodTotal / uniqueDays;
+
+        const topCatEl = document.getElementById('analytics-top-category');
+        const avgDailyEl = document.getElementById('analytics-avg-daily');
+        const periodTotalEl = document.getElementById('analytics-period-total');
+        if (topCatEl) topCatEl.textContent = topCat === '–' ? '–' : `${topCat} (₹${topCatAmt.toFixed(0)})`;
+        if (avgDailyEl) avgDailyEl.textContent = `₹${avgDaily.toFixed(0)}`;
+        if (periodTotalEl) periodTotalEl.textContent = `₹${periodTotal.toFixed(0)}`;
     }
 
     // --- Calendar ---
@@ -2380,15 +2944,28 @@
                 dayAmountMap[dateNum] = (dayAmountMap[dateNum] || 0) + tx.amount;
             }
         });
+
+        const today = new Date();
+        let monthTotal = 0;
+        let highestDay = null, highestAmt = 0;
+        let daysOverBudget = 0;
+
         for (let day = 1; day <= totalDays; day++) {
             const cell = document.createElement('div');
             cell.className = 'calendar-cell';
+            if (today.getFullYear() === year && today.getMonth() === month && today.getDate() === day) {
+                cell.classList.add('is-today');
+            }
             const dSpan = document.createElement('span');
             dSpan.className = 'cell-date';
             dSpan.textContent = day;
             cell.appendChild(dSpan);
             if (dayAmountMap[day]) {
                 const totalSpent = dayAmountMap[day];
+                monthTotal += totalSpent;
+                if (totalSpent > highestAmt) { highestAmt = totalSpent; highestDay = day; }
+                if (totalSpent > budgetThreshold) daysOverBudget++;
+
                 const amtSpan = document.createElement('span');
                 amtSpan.className = 'cell-amount';
                 amtSpan.textContent = `₹${totalSpent.toFixed(0)}`;
@@ -2400,10 +2977,27 @@
             }
             grid.appendChild(cell);
         }
+
+        // FEATURE: calendar stat chips
+        const activeDaysCount = Object.keys(dayAmountMap).length || 1;
+        const totalEl = document.getElementById('cal-stat-total');
+        const highestEl = document.getElementById('cal-stat-highest');
+        const avgEl = document.getElementById('cal-stat-avg');
+        const overBudgetEl = document.getElementById('cal-stat-overbudget');
+        if (totalEl) totalEl.textContent = `₹${monthTotal.toFixed(0)}`;
+        if (highestEl) highestEl.textContent = highestDay ? `${highestDay} ${monthNames[month]} (₹${highestAmt.toFixed(0)})` : '–';
+        if (avgEl) avgEl.textContent = `₹${(monthTotal / activeDaysCount).toFixed(0)}`;
+        if (overBudgetEl) overBudgetEl.textContent = daysOverBudget;
     }
 
     function changeMonth(dir) {
         currentCalDate.setMonth(currentCalDate.getMonth() + dir);
+        renderCalendar();
+    }
+
+    // FEATURE: jump to today
+    function jumpToToday() {
+        currentCalDate = new Date();
         renderCalendar();
     }
 
@@ -2455,28 +3049,38 @@
                 items.push({ name: peer, amount: bal });
             } else if(type === 'pay' && bal < 0) {
                 items.push({ name: peer, amount: Math.abs(bal) });
+            } else if(type === 'net') {
+                items.push({ name: peer, amount: bal });
             }
         }
 
         if (type === 'receive') {
             titleEl.textContent = 'Friends Who Owe You';
-        } else {
+        } else if (type === 'pay') {
             titleEl.textContent = 'Friends You Owe';
+        } else {
+            titleEl.textContent = 'Net Position Per Friend';
         }
 
         if (items.length === 0) {
             listEl.innerHTML = `<li class="no-history-msg">No pending balances in this category.</li>`;
         } else {
-            // Sort by amount descending
-            items.sort((a, b) => b.amount - a.amount);
+            items.sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount));
             listEl.innerHTML = items.map(item => {
-                const amountColor = type === 'receive' ? 'var(--btn-receive)' : 'var(--btn-give)';
+                let cls = 'receive';
+                let colorVar = 'var(--btn-receive)';
+                if (type === 'pay') { cls = 'give'; colorVar = 'var(--btn-give)'; }
+                if (type === 'net') {
+                    cls = item.amount >= 0 ? 'receive' : 'give';
+                    colorVar = item.amount >= 0 ? 'var(--btn-receive)' : 'var(--btn-give)';
+                }
+                const displayAmt = type === 'net' ? (item.amount >= 0 ? `+₹${item.amount.toFixed(2)}` : `-₹${Math.abs(item.amount).toFixed(2)}`) : `₹${item.amount.toFixed(2)}`;
                 return `
-                    <li class="timeline-item ${type === 'receive' ? 'receive' : 'give'}" style="padding-bottom:15px;">
+                    <li class="timeline-item ${cls}" style="padding-bottom:15px;">
                         <div class="timeline-meta" style="max-width: 60%;">
                             <span class="timeline-desc" style="font-size: 1.05rem;">${item.name}</span>
                         </div>
-                        <div class="timeline-amount" style="color: ${amountColor};">₹${item.amount.toFixed(2)}</div>
+                        <div class="timeline-amount" style="color: ${colorVar};">${displayAmt}</div>
                     </li>
                 `;
             }).join('');
@@ -2506,7 +3110,9 @@
         localStorage.removeItem('personalTotalDebit');
         loadSavingsData();
         document.getElementById('notes-area').value = localStorage.getItem('ledgerNotes') || '';
+        document.getElementById('notes-area').style.fontSize = notesFontSizePx + 'px';
         updateBalancesUI();
+        updateNotesWordCount();
         // If user was previously authenticated in this tab session, jump to menu
         if (sessionStorage.getItem('ledgerAuthenticated') === 'true') {
             document.getElementById('display-username').textContent = sessionStorage.getItem('ledgerUser') || 'Shivadut';
@@ -2515,7 +3121,7 @@
     });
 
     /* =========================================================================
-       NEW: COHORT CUSTOMIZATION LOGIC
+       COHORT CUSTOMIZATION LOGIC
        Uses MutationObserver to add UI elements WITHOUT modifying existing functions
        ========================================================================= */
 
@@ -2527,7 +3133,6 @@
     window.addEventListener('DOMContentLoaded', () => {
         const container = document.getElementById('ledger-container');
         if(container) {
-            // Watch for changes in the ledger container (which happens on renderLedger())
             cohortObserver.observe(container, { childList: true });
         }
     });
@@ -2543,8 +3148,13 @@
         }
         const recEl = document.getElementById('cohort-total-receive');
         const payEl = document.getElementById('cohort-total-pay');
+        const netEl = document.getElementById('cohort-net-position');
         if(recEl) recEl.innerText = '₹' + totalReceive.toFixed(2);
         if(payEl) payEl.innerText = '₹' + totalPay.toFixed(2);
+        if(netEl) {
+            const net = totalReceive - totalPay;
+            netEl.innerText = (net >= 0 ? '+₹' : '-₹') + Math.abs(net).toFixed(2);
+        }
     }
 
     // Handles the live filtering functionality
@@ -2553,7 +3163,8 @@
         const items = document.querySelectorAll('.ledger-item-container');
         items.forEach(item => {
             const name = item.querySelector('.peer-name').innerText.toLowerCase();
-            if(name.includes(query)) {
+            const statusOk = window.cohortStatusFilter === 'all' || window.cohortStatusFilter === item.getAttribute('data-status');
+            if(name.includes(query) && statusOk) {
                 item.style.display = 'flex';
             } else {
                 item.style.display = 'none';
@@ -2566,22 +3177,18 @@
         const peerInfos = document.querySelectorAll('.peer-info');
         peerInfos.forEach(infoBox => {
             const nameEl = infoBox.querySelector('.peer-name');
-            // Check if we haven't already wrapped the name to avoid infinite loops
             if (nameEl && !infoBox.querySelector('.peer-name-container')) {
                 const nameContainer = document.createElement('div');
                 nameContainer.className = 'peer-name-container';
 
                 const avatar = document.createElement('div');
                 avatar.className = 'peer-avatar';
-                // Use the first letter of the friend's name
                 avatar.innerText = nameEl.innerText.charAt(0).toUpperCase();
 
-                // Group the avatar and original name element together
                 nameContainer.appendChild(avatar);
                 nameEl.parentNode.insertBefore(nameContainer, nameEl);
                 nameContainer.appendChild(nameEl);
 
-                // Smart Tag Integration
                 if (nameEl.innerText.trim().toLowerCase() === 'mowlish') {
                     const badge = document.createElement('span');
                     badge.className = 'travel-badge';
