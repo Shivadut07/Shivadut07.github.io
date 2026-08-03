@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light only">
-    <title>Shivadut's Integrated Financial Ledger</title>
+    <title>Aravindh's Integrated Financial Ledger</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Lobster+Two:ital,wght@0,400;0,700;1,400;1,700&family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1305,11 +1305,11 @@
 <div id="login-page" class="app-page" style="display: flex;">
     <div class="login-card">
         <div class="login-brand-icon">📖</div>
-        <h1>Shivadut's Secure Ledger</h1>
+        <h1>Aravindh's Secure Ledger</h1>
         <p>Access your financial dashboard &amp; timelines.</p>
         <div class="login-form-group">
             <label for="username">Username</label>
-            <input type="text" id="username" placeholder="Enter numeric username" autocomplete="off" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            <input type="text" id="username" placeholder="Enter username" autocomplete="off">
         </div>
         <div class="login-form-group">
             <label for="password">Password</label>
@@ -1388,7 +1388,7 @@
         </div>
     </div>
 
-    <div class="app-footer" style="margin-top: 30px;"><span class="footer-icon">🪙</span> Shivadut's Ledger — track every rupee, settle every macha</div>
+    <div class="app-footer" style="margin-top: 30px;"><span class="footer-icon">🪙</span> Aravindh's Ledger — track every rupee, settle every macha</div>
 </div>
 
 <div id="notes-page" class="app-page">
@@ -1894,11 +1894,11 @@
         const u = document.getElementById('username').value.trim();
         const p = document.getElementById('password').value.trim();
         const err = document.getElementById('login-error-msg');
-        if (u === "123456" && p === "857447") {
+        if (u === "aravindh" && p === "2006") {
             err.textContent = "";
             sessionStorage.setItem('ledgerAuthenticated', 'true');
-            sessionStorage.setItem('ledgerUser', "Shivadut");
-            document.getElementById('display-username').textContent = "Shivadut";
+            sessionStorage.setItem('ledgerUser', "Aravindh");
+            document.getElementById('display-username').textContent = "Aravindh";
             openPage('menu-page');
         } else {
             err.textContent = "Thappana Credentials! Correct numeric User & Pass enter pannunga.";
@@ -1954,7 +1954,7 @@
             document.getElementById(`row-total-${denom}`).textContent = total.toFixed(2);
         });
 
-        localStorage.setItem('savingsData', JSON.stringify(savingsData));
+        localStorage.setItem('savingsDataV2', JSON.stringify(savingsData));
         document.getElementById('savings-grand-total').textContent = `₹${grandTotal.toFixed(2)}`;
     }
 
@@ -2055,12 +2055,12 @@
     }
 
     // --- State ---
-    const rawFriendsArray = ["Aravindh", "Gojo", "Mowlish", "Soukar","Gowtham","Thiwakar"];
-    const customFriendsArray = JSON.parse(localStorage.getItem('customFriendsArray')) || [];
+    const rawFriendsArray = ["Shivadut", "Siddharth", "Soukar", "Tamilkarthik", "Gowtham", "Thiwakar"];
+    const customFriendsArray = JSON.parse(localStorage.getItem('customFriendsArrayV2')) || [];
     let sortedFriends = [...rawFriendsArray, ...customFriendsArray].sort();
 
-    let ledgerState = JSON.parse(localStorage.getItem('ledgerState')) || {};
-    let debitHistoryState = JSON.parse(localStorage.getItem('debitHistoryState')) || [];
+    let ledgerState = JSON.parse(localStorage.getItem('ledgerStateV2')) || {};
+    let debitHistoryState = JSON.parse(localStorage.getItem('debitHistoryStateV2')) || [];
     let currentEditingId = null;
 
     sortedFriends.forEach(peer => {
@@ -2068,7 +2068,7 @@
             ledgerState[peer] = { balance: 0, baseline: 0, transactions: [] };
         }
     });
-    localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
+    localStorage.setItem('ledgerStateV2', JSON.stringify(ledgerState));
 
     const dateFormatter = new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
 
@@ -2080,7 +2080,7 @@
     }
 
     function loadSavingsData() {
-        const savedData = JSON.parse(localStorage.getItem('savingsData'));
+        const savedData = JSON.parse(localStorage.getItem('savingsDataV2'));
         if (savedData) {
             Object.keys(savedData).forEach(denom => {
                 const input = document.querySelector(`.note-input[data-denom="${denom}"]`);
@@ -2180,7 +2180,7 @@
                 };
                 debitHistoryState.unshift(newEntry);
             }
-            localStorage.setItem('debitHistoryState', JSON.stringify(debitHistoryState));
+            localStorage.setItem('debitHistoryStateV2', JSON.stringify(debitHistoryState));
             updateBalancesUI();
             renderDebitHistory();
             renderDebitCategoryChips();
@@ -2231,7 +2231,7 @@
         if (confirm("Intha transaction-ai permanent-aga delete seiya venduma?")) {
             if (currentEditingId === id) cancelDebitEdit();
             debitHistoryState = debitHistoryState.filter(item => item.id !== id);
-            localStorage.setItem('debitHistoryState', JSON.stringify(debitHistoryState));
+            localStorage.setItem('debitHistoryStateV2', JSON.stringify(debitHistoryState));
             updateBalancesUI();
             renderDebitHistory();
             renderDebitCategoryChips();
@@ -2286,11 +2286,11 @@
     // FEATURE 1: Monthly budget goal tracking
     function saveBudgetGoal() {
         const val = document.getElementById('monthly-budget-goal').value;
-        localStorage.setItem('monthlyBudgetGoal', val);
+        localStorage.setItem('monthlyBudgetGoalV2', val);
         updateDebitFeatureStats();
     }
     function loadBudgetGoal() {
-        const val = localStorage.getItem('monthlyBudgetGoal');
+        const val = localStorage.getItem('monthlyBudgetGoalV2');
         const input = document.getElementById('monthly-budget-goal');
         if (input && val !== null) input.value = val;
         updateDebitFeatureStats();
@@ -2320,7 +2320,7 @@
         highEl.textContent = `₹${highest.toFixed(0)}`;
         countEl.textContent = monthTx.length;
 
-        const goal = parseFloat(localStorage.getItem('monthlyBudgetGoal'));
+        const goal = parseFloat(localStorage.getItem('monthlyBudgetGoalV2'));
         const fillEl = document.getElementById('budget-progress-fill');
         const textEl = document.getElementById('budget-progress-text');
         if (fillEl && textEl) {
@@ -2392,7 +2392,7 @@
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = `Shivadut_${safeTitle}_${new Date().toISOString().slice(0,10)}.txt`;
+        link.download = `Aravindh_${safeTitle}_${new Date().toISOString().slice(0,10)}.txt`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -2543,7 +2543,7 @@
         doc.setFont("Helvetica", "bold");
         doc.setFontSize(22);
         doc.setTextColor(255, 255, 255);
-        doc.text("Shivadut's Personal Ledger Report", 14, 20);
+        doc.text("Aravindh's Personal Ledger Report", 14, 20);
 
         const totalSpent = data.reduce((sum, item) => sum + item.amount, 0);
 
@@ -2587,7 +2587,7 @@
         doc.setFont("Helvetica", "bold");
         doc.setFontSize(22);
         doc.setTextColor(255, 255, 255);
-        doc.text("Shivadut's Cohort Ledger Report", 14, 20);
+        doc.text("Aravindh's Cohort Ledger Report", 14, 20);
 
         doc.setFontSize(10);
         doc.setFont("Helvetica", "normal");
@@ -2664,7 +2664,7 @@
     }
 
     function exportCohortToExcel(data, selectedFriend) {
-        let csvContent = "SHIVADUT'S COHORT LEDGER & HISTORY\n";
+        let csvContent = "ARAVINDH'S COHORT LEDGER & HISTORY\n";
         csvContent += "Document Type,Shared Expenses and Cash Settlements Record\n";
         csvContent += `Generated On,${new Date().toLocaleString('en-IN').replace(/,/g, '')}\n\n`;
 
@@ -2829,7 +2829,7 @@
                 type: type, amount: amount, category: categoryDesc,
                 timestamp: new Date().toISOString()
             });
-            localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
+            localStorage.setItem('ledgerStateV2', JSON.stringify(ledgerState));
             renderLedger();
             amtEl.value = '';
             document.getElementById(`cat-${peer}`).value = '';
@@ -2879,11 +2879,11 @@
             return;
         }
         customFriendsArray.push(properCaseName);
-        localStorage.setItem('customFriendsArray', JSON.stringify(customFriendsArray));
+        localStorage.setItem('customFriendsArrayV2', JSON.stringify(customFriendsArray));
         sortedFriends.push(properCaseName);
         sortedFriends.sort();
         ledgerState[properCaseName] = { balance: 0, baseline: 0, transactions: [] };
-        localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
+        localStorage.setItem('ledgerStateV2', JSON.stringify(ledgerState));
         input.value = '';
         renderLedger();
     }
@@ -2902,7 +2902,7 @@
         });
         ledgerState[peer].balance = 0;
         ledgerState[peer].baseline = 0;
-        localStorage.setItem('ledgerState', JSON.stringify(ledgerState));
+        localStorage.setItem('ledgerStateV2', JSON.stringify(ledgerState));
         renderLedger();
     }
 
@@ -3315,7 +3315,7 @@
         updateNotesWordCount();
         // If user was previously authenticated in this tab session, jump to menu
         if (sessionStorage.getItem('ledgerAuthenticated') === 'true') {
-            document.getElementById('display-username').textContent = sessionStorage.getItem('ledgerUser') || 'Shivadut';
+            document.getElementById('display-username').textContent = sessionStorage.getItem('ledgerUser') || 'Aravindh';
             openPage('menu-page');
         }
     });
